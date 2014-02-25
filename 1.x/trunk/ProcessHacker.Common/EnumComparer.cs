@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Reflection.Emit;
 
 namespace ProcessHacker.Common
@@ -14,6 +15,7 @@ namespace ProcessHacker.Common
         where TEnum : struct, IComparable, IConvertible, IFormattable
     {
         public static readonly EnumComparer<TEnum> Instance;
+
         private static readonly Func<TEnum, TEnum, bool> _equals;
         private static readonly Func<TEnum, int> _getHashCode;
 
@@ -51,11 +53,12 @@ namespace ProcessHacker.Common
         private static void AssertUnderlyingTypeIsSupported()
         {
             var underlyingType = Enum.GetUnderlyingType(typeof(TEnum));
-            ICollection<Type> supportedTypes = new[]
-            {
-                typeof(byte), typeof(sbyte), typeof(short), typeof(ushort),
-                typeof(int), typeof(uint), typeof(long), typeof(ulong)
-            };
+            ICollection<Type> supportedTypes =
+                new[]
+                {
+                    typeof (byte), typeof (sbyte), typeof (short), typeof (ushort),
+                    typeof (int), typeof (uint), typeof (long), typeof (ulong)
+                };
 
             if (supportedTypes.Contains(underlyingType))
                 return;
@@ -75,19 +78,18 @@ namespace ProcessHacker.Common
         /// <returns>The generated method.</returns>
         private static Func<TEnum, TEnum, bool> generateEquals()
         {
-            var method = new DynamicMethod(typeof(TEnum).Name + "_Equals", typeof(bool), new[] 
-            { 
-                typeof(TEnum), typeof(TEnum) 
-            }, typeof(TEnum), true);
-
+            var method = new DynamicMethod(typeof(TEnum).Name + "_Equals",
+                typeof(bool),
+                new[] { typeof(TEnum), typeof(TEnum) },
+                typeof(TEnum), true);
             var generator = method.GetILGenerator();
             // Writing body
             generator.Emit(OpCodes.Ldarg_0);    // load x to stack
             generator.Emit(OpCodes.Ldarg_1);    // load y to stack
             generator.Emit(OpCodes.Ceq);        // x == y
             generator.Emit(OpCodes.Ret);        // return result
-
-            return (Func<TEnum, TEnum, bool>)method.CreateDelegate(typeof(Func<TEnum, TEnum, bool>));
+            return (Func<TEnum, TEnum, bool>)method.CreateDelegate
+                (typeof(Func<TEnum, TEnum, bool>));
         }
 
         /// <summary>
@@ -102,11 +104,10 @@ namespace ProcessHacker.Common
         /// <returns>The generated method.</returns>
         private static Func<TEnum, int> generateGetHashCode()
         {
-            var method = new DynamicMethod(typeof(TEnum).Name + "_GetHashCode", typeof(int), new[] 
-            { 
-                typeof(TEnum) 
-            }, typeof(TEnum), true);
-
+            var method = new DynamicMethod(typeof(TEnum).Name + "_GetHashCode",
+                typeof(int),
+                new[] { typeof(TEnum) },
+                typeof(TEnum), true);
             var generator = method.GetILGenerator();
             var underlyingType = Enum.GetUnderlyingType(typeof(TEnum));
             var getHashCodeMethod = underlyingType.GetMethod("GetHashCode");
@@ -117,7 +118,6 @@ namespace ProcessHacker.Common
             generator.Emit(OpCodes.Ldloca_S, castValue);        // load *castValue to stack
             generator.Emit(OpCodes.Call, getHashCodeMethod);    // castValue.GetHashCode()
             generator.Emit(OpCodes.Ret);                        // return result
-
             return (Func<TEnum, int>)method.CreateDelegate(typeof(Func<TEnum, int>));
         }
     }

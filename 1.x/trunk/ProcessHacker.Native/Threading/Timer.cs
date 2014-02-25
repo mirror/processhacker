@@ -38,6 +38,8 @@ namespace ProcessHacker.Native.Threading
     /// </summary>
     public sealed class Timer : NativeObject<TimerHandle>
     {
+        private TimerCallback _callback;
+
         /// <summary>
         /// Creates a timer.
         /// </summary>
@@ -90,7 +92,7 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public TimeSpan RemainingTime
         {
-            get { return new TimeSpan(this.Handle.BasicInformation.RemainingTime); }
+            get { return new TimeSpan(this.Handle.GetBasicInformation().RemainingTime); }
         }
 
         /// <summary>
@@ -98,7 +100,7 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public bool Signaled
         {
-            get { return this.Handle.BasicInformation.TimerState; }
+            get { return this.Handle.GetBasicInformation().TimerState; }
         }
 
         /// <summary>
@@ -150,6 +152,7 @@ namespace ProcessHacker.Native.Threading
         {
             TimerApcRoutine apcRoutine = (context_, lowPart, highPart) => callback(context_);
 
+            _callback = callback;
             this.Handle.Set(
                 dueTime * Win32.TimeMsTo100Ns,
                 true,
@@ -200,6 +203,7 @@ namespace ProcessHacker.Native.Threading
         {
             TimerApcRoutine apcRoutine = (context_, lowPart, highPart) => callback(context_);
 
+            _callback = callback;
             this.Handle.Set(
                 dueTime.ToFileTime(),
                 false,

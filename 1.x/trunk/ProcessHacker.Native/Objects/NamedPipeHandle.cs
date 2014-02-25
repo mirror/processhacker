@@ -89,6 +89,7 @@ namespace ProcessHacker.Native.Objects
             long defaultTimeout
             )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
@@ -99,7 +100,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                Win32.NtCreateNamedPipeFile(
+                if ((status = Win32.NtCreateNamedPipeFile(
                     out handle,
                     access,
                     ref oa,
@@ -114,7 +115,8 @@ namespace ProcessHacker.Native.Objects
                     inboundQuota,
                     outboundQuota,
                     ref defaultTimeout
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -153,33 +155,33 @@ namespace ProcessHacker.Native.Objects
 
         public static bool Wait(string name, long timeout, bool relative)
         {
-            using (FileHandle npfsHandle = new FileHandle(
+            using (var npfsHandle = new FileHandle(
                 Win32.NamedPipePath + "\\",
                 FileShareMode.ReadWrite,
                 FileCreateOptions.SynchronousIoNonAlert,
                 FileAccess.ReadAttributes | (FileAccess)StandardRights.Synchronize
                 ))
             {
-                using (MemoryAlloc data = new MemoryAlloc(FilePipeWaitForBuffer.NameOffset + name.Length * 2))
+                using (var data = new MemoryAlloc(FilePipeWaitForBuffer.NameOffset + name.Length * 2))
                 {
-                    FilePipeWaitForBuffer info = new FilePipeWaitForBuffer
-                    {
-                        Timeout = timeout, 
-                        TimeoutSpecified = true, 
-                        NameLength = name.Length * 2
-                    };
+                    FilePipeWaitForBuffer info = new FilePipeWaitForBuffer();
 
-                    data.WriteStruct(info);
+                    info.Timeout = timeout;
+                    info.TimeoutSpecified = true;
+                    info.NameLength = name.Length * 2;
+                    data.WriteStruct<FilePipeWaitForBuffer>(info);
                     data.WriteUnicodeString(FilePipeWaitForBuffer.NameOffset, name);
 
+                    NtStatus status;
                     int returnLength;
 
-                    NtStatus status = npfsHandle.FsControl(FsCtlWait, data, data.Size, IntPtr.Zero, 0, out returnLength);
+                    status = npfsHandle.FsControl(FsCtlWait, data, data.Size, IntPtr.Zero, 0, out returnLength);
 
                     if (status == NtStatus.IoTimeout)
                         return false;
 
-                    status.ThrowIf();
+                    if (status >= NtStatus.Error)
+                        Win32.Throw(status);
 
                     return true;
                 }
@@ -253,7 +255,8 @@ namespace ProcessHacker.Native.Objects
             if (asyncContext.Status == NtStatus.PipeConnected)
                 return true;
 
-            asyncContext.StatusBlock.Status.ThrowIf();
+            if (asyncContext.StatusBlock.Status >= NtStatus.Error)
+                Win32.Throw(asyncContext.StatusBlock.Status);
 
             return false;
         }
@@ -268,31 +271,19 @@ namespace ProcessHacker.Native.Objects
             this.FsControl(FsCtlDisconnect, IntPtr.Zero, 0, IntPtr.Zero, 0);
         }
 
-        private FilePipeInformation Information
+        private FilePipeInformation GetInformation()
         {
-            get 
-            { 
-                return this.QueryStruct<FilePipeInformation>(
-                    FileInformationClass.FilePipeInformation, 
-                    FilePipeInformation.SizeOf
-                    ); 
-            }
+            return this.QueryStruct<FilePipeInformation>(FileInformationClass.FilePipeInformation);
         }
 
-        private FilePipeLocalInformation LocalInformation
+        private FilePipeLocalInformation GetLocalInformation()
         {
-            get 
-            { 
-                return this.QueryStruct<FilePipeLocalInformation>(
-                    FileInformationClass.FilePipeLocalInformation, 
-                    FilePipeLocalInformation.SizeOf
-                    ); 
-            }
+            return this.QueryStruct<FilePipeLocalInformation>(FileInformationClass.FilePipeLocalInformation);
         }
 
-        public PipeType PipeType
+        public PipeType GetPipeType()
         {
-            get { return this.Information.ReadMode; }
+            return this.GetInformation().ReadMode;
         }
 
         public void ImpersonateClient()
@@ -302,14 +293,16 @@ namespace ProcessHacker.Native.Objects
 
         public bool Listen()
         {
+            NtStatus status;
             int returnLength;
 
-            NtStatus status = this.FsControl(FsCtlListen, IntPtr.Zero, 0, IntPtr.Zero, 0, out returnLength);
+            status = this.FsControl(FsCtlListen, IntPtr.Zero, 0, IntPtr.Zero, 0, out returnLength);
 
             if (status == NtStatus.PipeConnected)
                 return true;
 
-            status.ThrowIf();
+            if (status >= NtStatus.Error)
+                Win32.Throw(status);
 
             return false;
         }
@@ -374,7 +367,7 @@ namespace ProcessHacker.Native.Objects
 
         public int Peek(IntPtr buffer, int length, out int bytesAvailable, out int bytesLeftInMessage)
         {
-            using (MemoryAlloc data = new MemoryAlloc(FilePipePeekBuffer.DataOffset + length))
+            using (var data = new MemoryAlloc(FilePipePeekBuffer.DataOffset + length))
             {
                 NtStatus status;
                 int returnLength;
@@ -386,12 +379,14 @@ namespace ProcessHacker.Native.Objects
                 if (status == NtStatus.BufferOverflow)
                     status = NtStatus.Success;
 
-                status.ThrowIf();
+                if (status >= NtStatus.Error)
+                    Win32.Throw(status);
 
                 FilePipePeekBuffer info = data.ReadStruct<FilePipePeekBuffer>();
+                int bytesRead;
 
                 bytesAvailable = info.ReadDataAvailable;
-                int bytesRead = returnLength - FilePipePeekBuffer.DataOffset;
+                bytesRead = returnLength - FilePipePeekBuffer.DataOffset;
                 bytesLeftInMessage = info.MessageLength - bytesRead;
 
                 if (buffer != IntPtr.Zero)

@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -85,44 +86,49 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the domain.</param>
         public SamDomainHandle(SamServerHandle serverHandle, Sid domainId, SamDomainAccess access)
         {
+            NtStatus status;
             IntPtr handle;
 
-            Win32.SamOpenDomain(
+            if ((status = Win32.SamOpenDomain(
                 serverHandle,
                 access,
                 domainId,
                 out handle
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             this.Handle = handle;
         }
 
         public void EnumAliases(EnumAliasesDelegate callback)
         {
+            NtStatus status;
             int enumerationContext = 0;
             IntPtr buffer;
             int count;
 
             while (true)
             {
-                Win32.SamEnumerateAliasesInDomain(
+                status = Win32.SamEnumerateAliasesInDomain(
                     this,
                     ref enumerationContext,
                     out buffer,
                     0x100,
                     out count
-                    ).ThrowIf();
+                    );
 
+                if (status >= NtStatus.Error)
+                    Win32.Throw(status);
                 if (count == 0)
                     break;
 
-                using (SamMemoryAlloc bufferAlloc = new SamMemoryAlloc(buffer))
+                using (var bufferAlloc = new SamMemoryAlloc(buffer))
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        SamRidEnumeration data = bufferAlloc.ReadStruct<SamRidEnumeration>(0, SamRidEnumeration.SizeOf, i);
+                        var data = bufferAlloc.ReadStruct<SamRidEnumeration>(i);
 
-                        if (!callback(data.Name.Text, data.RelativeId))
+                        if (!callback(data.Name.Read(), data.RelativeId))
                             return;
                     }
                 }
@@ -131,30 +137,33 @@ namespace ProcessHacker.Native.Objects
 
         public void EnumGroups(EnumGroupsDelegate callback)
         {
+            NtStatus status;
             int enumerationContext = 0;
             IntPtr buffer;
             int count;
 
             while (true)
             {
-                Win32.SamEnumerateGroupsInDomain(
+                status = Win32.SamEnumerateGroupsInDomain(
                     this,
                     ref enumerationContext,
                     out buffer,
                     0x100,
                     out count
-                    ).ThrowIf();
+                    );
 
+                if (status >= NtStatus.Error)
+                    Win32.Throw(status);
                 if (count == 0)
                     break;
 
-                using (SamMemoryAlloc bufferAlloc = new SamMemoryAlloc(buffer))
+                using (var bufferAlloc = new SamMemoryAlloc(buffer))
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        SamRidEnumeration data = bufferAlloc.ReadStruct<SamRidEnumeration>(0, SamRidEnumeration.SizeOf, i);
+                        var data = bufferAlloc.ReadStruct<SamRidEnumeration>(i);
 
-                        if (!callback(data.Name.Text, data.RelativeId))
+                        if (!callback(data.Name.Read(), data.RelativeId))
                             return;
                     }
                 }
@@ -168,31 +177,34 @@ namespace ProcessHacker.Native.Objects
 
         public void EnumUsers(EnumUsersDelegate callback, UserAccountFlags flags)
         {
+            NtStatus status;
             int enumerationContext = 0;
             IntPtr buffer;
             int count;
 
             while (true)
             {
-                Win32.SamEnumerateUsersInDomain(
+                status = Win32.SamEnumerateUsersInDomain(
                     this,
                     ref enumerationContext,
                     flags,
                     out buffer,
                     0x100,
                     out count
-                    ).ThrowIf();
+                    );
 
+                if (status >= NtStatus.Error)
+                    Win32.Throw(status);
                 if (count == 0)
                     break;
 
-                using (SamMemoryAlloc bufferAlloc = new SamMemoryAlloc(buffer))
+                using (var bufferAlloc = new SamMemoryAlloc(buffer))
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        var data = bufferAlloc.ReadStruct<SamRidEnumeration>(0, SamRidEnumeration.SizeOf, i);
+                        var data = bufferAlloc.ReadStruct<SamRidEnumeration>(i);
 
-                        if (!callback(data.Name.Text, data.RelativeId))
+                        if (!callback(data.Name.Read(), data.RelativeId))
                             return;
                     }
                 }
@@ -201,44 +213,50 @@ namespace ProcessHacker.Native.Objects
 
         public int[] GetAliasMembership(Sid sid)
         {
+            NtStatus status;
             IntPtr aliases;
             int count;
 
-            Win32.SamGetAliasMembership(
+            if ((status = Win32.SamGetAliasMembership(
                 this,
                 1,
                 new IntPtr[] { sid },
                 out count,
                 out aliases
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             if (aliases != IntPtr.Zero)
             {
                 using (var aliasesAlloc = new SamMemoryAlloc(aliases))
                     return aliasesAlloc.ReadInt32Array(0, count);
             }
-            
-            return new int[0];
+            else
+            {
+                return new int[0];
+            }
         }
 
         private SamMemoryAlloc GetInformation(DomainInformationClass infoClass)
         {
+            NtStatus status;
             IntPtr buffer;
 
-            Win32.SamQueryInformationDomain(
+            if ((status = Win32.SamQueryInformationDomain(
                 this,
                 infoClass,
                 out buffer
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return new SamMemoryAlloc(buffer);
         }
 
         public DomainPasswordPolicy GetPasswordPolicy()
         {
-            using (SamMemoryAlloc data = this.GetInformation(DomainInformationClass.DomainPasswordInformation))
+            using (var data = this.GetInformation(DomainInformationClass.DomainPasswordInformation))
             {
-                DomainPasswordInformation info = data.ReadStruct<DomainPasswordInformation>();
+                var info = data.ReadStruct<DomainPasswordInformation>();
 
                 return new DomainPasswordPolicy(
                     info.MinPasswordLength,
@@ -252,15 +270,17 @@ namespace ProcessHacker.Native.Objects
 
         public Sid GetSid(int relativeId)
         {
+            NtStatus status;
             IntPtr sid;
 
-            Win32.SamRidToSid(
+            if ((status = Win32.SamRidToSid(
                 this,
                 relativeId,
                 out sid
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
-            using (SamMemoryAlloc sidAlloc = new SamMemoryAlloc(sid))
+            using (var sidAlloc = new SamMemoryAlloc(sid))
                 return new Sid(sidAlloc);
         }
 
@@ -278,26 +298,28 @@ namespace ProcessHacker.Native.Objects
 
         public string[] LookupIds(int[] relativeIds, out SidNameUse[] uses)
         {
+            NtStatus status;
             IntPtr names;
             IntPtr use;
 
-            Win32.SamLookupIdsInDomain(
+            if ((status = Win32.SamLookupIdsInDomain(
                 this,
                 relativeIds.Length,
                 relativeIds,
                 out names,
                 out use
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
-            using (SamMemoryAlloc namesAlloc = new SamMemoryAlloc(names))
-            using (SamMemoryAlloc useAlloc = new SamMemoryAlloc(use))
+            using (var namesAlloc = new SamMemoryAlloc(names))
+            using (var useAlloc = new SamMemoryAlloc(use))
             {
                 string[] nameArray = new string[relativeIds.Length];
                 SidNameUse[] useArray = new SidNameUse[relativeIds.Length];
 
                 for (int i = 0; i < relativeIds.Length; i++)
                 {
-                    nameArray[i] = namesAlloc.ReadStruct<UnicodeString>(0, UnicodeString.SizeOf, i).Text;
+                    nameArray[i] = namesAlloc.ReadStruct<UnicodeString>(i).Read();
                     useArray[i] = (SidNameUse)useAlloc.ReadInt32(0, i);
                 }
 
@@ -321,23 +343,26 @@ namespace ProcessHacker.Native.Objects
 
         public int[] LookupNames(string[] names, out SidNameUse[] uses)
         {
+            NtStatus status;
+            UnicodeString[] nameStr;
             IntPtr relativeIds;
             IntPtr use;
 
-            UnicodeString[] nameStr = new UnicodeString[names.Length];
+            nameStr = new UnicodeString[names.Length];
 
             for (int i = 0; i < names.Length; i++)
                 nameStr[i] = new UnicodeString(names[i]);
 
             try
             {
-                Win32.SamLookupNamesInDomain(
+                if ((status = Win32.SamLookupNamesInDomain(
                     this,
                     names.Length,
                     nameStr,
                     out relativeIds,
                     out use
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -345,8 +370,8 @@ namespace ProcessHacker.Native.Objects
                     nameStr[i].Dispose();
             }
 
-            using (SamMemoryAlloc relativeIdsAlloc = new SamMemoryAlloc(relativeIds))
-            using (SamMemoryAlloc useAlloc = new SamMemoryAlloc(use))
+            using (var relativeIdsAlloc = new SamMemoryAlloc(relativeIds))
+            using (var useAlloc = new SamMemoryAlloc(use))
             {
                 SidNameUse[] useArray = new SidNameUse[names.Length];
 
@@ -361,25 +386,30 @@ namespace ProcessHacker.Native.Objects
 
         private void SetInformation(DomainInformationClass infoClass, IntPtr buffer)
         {
-            Win32.SamSetInformationDomain(
+            NtStatus status;
+
+            if ((status = Win32.SamSetInformationDomain(
                 this,
                 infoClass,
                 buffer
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
-        public unsafe void SetPasswordPolicy(DomainPasswordPolicy policy)
+        public void SetPasswordPolicy(DomainPasswordPolicy policy)
         {
-            DomainPasswordInformation info = new DomainPasswordInformation
+            unsafe
             {
-                MinPasswordLength = policy.MinPasswordLength, 
-                PasswordHistoryLength = policy.PasswordHistoryLength, 
-                PasswordProperties = policy.PasswordProperties,
-                MaxPasswordAge = -policy.MaxPasswordAge.Ticks, 
-                MinPasswordAge = -policy.MinPasswordAge.Ticks
-            };
+                DomainPasswordInformation info = new DomainPasswordInformation();
 
-            this.SetInformation(DomainInformationClass.DomainPasswordInformation, new IntPtr(&info));
+                info.MinPasswordLength = policy.MinPasswordLength;
+                info.PasswordHistoryLength = policy.PasswordHistoryLength;
+                info.PasswordProperties = policy.PasswordProperties;
+                info.MaxPasswordAge = -policy.MaxPasswordAge.Ticks;
+                info.MinPasswordAge = -policy.MinPasswordAge.Ticks;
+
+                this.SetInformation(DomainInformationClass.DomainPasswordInformation, new IntPtr(&info));
+            }
         }
     }
 

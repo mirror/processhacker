@@ -34,14 +34,14 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NetworkList));
-            this.listNetwork = new ProcessHacker.Components.ExtendedListView();
-            this.columnProcess = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnLocal = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnLocalPort = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnRemote = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnRemotePort = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnProtocol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnState = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listNetwork = new System.Windows.Forms.ListView();
+            this.columnProcess = new System.Windows.Forms.ColumnHeader();
+            this.columnLocal = new System.Windows.Forms.ColumnHeader();
+            this.columnLocalPort = new System.Windows.Forms.ColumnHeader();
+            this.columnRemote = new System.Windows.Forms.ColumnHeader();
+            this.columnRemotePort = new System.Windows.Forms.ColumnHeader();
+            this.columnProtocol = new System.Windows.Forms.ColumnHeader();
+            this.columnState = new System.Windows.Forms.ColumnHeader();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.SuspendLayout();
             // 
@@ -57,7 +57,6 @@
             this.columnProtocol,
             this.columnState});
             this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listNetwork.DoubleClickChecks = true;
             this.listNetwork.FullRowSelect = true;
             this.listNetwork.HideSelection = false;
             this.listNetwork.Location = new System.Drawing.Point(0, 0);
@@ -115,8 +114,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listNetwork);
+            this.DoubleBuffered = true;
             this.Name = "NetworkList";
             this.Size = new System.Drawing.Size(685, 472);
             this.ResumeLayout(false);
@@ -125,7 +124,7 @@
 
         #endregion
 
-        private ExtendedListView listNetwork;
+        private System.Windows.Forms.ListView listNetwork;
         private System.Windows.Forms.ColumnHeader columnLocal;
         private System.Windows.Forms.ColumnHeader columnRemote;
         private System.Windows.Forms.ColumnHeader columnRemotePort;

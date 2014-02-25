@@ -1,6 +1,4 @@
-﻿using ProcessHacker.Components;
-
-namespace ProcessHacker
+﻿namespace ProcessHacker
 {
     partial class HandleFilterWindow
     {
@@ -30,21 +28,24 @@ namespace ProcessHacker
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HandleFilterWindow));
             this.label1 = new System.Windows.Forms.Label();
             this.textFilter = new System.Windows.Forms.TextBox();
             this.buttonFind = new System.Windows.Forms.Button();
-            this.listHandles = new ProcessHacker.Components.ExtendedListView();
-            this.columnProcess = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listHandles = new System.Windows.Forms.ListView();
+            this.columnProcess = new System.Windows.Forms.ColumnHeader();
+            this.columnType = new System.Windows.Forms.ColumnHeader();
+            this.columnName = new System.Windows.Forms.ColumnHeader();
+            this.columnHandle = new System.Windows.Forms.ColumnHeader();
             this.menuHandle = new System.Windows.Forms.ContextMenu();
             this.closeMenuItem = new System.Windows.Forms.MenuItem();
             this.processPropertiesMenuItem = new System.Windows.Forms.MenuItem();
             this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
             this.progress = new System.Windows.Forms.ProgressBar();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -52,21 +53,21 @@ namespace ProcessHacker
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 17);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(36, 13);
+            this.label1.Size = new System.Drawing.Size(32, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Filter:";
             // 
             // textFilter
             // 
-            this.textFilter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textFilter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textFilter.Location = new System.Drawing.Point(50, 14);
             this.textFilter.Name = "textFilter";
-            this.textFilter.Size = new System.Drawing.Size(395, 22);
+            this.textFilter.Size = new System.Drawing.Size(395, 20);
             this.textFilter.TabIndex = 1;
             this.textFilter.TextChanged += new System.EventHandler(this.textFilter_TextChanged);
-            this.textFilter.Enter += new System.EventHandler(this.textFilter_Enter);
             this.textFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textFilter_KeyPress);
+            this.textFilter.Enter += new System.EventHandler(this.textFilter_Enter);
             // 
             // buttonFind
             // 
@@ -84,15 +85,14 @@ namespace ProcessHacker
             // listHandles
             // 
             this.listHandles.AllowColumnReorder = true;
-            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listHandles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnProcess,
             this.columnType,
             this.columnName,
             this.columnHandle});
-            this.listHandles.DoubleClickChecks = true;
             this.listHandles.FullRowSelect = true;
             this.listHandles.HideSelection = false;
             this.listHandles.Location = new System.Drawing.Point(12, 41);
@@ -136,6 +136,7 @@ namespace ProcessHacker
             // 
             // closeMenuItem
             // 
+            this.vistaMenu.SetImage(this.closeMenuItem, global::ProcessHacker.Properties.Resources.cross);
             this.closeMenuItem.Index = 0;
             this.closeMenuItem.Text = "Close";
             this.closeMenuItem.Click += new System.EventHandler(this.closeMenuItem_Click);
@@ -154,25 +155,30 @@ namespace ProcessHacker
             // 
             // copyMenuItem
             // 
+            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyMenuItem.Index = 3;
             this.copyMenuItem.Text = "&Copy";
             // 
             // progress
             // 
-            this.progress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.progress.Location = new System.Drawing.Point(50, 11);
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(395, 23);
             this.progress.TabIndex = 4;
             this.progress.Visible = false;
             // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
+            // 
             // HandleFilterWindow
             // 
             this.AcceptButton = this.buttonFind;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(538, 427);
             this.Controls.Add(this.progress);
             this.Controls.Add(this.listHandles);
@@ -183,9 +189,10 @@ namespace ProcessHacker
             this.Name = "HandleFilterWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Find Handles or DLLs";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HandleFilterWindow_FormClosing);
             this.Load += new System.EventHandler(this.HandleFilterWindow_Load);
             this.VisibleChanged += new System.EventHandler(this.HandleFilterWindow_VisibleChanged);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HandleFilterWindow_FormClosing);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -196,13 +203,14 @@ namespace ProcessHacker
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textFilter;
         private System.Windows.Forms.Button buttonFind;
-        private ExtendedListView listHandles;
+        private System.Windows.Forms.ListView listHandles;
         private System.Windows.Forms.ColumnHeader columnProcess;
         private System.Windows.Forms.ColumnHeader columnType;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnHandle;
         private System.Windows.Forms.ContextMenu menuHandle;
         private System.Windows.Forms.MenuItem closeMenuItem;
+        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MenuItem copyMenuItem;
         private System.Windows.Forms.ProgressBar progress;
         private System.Windows.Forms.MenuItem propertiesMenuItem;

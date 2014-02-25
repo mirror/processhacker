@@ -21,13 +21,15 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ProcessHacker.Common
 {
     public sealed class ByteStreamReader : Stream
     {
-        private readonly byte[] _data;
+        private byte[] _data;
         private long _position;
 
         public ByteStreamReader(byte[] data) 

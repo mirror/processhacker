@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -46,12 +47,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle to the timer.</returns>
         public static TimerHandle Create(TimerAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, TimerType type)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtCreateTimer(out handle, access, ref oa, type).ThrowIf();
+                if ((status = Win32.NtCreateTimer(out handle, access, ref oa, type)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -66,18 +69,22 @@ namespace ProcessHacker.Native.Objects
             return new TimerHandle(handle, false);
         }
 
+        private TimerApcRoutine _routine;
+
         private TimerHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
         public TimerHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, TimerAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenTimer(out handle, access, ref oa).ThrowIf();
+                if ((status = Win32.NtOpenTimer(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -97,9 +104,11 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The state of the timer (whether it is signaled).</returns>
         public bool Cancel()
         {
+            NtStatus status;
             bool currentState;
 
-            Win32.NtCancelTimer(this, out currentState).ThrowIf();
+            if ((status = Win32.NtCancelTimer(this, out currentState)) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return currentState;
         }
@@ -107,23 +116,17 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets information about the timer.
         /// </summary>
-        public TimerBasicInformation BasicInformation
+        public TimerBasicInformation GetBasicInformation()
         {
-            get
-            {
-                TimerBasicInformation tbi;
-                int retLength;
+            NtStatus status;
+            TimerBasicInformation tbi;
+            int retLength;
 
-                Win32.NtQueryTimer(
-                    this,
-                    TimerInformationClass.TimerBasicInformation,
-                    out tbi,
-                    TimerBasicInformation.SizeOf,
-                    out retLength
-                    ).ThrowIf();
+            if ((status = Win32.NtQueryTimer(this, TimerInformationClass.TimerBasicInformation,
+                out tbi, Marshal.SizeOf(typeof(TimerBasicInformation)), out retLength)) >= NtStatus.Error)
+                Win32.Throw(status);
 
-                return tbi;
-            }
+            return tbi;
         }
 
         /// <summary>
@@ -203,12 +206,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The state of the timer (whether it is signaled).</returns>
         public bool Set(long dueTime, bool relative, TimerApcRoutine routine, IntPtr context, bool resume, int period)
         {
+            NtStatus status;
             long realDueTime = relative ? -dueTime : dueTime;
             bool previousState;
 
             // Keep the APC routine alive.
+            _routine = routine;
 
-            Win32.NtSetTimer(
+            if ((status = Win32.NtSetTimer(
                 this,
                 ref realDueTime,
                 routine,
@@ -216,7 +221,8 @@ namespace ProcessHacker.Native.Objects
                 resume,
                 period,
                 out previousState
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return previousState;
         }

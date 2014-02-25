@@ -32,10 +32,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listHandles = new ProcessHacker.Components.ExtendedListView();
-            this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.components = new System.ComponentModel.Container();
+            this.listHandles = new System.Windows.Forms.ListView();
+            this.columnType = new System.Windows.Forms.ColumnHeader();
+            this.columnName = new System.Windows.Forms.ColumnHeader();
+            this.columnHandle = new System.Windows.Forms.ColumnHeader();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.closeHandleMenuItem = new System.Windows.Forms.MenuItem();
             this.copyHandleMenuItem = new System.Windows.Forms.MenuItem();
             this.menuHandle = new System.Windows.Forms.ContextMenu();
@@ -43,6 +45,7 @@
             this.inheritMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
             this.propertiesHandleMenuItem = new System.Windows.Forms.MenuItem();
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // listHandles
@@ -53,7 +56,6 @@
             this.columnName,
             this.columnHandle});
             this.listHandles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listHandles.DoubleClickChecks = true;
             this.listHandles.FullRowSelect = true;
             this.listHandles.HideSelection = false;
             this.listHandles.Location = new System.Drawing.Point(0, 0);
@@ -79,14 +81,21 @@
             // 
             this.columnHandle.Text = "Handle";
             // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
+            // 
             // closeHandleMenuItem
             // 
+            this.vistaMenu.SetImage(this.closeHandleMenuItem, global::ProcessHacker.Properties.Resources.cross);
             this.closeHandleMenuItem.Index = 0;
             this.closeHandleMenuItem.Text = "Close";
             this.closeHandleMenuItem.Click += new System.EventHandler(this.closeHandleMenuItem_Click);
             // 
             // copyHandleMenuItem
             // 
+            this.vistaMenu.SetImage(this.copyHandleMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyHandleMenuItem.Index = 4;
             this.copyHandleMenuItem.Text = "&Copy";
             // 
@@ -128,20 +137,22 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listHandles);
+            this.DoubleBuffered = true;
             this.Name = "HandleList";
             this.Size = new System.Drawing.Size(450, 472);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private ExtendedListView listHandles;
+        private System.Windows.Forms.ListView listHandles;
         private System.Windows.Forms.ColumnHeader columnType;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnHandle;
+        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.ContextMenu menuHandle;
         private System.Windows.Forms.MenuItem closeHandleMenuItem;
         private System.Windows.Forms.MenuItem copyHandleMenuItem;

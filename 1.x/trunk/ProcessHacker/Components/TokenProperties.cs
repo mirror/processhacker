@@ -31,19 +31,19 @@ using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Security.AccessControl;
 using ProcessHacker.UI;
-using ProcessHacker.Api;
 
 namespace ProcessHacker.Components
 {
-    public partial class TokenProperties : ProcessPropertySheetPage
+    public partial class TokenProperties : UserControl
     {
-        private readonly IWithToken _object;
+        private IWithToken _object;
         private TokenGroupsList _groups;
 
         public TokenProperties(IWithToken obj)
         {
             InitializeComponent();
 
+            listPrivileges.SetDoubleBuffered(true);
             listPrivileges.ListViewItemSorter = new SortedListViewComparer(listPrivileges);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listPrivileges, null);
             listPrivileges.ContextMenu = menuPrivileges;
@@ -60,10 +60,10 @@ namespace ProcessHacker.Components
                     // "General"
                     try
                     {
-                        textUser.Text = thandle.User.GetFullName(true);
-                        textUserSID.Text = thandle.User.StringSid;
-                        textOwner.Text = thandle.Owner.GetFullName(true);
-                        textPrimaryGroup.Text = thandle.PrimaryGroup.GetFullName(true);
+                        textUser.Text = thandle.GetUser().GetFullName(true);
+                        textUserSID.Text = thandle.GetUser().StringSid;
+                        textOwner.Text = thandle.GetOwner().GetFullName(true);
+                        textPrimaryGroup.Text = thandle.GetPrimaryGroup().GetFullName(true);
                     }
                     catch (Exception ex)
                     {
@@ -72,7 +72,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        textSessionID.Text = thandle.SessionId.ToString();
+                        textSessionID.Text = thandle.GetSessionId().ToString();
                     }
                     catch (Exception ex)
                     {
@@ -81,20 +81,14 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        TokenElevationType type = thandle.ElevationType;
+                        var type = thandle.GetElevationType();
 
-                        switch (type)
-                        {
-                            case TokenElevationType.Default:
-                                this.textElevated.Text = "N/A";
-                                break;
-                            case TokenElevationType.Full:
-                                this.textElevated.Text = "True";
-                                break;
-                            case TokenElevationType.Limited:
-                                this.textElevated.Text = "False";
-                                break;
-                        }
+                        if (type == TokenElevationType.Default)
+                            textElevated.Text = "N/A";
+                        else if (type == TokenElevationType.Full)
+                            textElevated.Text = "True";
+                        else if (type == TokenElevationType.Limited)
+                            textElevated.Text = "False";
                     }
                     catch (Exception ex)
                     {
@@ -106,7 +100,7 @@ namespace ProcessHacker.Components
                     {
                         try
                         {
-                            TokenHandle linkedToken = thandle.LinkedToken;
+                            TokenHandle linkedToken = thandle.GetLinkedToken();
 
                             if (linkedToken != null)
                                 linkedToken.Dispose();
@@ -125,8 +119,8 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        bool virtAllowed = thandle.IsVirtualizationAllowed;
-                        bool virtEnabled = thandle.IsVirtualizationEnabled;
+                        bool virtAllowed = thandle.IsVirtualizationAllowed();
+                        bool virtEnabled = thandle.IsVirtualizationEnabled();
 
                         if (virtEnabled)
                             textVirtualized.Text = "Enabled";
@@ -144,7 +138,7 @@ namespace ProcessHacker.Components
                     {
                         using (TokenHandle tokenSource = _object.GetToken(TokenAccess.QuerySource))
                         {
-                            var source = tokenSource.Source;
+                            var source = tokenSource.GetSource();
 
                             textSourceName.Text = source.SourceName.TrimEnd('\0', '\r', '\n', ' ');
 
@@ -161,7 +155,7 @@ namespace ProcessHacker.Components
                     // "Advanced"
                     try
                     {
-                        var statistics = thandle.Statistics;
+                        var statistics = thandle.GetStatistics();
 
                         textTokenType.Text = statistics.TokenType.ToString();
                         textImpersonationLevel.Text = statistics.ImpersonationLevel.ToString();
@@ -177,7 +171,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        Sid[] groups = thandle.Groups;
+                        var groups = thandle.GetGroups();
 
                         _groups = new TokenGroupsList(groups);
 
@@ -194,11 +188,11 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        var privileges = thandle.Privileges;
+                        var privileges = thandle.GetPrivileges();
 
-                        foreach (Privilege t in privileges)
+                        for (int i = 0; i < privileges.Length; i++)
                         {
-                            this.AddPrivilege(t);
+                            this.AddPrivilege(privileges[i]);
                         }
                     }
                     catch (Exception ex)
@@ -211,10 +205,9 @@ namespace ProcessHacker.Components
             {
                 tabControl.Visible = false;
 
-                Label errorMessage = new Label
-                {
-                    Text = ex.Message
-                };
+                Label errorMessage = new Label();
+
+                errorMessage.Text = ex.Message;
 
                 this.Padding = new Padding(15, 10, 0, 0);
                 this.Controls.Add(errorMessage);
@@ -224,10 +217,10 @@ namespace ProcessHacker.Components
             {
                 labelElevated.Enabled = false;
                 textElevated.Enabled = false;
-                textElevated.Text = string.Empty;
+                textElevated.Text = "";
                 labelVirtualization.Enabled = false;
                 textVirtualized.Enabled = false;
-                textVirtualized.Text = string.Empty;
+                textVirtualized.Text = "";
             }
 
             if (tabControl.TabPages[Settings.Instance.TokenWindowTab] != null)
@@ -257,10 +250,8 @@ namespace ProcessHacker.Components
             buttonPermissions.Visible = false;
             listPrivileges.ContextMenu = listPrivileges.GetCopyMenu();
 
-            _groups = new TokenGroupsList(null)
-            {
-                Dock = DockStyle.Fill
-            };
+            _groups = new TokenGroupsList(null);
+            _groups.Dock = DockStyle.Fill;
             tabGroups.Controls.Add(_groups);
         }
 
@@ -343,35 +334,31 @@ namespace ProcessHacker.Components
         {
             if ((Attributes & SePrivilegeAttributes.EnabledByDefault) != 0)
                 return "Default Enabled";
-            
-            if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
+            else if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
                 return "Enabled";
-            
-            if (Attributes == SePrivilegeAttributes.Disabled)
+            else if (Attributes == SePrivilegeAttributes.Disabled)
                 return "Disabled";
-            
-            return "Unknown";
+            else
+                return "Unknown";
         }
 
         private Color GetAttributeColor(SePrivilegeAttributes Attributes)
         {
             if ((Attributes & SePrivilegeAttributes.EnabledByDefault) != 0)
                 return Color.FromArgb(0xc0f0c0);
-            
-            if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
+            else if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
                 return Color.FromArgb(0xe0f0e0);
-            
-            if (Attributes == SePrivilegeAttributes.Disabled)
+            else if (Attributes == SePrivilegeAttributes.Disabled)
                 return Color.FromArgb(0xf0e0e0);
-            
-            return Color.White;
+            else
+                return Color.White;
         }
 
         private void menuPrivileges_Popup(object sender, EventArgs e)
         {
             if (listPrivileges.SelectedItems.Count == 0)
             {
-                //menuPrivileges.DisableAll();
+                menuPrivileges.DisableAll();
             }
             else
             {
@@ -481,14 +468,14 @@ namespace ProcessHacker.Components
 
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
-            this.listPrivileges.Items.SelectAll();
+            Utils.SelectAll(listPrivileges.Items);
         }
 
         private void buttonLinkedToken_Click(object sender, EventArgs e)
         {
-            using (TokenHandle thandle = _object.GetToken(TokenAccess.Query))
+            using (var thandle = _object.GetToken(TokenAccess.Query))
             {
-                TokenWithLinkedToken token = new TokenWithLinkedToken(thandle);
+                var token = new TokenWithLinkedToken(thandle);
                 TokenWindow window = new TokenWindow(token);
 
                 window.ShowDialog();
@@ -501,7 +488,7 @@ namespace ProcessHacker.Components
             {
                 SecurityEditor.EditSecurity(
                     this,
-                    SecurityEditor.GetSecurableWrapper(access => _object.GetToken((TokenAccess)access)),
+                    SecurityEditor.GetSecurableWrapper((access) => _object.GetToken((TokenAccess)access)),
                     "Token",
                     NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Token)
                     );

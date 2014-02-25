@@ -29,7 +29,7 @@ namespace ProcessHacker
 {
     public partial class DumpServiceWindow : Form
     {
-        private readonly MemoryObject _serviceMo;
+        private MemoryObject _serviceMo;
 
         public DumpServiceWindow(ServiceItem item, MemoryObject serviceMo)
         {
@@ -75,11 +75,6 @@ namespace ProcessHacker
         private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void textDescription_TextChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

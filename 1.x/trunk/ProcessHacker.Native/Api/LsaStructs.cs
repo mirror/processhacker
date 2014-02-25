@@ -21,7 +21,9 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ProcessHacker.Native.Api
 {
@@ -60,13 +62,6 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct LsaTrustInformation
     {
-        public static readonly int SizeOf;
-
-        static LsaTrustInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(LsaTrustInformation));
-        }
-
         public UnicodeString Name;
         public IntPtr Sid; // Sid*
     }
@@ -74,13 +69,6 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct Msv1_0_InteractiveLogon
     {
-        public static readonly int SizeOf;
-
-        static Msv1_0_InteractiveLogon()
-        {
-            SizeOf = Marshal.SizeOf(typeof(Msv1_0_InteractiveLogon));
-        }
-
         public Msv1_0_LogonSubmitType MessageType;
         public UnicodeString LogonDomainName;
         public UnicodeString UserName;
@@ -111,13 +99,6 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct PolicyPrivilegeDefinition
     {
-        public static readonly int SizeOf;
-
-        static PolicyPrivilegeDefinition()
-        {
-            SizeOf = Marshal.SizeOf(typeof(PolicyPrivilegeDefinition));
-        }
-
         public UnicodeString Name;
         public Luid LocalValue;
     }

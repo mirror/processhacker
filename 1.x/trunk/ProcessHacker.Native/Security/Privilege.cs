@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Text;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -44,8 +45,8 @@ namespace ProcessHacker.Native.Security
             }
         }
 
-        private readonly TokenHandle _tokenHandle;
-        private readonly Luid _luid;
+        private TokenHandle _tokenHandle;
+        private Luid _luid;
         private SePrivilegeAttributes _attributes;
         private string _name;
         private string _displayName;
@@ -121,7 +122,8 @@ namespace ProcessHacker.Native.Security
         {
             get
             {
-                return (_attributes & SePrivilegeAttributes.Disabled)!= SePrivilegeAttributes.Disabled;
+                return (_attributes & SePrivilegeAttributes.Disabled)
+                    != SePrivilegeAttributes.Disabled;
             }
             set
             {
@@ -133,7 +135,7 @@ namespace ProcessHacker.Native.Security
         {
             get
             {
-                if (string.IsNullOrEmpty(_displayName))
+                if (_displayName == null)
                 {
                     _displayName = LsaPolicyHandle.LookupPolicyHandle.LookupPrivilegeDisplayName(this.Name);
                 }
@@ -177,7 +179,7 @@ namespace ProcessHacker.Native.Security
         {
             get
             {
-                if (string.IsNullOrEmpty(_name))
+                if (_name == null)
                 {
                     _name = LsaPolicyHandle.LookupPolicyHandle.LookupPrivilegeName(_luid);
                 }
@@ -262,7 +264,7 @@ namespace ProcessHacker.Native.Security
 
         public LuidAndAttributes ToLuidAndAttributes()
         {
-            return new LuidAndAttributes
+            return new LuidAndAttributes()
             {
                 Attributes = _attributes,
                 Luid = _luid

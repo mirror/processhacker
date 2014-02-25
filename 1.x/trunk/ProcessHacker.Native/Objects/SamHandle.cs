@@ -46,24 +46,29 @@ namespace ProcessHacker.Native.Objects
 
         public override SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
         {
+            NtStatus status;
             IntPtr securityDescriptor;
 
-            Win32.SamQuerySecurityObject(
+            if ((status = Win32.SamQuerySecurityObject(
                 this,
                 securityInformation,
                 out securityDescriptor
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return new SecurityDescriptor(new SamMemoryAlloc(securityDescriptor));
         }
 
         public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
-            Win32.SamSetSecurityObject(
+            NtStatus status;
+
+            if ((status = Win32.SamSetSecurityObject(
                 this,
                 securityInformation,
                 securityDescriptor
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
         }
     }
 }

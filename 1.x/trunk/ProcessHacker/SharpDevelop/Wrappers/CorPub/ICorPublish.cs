@@ -9,18 +9,22 @@
 
 namespace Debugger.Core.Wrappers.CorPub
 {
-    public class ICorPublish
+	using System;
+	using System.Runtime.InteropServices;
+	using Debugger.Wrappers;
+	
+	public partial class ICorPublish
 	{
-		private readonly Interop.CorPub.CorpubPublishClass corpubPublishClass;
+		private Debugger.Interop.CorPub.CorpubPublishClass corpubPublishClass;
 
 		public ICorPublish()
 		{
-			corpubPublishClass = new Interop.CorPub.CorpubPublishClass();
+			corpubPublishClass = new Debugger.Interop.CorPub.CorpubPublishClass();
 		}
 		
 		public ICorPublishProcess GetProcess(int id) 
 		{
-			Interop.CorPub.ICorPublishProcess process;
+			Debugger.Interop.CorPub.ICorPublishProcess process;
 			this.corpubPublishClass.GetProcess((uint)id, out  process);
 			return ICorPublishProcess.Wrap(process);
 		}

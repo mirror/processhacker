@@ -35,7 +35,6 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Debugging;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using ProcessHacker.Native.Threading;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
 using TaskbarLib;
@@ -46,10 +45,10 @@ namespace ProcessHacker
     {
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
 
-        private readonly ThumbButtonManager thumbButtonManager;
+        private ThumbButtonManager thumbButtonManager;
         //private JumpListManager jumpListManager; //Reserved for future use
 
-        public delegate void AddMenuItemDelegate(string text, EventHandler onClick);
+        private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
         // This entire file is a big monolithic mess.
 
@@ -74,6 +73,11 @@ namespace ProcessHacker
         public SysInfoWindow SysInfoWindow;
 
         /// <summary>
+        /// The UAC shield bitmap. Used for the various menu items which 
+        /// require UAC elevation.
+        /// </summary>
+        Bitmap uacShieldIcon;
+        /// <summary>
         /// A black icon which all notification icons are set to initially 
         /// before their first paint.
         /// </summary>
@@ -86,7 +90,7 @@ namespace ProcessHacker
         /// <summary>
         /// The list of notification icons.
         /// </summary>
-        readonly List<UsageIcon> notifyIcons = new List<UsageIcon>();
+        List<UsageIcon> notifyIcons = new List<UsageIcon>();
         /// <summary>
         /// The CPU history icon, with a history of CPU usage.
         /// </summary>
@@ -114,7 +118,7 @@ namespace ProcessHacker
         /// A dictionary relating services to processes. Each key is a PID and 
         /// each value is a list of service names hosted in that particular process.
         /// </summary>
-        readonly Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
+        Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
 
         /// <summary>
         /// The number of selected processes. Not used.
@@ -129,7 +133,7 @@ namespace ProcessHacker
         /// The PH log, with events such as process creation/termination and various 
         /// service events.
         /// </summary>
-        readonly List<KeyValuePair<DateTime, string>> _log = new List<KeyValuePair<DateTime, string>>();
+        List<KeyValuePair<DateTime, string>> _log = new List<KeyValuePair<DateTime, string>>();
 
         /// <summary>
         /// windowhandle owned by the currently selected process. 
@@ -157,9 +161,14 @@ namespace ProcessHacker
         // The following two properties were used by the Window menu system. 
         // Not very useful, but still needed for now.
 
-        public ToolStripMenuItem WindowMenuItem
+        public MenuItem WindowMenuItem
         {
-            get { return windowToolStripMenuItem; }
+            get { return windowMenuItem; }
+        }
+
+        public wyDay.Controls.VistaMenu VistaMenu
+        {
+            get { return vistaMenu; }
         }
 
         // Mostly used by Save.cs.
@@ -259,18 +268,15 @@ namespace ProcessHacker
 
         private void runAsAdministratorMenuItem_Click(object sender, EventArgs e)
         {
-            using (PromptBox box = new PromptBox
-            {
-                Text = "Enter the command to start"
-            })
-            {
-                box.TextBox.AutoCompleteSource = AutoCompleteSource.AllSystemSources;
-                box.TextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            PromptBox box = new PromptBox();
 
-                if (box.ShowDialog() == DialogResult.OK)
-                {
-                    Program.StartProgramAdmin(box.Value, "", null, ShowWindowType.Show, this.Handle);
-                }
+            box.Text = "Enter the command to start";
+            box.TextBox.AutoCompleteSource = AutoCompleteSource.AllSystemSources;
+            box.TextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+            if (box.ShowDialog() == DialogResult.OK)
+            {
+                Program.StartProgramAdmin(box.Value, "", null, ShowWindowType.Show, this.Handle);
             }
         }
 
@@ -282,7 +288,10 @@ namespace ProcessHacker
 
         private void showDetailsForAllProcessesMenuItem_Click(object sender, EventArgs e)
         {
-            Program.StartProcessHackerAdmin("-v", this.Exit, this.Handle);
+            Program.StartProcessHackerAdmin("-v", () =>
+                {
+                    this.Exit();
+                }, this.Handle);
         }
 
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
@@ -343,7 +352,7 @@ namespace ProcessHacker
             }
             else
             {
-                SysInfoWindow.BeginInvoke(new MethodInvoker(() =>
+                SysInfoWindow.BeginInvoke(new MethodInvoker(delegate
                 {
                     SysInfoWindow.Show();
                     SysInfoWindow.Activate();
@@ -368,21 +377,20 @@ namespace ProcessHacker
 
         private void aboutMenuItem_Click(object sender, EventArgs e)
         {
-            using (AboutWindow about = new AboutWindow())
-            {
-                about.ShowDialog();
-            }
+            AboutWindow about = new AboutWindow();
+            about.ShowDialog();
         }
 
         private void optionsMenuItem_Click(object sender, EventArgs e)
         {
-            using (OptionsWindow options = new OptionsWindow())
-            {
-                if (options.ShowDialog() == DialogResult.OK)
-                {
-                    this.LoadOtherSettings();
-                }
-            }
+            OptionsWindow options = new OptionsWindow();
+
+            DialogResult result = options.ShowDialog();
+
+           if (result == DialogResult.OK)
+           {
+               this.LoadOtherSettings();
+           }
         }
 
         private void freeMemoryMenuItem_Click(object sender, EventArgs e)
@@ -408,6 +416,15 @@ namespace ProcessHacker
         {
             toolbarMenuItem.Checked = !toolbarMenuItem.Checked;
             Settings.Instance.ToolbarVisible = toolStrip.Visible = toolbarMenuItem.Checked;
+        }
+
+        private void updateNowMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Program.ProcessProvider.RunCount > 1)
+                Program.ProcessProvider.Boost();
+
+            if (Program.ServiceProvider.RunCount > 1)
+                Program.ServiceProvider.Boost();
         }
 
         private void updateProcessesMenuItem_Click(object sender, EventArgs e)
@@ -437,85 +454,81 @@ namespace ProcessHacker
 
         private void verifyFileSignatureMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog ofd = new OpenFileDialog
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.CheckFileExists = true;
+            ofd.CheckPathExists = true;
+            ofd.Filter = "Executable files (*.exe;*.dll;*.sys;*.scr;*.cpl)|*.exe;*.dll;*.sys;*.scr;*.cpl|All files (*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                Filter = "Executable files (*.exe;*.dll;*.sys;*.scr;*.cpl)|*.exe;*.dll;*.sys;*.scr;*.cpl|All files (*.*)|*.*"
-            })
-            {
-                if (ofd.ShowDialog() == DialogResult.OK)
+                try
                 {
-                    try
-                    {
-                        var result = Cryptography.VerifyFile(ofd.FileName);
-                        string message = string.Empty;
+                    var result = Cryptography.VerifyFile(ofd.FileName);
+                    string message = "";
 
-                        switch (result)
-                        {
-                            case VerifyResult.Distrust:
-                                message = "is not trusted";
-                                break;
-                            case VerifyResult.Expired:
-                                message = "has an expired certificate";
-                                break;
-                            case VerifyResult.NoSignature:
-                                message = "does not have a digital signature";
-                                break;
-                            case VerifyResult.Revoked:
-                                message = "has a revoked certificate";
-                                break;
-                            case VerifyResult.SecuritySettings:
-                                message = "could not be verified due to security settings";
-                                break;
-                            case VerifyResult.Trusted:
-                                message = "is trusted";
-                                break;
-                            case VerifyResult.Unknown:
-                                message = "could not be verified";
-                                break;
-                            default:
-                                message = "could not be verified";
-                                break;
-                        }
-
-                        PhUtils.ShowInformation("The file \"" + ofd.FileName + "\" " + message + ".");
-                    }
-                    catch (Exception ex)
+                    switch (result)
                     {
-                        PhUtils.ShowException("Unable to verify the file", ex);
+                        case VerifyResult.Distrust:
+                            message = "is not trusted";
+                            break;
+                        case VerifyResult.Expired:
+                            message = "has an expired certificate";
+                            break;
+                        case VerifyResult.NoSignature:
+                            message = "does not have a digital signature";
+                            break;
+                        case VerifyResult.Revoked:
+                            message = "has a revoked certificate";
+                            break;
+                        case VerifyResult.SecuritySettings:
+                            message = "could not be verified due to security settings";
+                            break;
+                        case VerifyResult.Trusted:
+                            message = "is trusted";
+                            break;
+                        case VerifyResult.Unknown:
+                            message = "could not be verified";
+                            break;
+                        default:
+                            message = "could not be verified";
+                            break;
                     }
+
+                    PhUtils.ShowInformation("The file \"" + ofd.FileName + "\" " + message + ".");
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to verify the file", ex);
                 }
             }
         }
 
         private void openMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog ofd = new OpenFileDialog
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "Process Hacker Dump Files (*.phi)|*.phi|All Files (*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Filter = "Process Hacker Dump Files (*.phi)|*.phi|All Files (*.*)|*.*"
-            })
-            {
-                if (ofd.ShowDialog() == DialogResult.OK)
+                DumpHackerWindow dhw = null;
+
+                try
                 {
-                    DumpHackerWindow dhw = null;
-
-                    try
-                    {
-                        dhw = new DumpHackerWindow(ofd.FileName);
-                    }
-                    catch (ProcessHacker.Native.Mfs.MfsInvalidFileSystemException)
-                    {
-                        PhUtils.ShowError("Unable to open the dump file: the dump file is invalid.");
-                    }
-                    catch (Exception ex)
-                    {
-                        PhUtils.ShowException("Unable to open the dump file", ex);
-                    }
-
-                    if (dhw != null)
-                        dhw.Show();
+                    dhw = new DumpHackerWindow(ofd.FileName);
                 }
+                catch (ProcessHacker.Native.Mfs.MfsInvalidFileSystemException)
+                {
+                    PhUtils.ShowError("Unable to open the dump file: the dump file is invalid.");
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to open the dump file", ex);
+                }
+
+                if (dhw != null)
+                    dhw.Show();
             }
         }
 
@@ -590,30 +603,21 @@ namespace ProcessHacker
 
         #endregion
 
-        public class ToolStripSearchBox : ToolStripControlHost
-        {
-            public ToolStripSearchBox()
-                : base(new VistaSearchBox())
-            {
-
-            }
-        }
-
         #region Network Context Menu
 
         private void menuNetwork_Popup(object sender, EventArgs e)
         {
             if (listNetwork.SelectedItems.Count == 0)
             {
-                //contextMenuStripNetwork.DisableAll();
+                menuNetwork.DisableAll();
             }
             else if (listNetwork.SelectedItems.Count == 1)
             {
-                //contextMenuStripNetwork.EnableAll();
+                menuNetwork.EnableAll();
             }
             else
             {
-                //contextMenuStripNetwork.EnableAll();
+                menuNetwork.EnableAll();
                 goToProcessNetworkMenuItem.Enabled = false;
             }
 
@@ -799,7 +803,7 @@ namespace ProcessHacker
 
         private void selectAllNetworkMenuItem_Click(object sender, EventArgs e)
         {
-            this.listNetwork.List.Items.SelectAll();
+            Utils.SelectAll(listNetwork.List.Items);
         }
 
         #endregion
@@ -816,10 +820,10 @@ namespace ProcessHacker
             List<ProcessItem> processes = new List<ProcessItem>();
 
             // Clear the images so we don't get GDI+ handle leaks
-            //foreach (MenuItem item in processesMenuItem.MenuItems)
-                //vistaMenu.SetImage(item, null);
+            foreach (MenuItem item in processesMenuItem.MenuItems)
+                vistaMenu.SetImage(item, null);
 
-            processesMenuItem.DropDownItems.Clear();
+            processesMenuItem.MenuItems.DisposeAndClear();
 
             // HACK: To be fixed later - we need some sort of locking for the process provider
             try
@@ -872,61 +876,62 @@ namespace ProcessHacker
                     processItem.Text = process.Name + " (" + process.Pid.ToString() + ")";
                     processItem.Tag = process;
 
-                    terminateItem.Click += (sender_, e_) =>
+                    terminateItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        ProcessItem item = ((MenuItem)sender_).Parent.Tag as ProcessItem;
+                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
                         ProcessActions.Terminate(this, new int[] { item.Pid }, new string[] { item.Name }, true);
-                    };
+                    });
                     terminateItem.Text = "Terminate";
 
-                    suspendItem.Click += (sender_, e_) =>
+                    suspendItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        ProcessItem item = ((MenuItem)sender_).Parent.Tag as ProcessItem;
+                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
                         ProcessActions.Suspend(this, new int[] { item.Pid }, new string[] { item.Name }, true);
-                    };
+                    });
                     suspendItem.Text = "Suspend";
 
-                    resumeItem.Click += (sender_, e_) =>
+                    resumeItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        ProcessItem item = ((MenuItem)sender_).Parent.Tag as ProcessItem;
+                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
                         ProcessActions.Resume(this, new int[] { item.Pid }, new string[] { item.Name }, true);
-                    };
+                    });
                     resumeItem.Text = "Resume";
 
-                    //propertiesItem.Click += (sender_, e_) =>
-                    //{
-                    //    try
-                    //    {
-                    //        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
+                    propertiesItem.Click += new EventHandler((sender_, e_) =>
+                    {
+                        try
+                        {
+                            ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
-                    //        Program.GetProcessWindow(Program.ProcessProvider.Dictionary[item.Pid], f =>
-                    //        {
-                    //            f.Show();
-                    //            f.Activate();
-                    //        });
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //        PhUtils.ShowException("Unable to inspect the process", ex);
-                    //    }
-                    //};
-                    //propertiesItem.Text = "Properties";
+                            ProcessWindow pForm = Program.GetProcessWindow(Program.ProcessProvider.Dictionary[item.Pid],
+                                new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                            {
+                                f.Show();
+                                f.Activate();
+                            }));
+                        }
+                        catch (Exception ex)
+                        {
+                            PhUtils.ShowException("Unable to inspect the process", ex);
+                        }
+                    });
+                    propertiesItem.Text = "Properties";
 
-                    //processItem.MenuItems.AddRange(new MenuItem[] { terminateItem, suspendItem, resumeItem, propertiesItem });
-                    //processesMenuItem.DropDownItems.Add(processItem);
+                    processItem.MenuItems.AddRange(new MenuItem[] { terminateItem, suspendItem, resumeItem, propertiesItem });
+                    processesMenuItem.MenuItems.Add(processItem);
 
-                   // vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.Pid].Icon);
+                    vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.Pid].Icon);
                 }
             }
             catch
             {
-                //foreach (MenuItem item in processesMenuItem.MenuItems)
-                    //vistaMenu.SetImage(item, null);
+                foreach (MenuItem item in processesMenuItem.MenuItems)
+                    vistaMenu.SetImage(item, null);
 
-                processesMenuItem.DropDownItems.Clear();
+                processesMenuItem.MenuItems.DisposeAndClear();
             }
         }
 
@@ -962,22 +967,22 @@ namespace ProcessHacker
 
         private void enableAllNotificationsMenuItem_Click(object sender, EventArgs e)
         {
-            newProcessesToolStripMenuItem.Checked = true;
-            terminatedProcessesToolStripMenuItem.Checked = true;
-            newServicesToolStripMenuItem.Checked = true;
-            startedServicesToolStripMenuItem.Checked = true;
-            stoppedServicesToolStripMenuItem.Checked = true;
-            deletedServicesToolStripMenuItem.Checked = true;
+            NPMenuItem.Checked = true;
+            TPMenuItem.Checked = true;
+            NSMenuItem.Checked = true;
+            startedSMenuItem.Checked = true;
+            stoppedSMenuItem.Checked = true;
+            DSMenuItem.Checked = true;
         }
 
         private void disableAllNotificationsMenuItem_Click(object sender, EventArgs e)
         {
-            newProcessesToolStripMenuItem.Checked = false;
-            terminatedProcessesToolStripMenuItem.Checked = false;
-            newServicesToolStripMenuItem.Checked = false;
-            startedServicesToolStripMenuItem.Checked = false;
-            stoppedServicesToolStripMenuItem.Checked = false;
-            deletedServicesToolStripMenuItem.Checked = false;
+            NPMenuItem.Checked = false;
+            TPMenuItem.Checked = false;
+            NSMenuItem.Checked = false;
+            startedSMenuItem.Checked = false;
+            stoppedSMenuItem.Checked = false;
+            DSMenuItem.Checked = false;
         }
 
         private void exitTrayMenuItem_Click(object sender, EventArgs e)
@@ -991,7 +996,7 @@ namespace ProcessHacker
 
         private void menuProcess_Popup(object sender, EventArgs e)
         {
-            virtualizationToolStripMenuItem.Checked = false;
+            virtualizationProcessMenuItem.Checked = false;
 
             // Menu item fixup...
             if (treeProcesses.SelectedTreeNodes.Count == 0)
@@ -999,72 +1004,72 @@ namespace ProcessHacker
                 // If nothing is selected, disable everything.
                 // The Select All menu item will be enabled later if 
                 // we have at least one process in the tree.
-                //contextMenuStripProcess.DisableAll();
+                menuProcess.DisableAll();
             }
             else if (treeProcesses.SelectedTreeNodes.Count == 1)
             {
                 // All actions should work with one process selected.
-                //contextMenuStripProcess.EnableAll();
+                menuProcess.EnableAll();
 
                 // Singular nouns.
-                //priorityMenuItem.Text = "&Priority";
-                //terminateToolStripMenuItem.Text = "&Terminate Process";
-                //suspendToolStripMenuItem.Text = "&Suspend Process";
-                //resumeToolStripMenuItem.Text = "&Resume Process";
+                priorityMenuItem.Text = "&Priority";
+                terminateMenuItem.Text = "&Terminate Process";
+                suspendMenuItem.Text = "&Suspend Process";
+                resumeMenuItem.Text = "&Resume Process";
 
                 // Clear the priority menu items.
-                realTimeToolStripMenuItem.Checked = false;
-                highToolStripMenuItem.Checked = false;
-                aboveNormalToolStripMenuItem.Checked = false;
-                normalToolStripMenuItem.Checked = false;
-                belowNormalToolStripMenuItem.Checked = false;
-                idleToolStripMenuItem.Checked = false;
+                realTimeMenuItem.Checked = false;
+                highMenuItem.Checked = false;
+                aboveNormalMenuItem.Checked = false;
+                normalMenuItem.Checked = false;
+                belowNormalMenuItem.Checked = false;
+                idleMenuItem.Checked = false;
 
                 // Clear the I/O priority menu items.
-                iOPriorityToolStripMenuItem.Enabled = true;
+                ioPriorityThreadMenuItem.Enabled = true;
                 ioPriority0ThreadMenuItem.Checked = false;
                 ioPriority1ThreadMenuItem.Checked = false;
-                ioPriority3ThreadMenuItem.Checked = false;
+                ioPriority2ThreadMenuItem.Checked = false;
                 ioPriority3ThreadMenuItem.Checked = false;
 
                 try
                 {
-                    using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
+                    using (var phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
                     {
                         try
                         {
-                            switch (phandle.PriorityClass)
+                            switch (phandle.GetPriorityClass())
                             {
                                 case ProcessPriorityClass.RealTime:
-                                    realTimeToolStripMenuItem.Checked = true;
+                                    realTimeMenuItem.Checked = true;
                                     break;
                                 case ProcessPriorityClass.High:
-                                    highToolStripMenuItem.Checked = true;
+                                    highMenuItem.Checked = true;
                                     break;
                                 case ProcessPriorityClass.AboveNormal:
-                                    aboveNormalToolStripMenuItem.Checked = true;
+                                    aboveNormalMenuItem.Checked = true;
                                     break;
                                 case ProcessPriorityClass.Normal:
-                                    normalToolStripMenuItem.Checked = true;
+                                    normalMenuItem.Checked = true;
                                     break;
                                 case ProcessPriorityClass.BelowNormal:
-                                    belowNormalToolStripMenuItem.Checked = true;
+                                    belowNormalMenuItem.Checked = true;
                                     break;
                                 case ProcessPriorityClass.Idle:
-                                    idleToolStripMenuItem.Checked = true;
+                                    idleMenuItem.Checked = true;
                                     break;
                             }
                         }
                         catch
                         {
-                            realTimeToolStripMenuItem.Enabled = false;
+                            priorityMenuItem.Enabled = false;
                         }
 
                         try
                         {
                             if (OSVersion.HasIoPriority)
                             {
-                                switch (phandle.IoPriority)
+                                switch (phandle.GetIoPriority())
                                 {
                                     case 0:
                                         ioPriority0ThreadMenuItem.Checked = true;
@@ -1073,7 +1078,7 @@ namespace ProcessHacker
                                         ioPriority1ThreadMenuItem.Checked = true;
                                         break;
                                     case 2:
-                                        ioPriority3ThreadMenuItem.Checked = true;
+                                        ioPriority2ThreadMenuItem.Checked = true;
                                         break;
                                     case 3:
                                         ioPriority3ThreadMenuItem.Checked = true;
@@ -1083,37 +1088,44 @@ namespace ProcessHacker
                         }
                         catch
                         {
-                            iOPriorityToolStripMenuItem.Enabled = false;
+                            ioPriorityThreadMenuItem.Enabled = false;
                         }
                     }
                 }
                 catch
                 {
-                    priorityToolStripMenuItem.Enabled = false;
-                    iOPriorityToolStripMenuItem.Enabled = false;
+                    priorityMenuItem.Enabled = false;
+                    ioPriorityThreadMenuItem.Enabled = false;
                 }
 
                 // Check if we think the process exists. If we don't, disable all menu items
                 // to avoid random exceptions occurring when the user clicks on certain things.
                 if (!Program.ProcessProvider.Dictionary.ContainsKey(processSelectedPid))
                 {
-                    //menuProcess.DisableAll();
+                    menuProcess.DisableAll();
                 }
                 else
                 {
                     // Check the virtualization menu item.
                     try
                     {
-                        using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
-                        using (TokenHandle thandle = phandle.GetToken(TokenAccess.Query))
+                        using (var phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
                         {
-                            if (virtualizationToolStripMenuItem.Enabled = thandle.IsVirtualizationAllowed)
-                                virtualizationToolStripMenuItem.Checked = thandle.IsVirtualizationEnabled;
+                            try
+                            {
+                                using (var thandle = phandle.GetToken(TokenAccess.Query))
+                                {
+                                    if (virtualizationProcessMenuItem.Enabled = thandle.IsVirtualizationAllowed())
+                                        virtualizationProcessMenuItem.Checked = thandle.IsVirtualizationEnabled();
+                                }
+                            }
+                            catch
+                            { }
                         }
                     }
                     catch
                     {
-                        virtualizationToolStripMenuItem.Enabled = false;
+                        virtualizationProcessMenuItem.Enabled = false;
                     }
 
                     // Enable/disable DLL injection based on the process' session ID. This only applies 
@@ -1124,9 +1136,9 @@ namespace ProcessHacker
                             OSVersion.IsBelowOrEqual(WindowsVersion.XP) &&
                             Program.ProcessProvider.Dictionary[processSelectedPid].SessionId != Program.CurrentSessionId
                             )
-                            injectDLLToolStripMenuItem.Enabled = false;
+                            injectDllProcessMenuItem.Enabled = false;
                         else
-                            injectDLLToolStripMenuItem.Enabled = true;
+                            injectDllProcessMenuItem.Enabled = true;
                     }
                     catch (Exception ex)
                     {
@@ -1138,10 +1150,11 @@ namespace ProcessHacker
                     // is sorting the list (!).
                     try
                     {
-                        if (treeProcesses.SelectedTreeNodes[0].IsLeaf && string.IsNullOrEmpty((treeProcesses.Tree.Model as ProcessTreeModel).GetSortColumn()))
-                            terminateProcessTreeToolStripMenuItem.Visible = false;
+                        if (treeProcesses.SelectedTreeNodes[0].IsLeaf &&
+                            (treeProcesses.Tree.Model as ProcessTreeModel).GetSortColumn() == "")
+                            terminateProcessTreeMenuItem.Visible = false;
                         else
-                            terminateProcessTreeToolStripMenuItem.Visible = true;
+                            terminateProcessTreeMenuItem.Visible = true;
                     }
                     catch (Exception ex)
                     {
@@ -1150,47 +1163,48 @@ namespace ProcessHacker
 
                     // Find the process' window (if any).
                     windowHandle = WindowHandle.Zero;
-                    WindowHandle.Enumerate(handle =>
-                    {
-                        // GetWindowLong
-                        // Shell_TrayWnd
-                        if (handle.IsWindow && handle.IsVisible && handle.IsParent)
+                    WindowHandle.Enumerate(
+                        (handle) =>
                         {
-                            int pid;
-                            Win32.GetWindowThreadProcessId(handle, out pid);
-
-                            if (pid == processSelectedPid)
+                            // GetWindowLong
+                            // Shell_TrayWnd
+                            if (handle.IsWindow() && handle.IsVisible() && handle.IsParent())
                             {
-                                windowHandle = handle;
-                                return false;
+                                int pid;
+                                Win32.GetWindowThreadProcessId(handle, out pid);
+
+                                if (pid == processSelectedPid)
+                                {
+                                    windowHandle = handle;
+                                    return false;
+                                }
                             }
-                        }
-                        return true;
-                    });
+                            return true;
+                        });
 
                     // Enable the Window submenu if we found window owned 
                     // by the process. Otherwise, disable the submenu.
                     if (windowHandle.IsInvalid)
                     {
-                        windowToolStripMenuItem1.Enabled = false;
+                        windowProcessMenuItem.Enabled = false;
                     }
                     else
                     {
-                        windowToolStripMenuItem1.Enabled = true;
-                        //windowToolStripMenuItem1.EnableAll();
+                        windowProcessMenuItem.Enabled = true;
+                        windowProcessMenuItem.EnableAll();
 
-                        switch (windowHandle.Placement.ShowState)
+                        switch (windowHandle.GetPlacement().ShowState)
                         {
                             case ShowWindowType.ShowMinimized:
-                                minimizeToolStripMenuItem.Enabled = false;
+                                minimizeProcessMenuItem.Enabled = false;
                                 break;
 
                             case ShowWindowType.ShowMaximized:
-                                maximizeToolStripMenuItem.Enabled = false;
+                                maximizeProcessMenuItem.Enabled = false;
                                 break;
 
                             case ShowWindowType.ShowNormal:
-                                restoreToolStripMenuItem.Enabled = false;
+                                restoreProcessMenuItem.Enabled = false;
                                 break;
                         }
                     }
@@ -1199,37 +1213,37 @@ namespace ProcessHacker
             else
             {
                 // Assume most process actions will not work with more than one process.
-                //menuProcess.DisableAll();
+                menuProcess.DisableAll();
 
                 // Use plural nouns.
-                terminateProcessTreeToolStripMenuItem.Text = "&Terminate Processes";
-                suspendToolStripMenuItem.Text = "&Suspend Processes";
-                resumeToolStripMenuItem.Text = "&Resume Processes";
+                terminateMenuItem.Text = "&Terminate Processes";
+                suspendMenuItem.Text = "&Suspend Processes";
+                resumeMenuItem.Text = "&Resume Processes";
 
                 // Enable a specific set of actions.
-                terminateToolStripMenuItem.Enabled = true;
-                suspendToolStripMenuItem.Enabled = true;
-                resumeToolStripMenuItem.Enabled = true;
-                reduceWorkingSetToolStripMenuItem.Enabled = true;
+                terminateMenuItem.Enabled = true;
+                suspendMenuItem.Enabled = true;
+                resumeMenuItem.Enabled = true;
+                reduceWorkingSetProcessMenuItem.Enabled = true;
                 copyProcessMenuItem.Enabled = true;
             }
 
             // Special case for invalid PIDs.
             if (processSelectedPid <= 0 && treeProcesses.SelectedNodes.Count == 1)
             {
-                //priorityMenuItem.Text = "&Priority";
-                //menuProcess.DisableAll();
-                propertiesToolStripMenuItem1.Enabled = true;
+                priorityMenuItem.Text = "&Priority";
+                menuProcess.DisableAll();
+                propertiesProcessMenuItem.Enabled = true;
             }
 
             // Enable/disable the Select All menu item.
             if (treeProcesses.Model.Nodes.Count == 0)
             {
-                selectAllToolStripMenuItem.Enabled = false;
+                selectAllProcessMenuItem.Enabled = false;
             }
             else
             {
-                selectAllToolStripMenuItem.Enabled = true;
+                selectAllProcessMenuItem.Enabled = true;
             }
         }
 
@@ -1418,10 +1432,12 @@ namespace ProcessHacker
 
             try
             {
-                using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
-                using (TokenHandle thandle = phandle.GetToken(TokenAccess.GenericWrite))
+                using (var phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
                 {
-                    thandle.IsVirtualizationEnabled = !virtualizationToolStripMenuItem.Checked;
+                    using (var thandle = phandle.GetToken(TokenAccess.GenericWrite))
+                    {
+                        thandle.SetVirtualizationEnabled(!virtualizationProcessMenuItem.Checked);
+                    }
                 }
             }
             catch (Exception ex)
@@ -1441,16 +1457,15 @@ namespace ProcessHacker
 
         private void affinityProcessMenuItem_Click(object sender, EventArgs e)
         {
-            using (ProcessAffinity affForm = new ProcessAffinity(processSelectedPid))
+            ProcessAffinity affForm = new ProcessAffinity(processSelectedPid);
+
+            try
             {
-                try
-                {
-                    affForm.ShowDialog();
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                }
+                affForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
             }
         }
 
@@ -1500,7 +1515,6 @@ namespace ProcessHacker
                         td.MainInstruction = "Creating the dump file...";
                         td.ShowMarqueeProgressBar = true;
                         td.EnableHyperlinks = true;
-                        td.PositionRelativeToWindow = true;
                         td.CallbackTimer = true;
                         td.Callback = (taskDialog, args, userData) =>
                             {
@@ -1571,14 +1585,11 @@ namespace ProcessHacker
 
         private void terminatorProcessMenuItem_Click(object sender, EventArgs e)
         {
-            using (TerminatorWindow w = new TerminatorWindow(processSelectedPid)
-            {
-                Text = "Terminator - " + Program.ProcessProvider.Dictionary[this.processSelectedPid].Name +
-                       " (PID " + this.processSelectedPid.ToString() + ")"
-            })
-            {
-                w.ShowDialog();
-            }
+            TerminatorWindow w = new TerminatorWindow(processSelectedPid);
+
+            w.Text = "Terminator - " + Program.ProcessProvider.Dictionary[processSelectedPid].Name +
+                " (PID " + processSelectedPid.ToString() + ")";
+            w.ShowDialog();
         }
 
         #region Run As
@@ -1589,10 +1600,8 @@ namespace ProcessHacker
             {
                 Settings.Instance.RunAsCommand = Program.ProcessProvider.Dictionary[processSelectedPid].FileName;
 
-                using (RunWindow run = new RunWindow())
-                {
-                    run.ShowDialog();
-                }
+                RunWindow run = new RunWindow();
+                run.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -1604,11 +1613,9 @@ namespace ProcessHacker
         {
             try
             {
-                using (RunWindow run = new RunWindow())
-                {
-                    run.UsePID(processSelectedPid);
-                    run.ShowDialog();
-                }
+                RunWindow run = new RunWindow();
+                run.UsePID(processSelectedPid);
+                run.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -1674,24 +1681,23 @@ namespace ProcessHacker
 
         private void injectDllProcessMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog ofd = new OpenFileDialog
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "DLL Files (*.dll)|*.dll|All Files (*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Filter = "DLL Files (*.dll)|*.dll|All Files (*.*)|*.*"
-            })
-            {
-                if (ofd.ShowDialog() == DialogResult.OK)
+                try
                 {
-                    try
+                    using (var phandle = new ProcessHandle(processSelectedPid,
+                        ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
                     {
-                        using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
-                        {
-                            phandle.InjectDll(ofd.FileName, 5000);
-                        }
+                        phandle.InjectDll(ofd.FileName, 5000);
                     }
-                    catch (Exception ex)
-                    {
-                        PhUtils.ShowException("Unable to inject the DLL", ex);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to inject the DLL", ex);
                 }
             }
         }
@@ -1728,21 +1734,19 @@ namespace ProcessHacker
 
         private void setTokenProcessMenuItem_Click(object sender, EventArgs e)
         {
-            using (ProcessPickerWindow picker = new ProcessPickerWindow
+            ProcessPickerWindow picker = new ProcessPickerWindow();
+
+            picker.Label = "Select the source of the token:";
+
+            if (picker.ShowDialog() == DialogResult.OK)
             {
-                Label = "Select the source of the token:"
-            })
-            {
-                if (picker.ShowDialog() == DialogResult.OK)
+                try
                 {
-                    try
-                    {
-                        //KProcessHacker2.Instance.KphOpenProcessToken(picker, processSelectedPid);
-                    }
-                    catch (Exception ex)
-                    {
-                        PhUtils.ShowException("Unable to set the process token", ex);
-                    }
+                    KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPid);
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to set the process token", ex);
                 }
             }
         }
@@ -1787,9 +1791,9 @@ namespace ProcessHacker
 
         private void bringToFrontProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
             {
-                WindowPlacement placement = windowHandle.Placement;
+                WindowPlacement placement = windowHandle.GetPlacement();
 
                 if (placement.ShowState == ShowWindowType.ShowMinimized)
                     windowHandle.Show(ShowWindowType.Restore);
@@ -1800,7 +1804,7 @@ namespace ProcessHacker
 
         private void restoreProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
             {
                 windowHandle.Show(ShowWindowType.Restore);
             }
@@ -1808,7 +1812,7 @@ namespace ProcessHacker
 
         private void minimizeProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
             {
                 windowHandle.Show(ShowWindowType.ShowMinimized);
             }
@@ -1816,7 +1820,7 @@ namespace ProcessHacker
 
         private void maximizeProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
             {
                 windowHandle.Show(ShowWindowType.ShowMaximized);
             }
@@ -1824,7 +1828,7 @@ namespace ProcessHacker
 
         private void closeProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
             {
                 windowHandle.PostMessage(WindowMessage.Close, 0, 0);
                 //windowHandle.Close();
@@ -1838,7 +1842,8 @@ namespace ProcessHacker
             if (treeProcesses.SelectedNodes.Count != 1)
                 return;
 
-            Program.TryStart(Settings.Instance.SearchEngine.Replace("%s", treeProcesses.SelectedNodes[0].Name));
+            Program.TryStart(Settings.Instance.SearchEngine.Replace("%s",
+                treeProcesses.SelectedNodes[0].Name));
         }
 
         private void reanalyzeProcessMenuItem_Click(object sender, EventArgs e)
@@ -1884,9 +1889,7 @@ namespace ProcessHacker
                 vt.Show();
             }
             else
-            {
                 PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
-            }
         }
 
         private void analyzeWaitChainProcessMenuItem_Click(object sender, EventArgs e)
@@ -1912,41 +1915,41 @@ namespace ProcessHacker
             Program.ProcessProvider.DictionaryRemoved += processP_DictionaryRemoved;
             Program.ProcessProvider.Updated -= processP_Updated;
 
-            ProcessHandle.Current.PriorityClass = ProcessPriorityClass.High;
+            try { ProcessHandle.Current.SetPriorityClass(ProcessPriorityClass.High); }
+            catch { }
 
             _enableNetworkProviderSync.Increment();
             _refreshHighlightingSync.Increment();
 
             if (Program.ProcessProvider.RunCount >= 1)
-                this.BeginInvoke(new MethodInvoker(() =>
+                this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    this.treeProcesses.Tree.EndCompleteUpdate();
-                    this.treeProcesses.Tree.EndUpdate();
+                    treeProcesses.Tree.EndCompleteUpdate();
+                    treeProcesses.Tree.EndUpdate();
 
                     if (Settings.Instance.ScrollDownProcessTree)
                     {
                         // HACK
                         try
                         {
-                            foreach (var process in this.treeProcesses.Model.Roots)
+                            foreach (var process in treeProcesses.Model.Roots)
                             {
                                 if (
                                     string.Equals(process.Name, "explorer.exe",
-                                                  StringComparison.OrdinalIgnoreCase) &&
+                                    StringComparison.OrdinalIgnoreCase) &&
                                     process.ProcessItem.Username == Program.CurrentUsername)
                                 {
-                                    this.treeProcesses.FindTreeNode(process).EnsureVisible2();
+                                    treeProcesses.FindTreeNode(process).EnsureVisible2();
 
                                     break;
                                 }
                             }
                         }
                         catch
-                        {
-                        }
+                        { }
                     }
 
-                    this.treeProcesses.Invalidate();
+                    treeProcesses.Invalidate();
                     Program.ProcessProvider.Boost();
                     this.Cursor = Cursors.Default;
                 }));
@@ -1954,7 +1957,10 @@ namespace ProcessHacker
 
         private void processP_InfoUpdater()
         {
-            this.BeginInvoke(new MethodInvoker(this.UpdateStatusInfo));
+            this.BeginInvoke(new MethodInvoker(delegate
+            {
+                UpdateStatusInfo();
+            }));
         }
 
         private void processP_FileProcessingReceived(int stage, int pid)
@@ -1970,7 +1976,7 @@ namespace ProcessHacker
         public void processP_DictionaryAdded(ProcessItem item)
         {
             ProcessItem parent = null;
-            string parentText = string.Empty;
+            string parentText = "";
 
             if (item.HasParent && Program.ProcessProvider.Dictionary.ContainsKey(item.ParentPid))
             {
@@ -1988,11 +1994,11 @@ namespace ProcessHacker
 
             this.QueueMessage("New Process: " + item.Name + " (PID " + item.Pid.ToString() + ")" + parentText);
 
-            if (newProcessesToolStripMenuItem.Checked)
+            if (NPMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Process",
                     "The process " + item.Name + " (" + item.Pid.ToString() +
-                    ") was started" + ((parentText != string.Empty) ? " by " +
-                    parent.Name + " (" + parent.Pid.ToString() + ")" : string.Empty) + ".", ToolTipIcon.Info);
+                    ") was started" + ((parentText != "") ? " by " +
+                    parent.Name + " (" + parent.Pid.ToString() + ")" : "") + ".", ToolTipIcon.Info);
         }
 
         public void processP_DictionaryRemoved(ProcessItem item)
@@ -2002,14 +2008,17 @@ namespace ProcessHacker
             if (processServices.ContainsKey(item.Pid))
                 processServices.Remove(item.Pid);
 
-            if (terminatedProcessesToolStripMenuItem.Checked)
+            if (TPMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "Terminated Process",
                     "The process " + item.Name + " (" + item.Pid.ToString() + ") was terminated.", ToolTipIcon.Info);
         }
 
         private void serviceP_Updated()
         {
-            listServices.BeginInvoke(new MethodInvoker(() => this.listServices.List.EndUpdate()));
+            listServices.BeginInvoke(new MethodInvoker(delegate
+            {
+                listServices.List.EndUpdate();
+            }));
 
             HighlightingContext.StateHighlighting = true;
 
@@ -2025,11 +2034,11 @@ namespace ProcessHacker
         {
             this.QueueMessage("New Service: " + item.Status.ServiceName +
                 " (" + item.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                (!string.IsNullOrEmpty(item.Status.DisplayName) ?
+                ((item.Status.DisplayName != "") ?
                 " (" + item.Status.DisplayName + ")" :
-                string.Empty));
+                ""));
 
-            if (newServicesToolStripMenuItem.Checked)
+            if (NSMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Service",
                     "The service " + item.Status.ServiceName + " (" + item.Status.DisplayName + ") has been created.",
                     ToolTipIcon.Info);
@@ -2057,11 +2066,11 @@ namespace ProcessHacker
             {
                 this.QueueMessage("Service Started: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                    ((newItem.Status.DisplayName != string.Empty) ?
+                    ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
-                    string.Empty));
+                    ""));
 
-                if (startedServicesToolStripMenuItem.Checked)
+                if (startedSMenuItem.Checked)
                     this.GetFirstIcon().ShowBalloonTip(2000, "Service Started",
                         "The service " + newItem.Status.ServiceName + " (" + newItem.Status.DisplayName + ") has been started.",
                         ToolTipIcon.Info);
@@ -2071,20 +2080,20 @@ namespace ProcessHacker
                 newState == ServiceState.Paused)
                 this.QueueMessage("Service Paused: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                    ((newItem.Status.DisplayName != string.Empty) ?
+                    ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
-                    string.Empty));
+                    ""));
 
             if (oldState == ServiceState.Running &&
                 newState == ServiceState.Stopped)
             {
                 this.QueueMessage("Service Stopped: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                    ((newItem.Status.DisplayName != string.Empty) ?
+                    ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
-                    string.Empty));
+                    ""));
 
-                if (stoppedServicesToolStripMenuItem.Checked)
+                if (stoppedSMenuItem.Checked)
                     this.GetFirstIcon().ShowBalloonTip(2000, "Service Stopped",
                         "The service " + newItem.Status.ServiceName + " (" + newItem.Status.DisplayName + ") has been stopped.",
                         ToolTipIcon.Info);
@@ -2123,11 +2132,11 @@ namespace ProcessHacker
         {
             this.QueueMessage("Deleted Service: " + item.Status.ServiceName +
                 " (" + item.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                ((item.Status.DisplayName != string.Empty) ?
+                ((item.Status.DisplayName != "") ?
                 " (" + item.Status.DisplayName + ")" :
-                string.Empty));
+                ""));
 
-            if (deletedServicesToolStripMenuItem.Checked)
+            if (DSMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "Service Deleted",
                     "The service " + item.Status.ServiceName + " (" + item.Status.DisplayName + ") has been deleted.",
                     ToolTipIcon.Info);
@@ -2149,6 +2158,102 @@ namespace ProcessHacker
         #endregion
 
         #region Service Context Menu
+
+        private void menuService_Popup(object sender, EventArgs e)
+        {
+            if (listServices.SelectedItems.Count == 0)
+            {
+                menuService.DisableAll();
+                goToProcessServiceMenuItem.Visible = true;
+                startServiceMenuItem.Visible = true;
+                continueServiceMenuItem.Visible = true;
+                pauseServiceMenuItem.Visible = true;
+                stopServiceMenuItem.Visible = true;
+
+                selectAllServiceMenuItem.Enabled = true;
+            }
+            else if (listServices.SelectedItems.Count == 1)
+            {
+                menuService.EnableAll();
+
+                goToProcessServiceMenuItem.Visible = true;
+                startServiceMenuItem.Visible = true;
+                continueServiceMenuItem.Visible = true;
+                pauseServiceMenuItem.Visible = true;
+                stopServiceMenuItem.Visible = true;
+
+                try
+                {
+                    ServiceItem item = Program.ServiceProvider.Dictionary[listServices.SelectedItems[0].Name];
+
+                    if (item.Status.ServiceStatusProcess.ProcessID != 0)
+                    {
+                        goToProcessServiceMenuItem.Enabled = true;
+                    }
+                    else
+                    {
+                        goToProcessServiceMenuItem.Enabled = false;
+                    }
+
+                    if ((item.Status.ServiceStatusProcess.ControlsAccepted & ServiceAccept.PauseContinue)
+                        == 0)
+                    {
+                        continueServiceMenuItem.Visible = false;
+                        pauseServiceMenuItem.Visible = false;
+                    }
+                    else
+                    {
+                        continueServiceMenuItem.Visible = true;
+                        pauseServiceMenuItem.Visible = true;
+                    }
+
+                    if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Paused)
+                    {
+                        startServiceMenuItem.Enabled = false;
+                        pauseServiceMenuItem.Enabled = false;
+                    }
+                    else if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
+                    {
+                        startServiceMenuItem.Enabled = false;
+                        continueServiceMenuItem.Enabled = false;
+                    }
+                    else if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Stopped)
+                    {
+                        pauseServiceMenuItem.Enabled = false;
+                        stopServiceMenuItem.Enabled = false;
+                    }
+
+                    if ((item.Status.ServiceStatusProcess.ControlsAccepted & ServiceAccept.Stop) == 0 &&
+                        item.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
+                    {
+                        stopServiceMenuItem.Enabled = false;
+                    }
+                }
+                catch
+                {
+                    menuService.DisableAll();
+                    copyServiceMenuItem.Enabled = true;
+                    propertiesServiceMenuItem.Enabled = true;
+                }
+            }
+            else
+            {
+                menuService.DisableAll();
+
+                goToProcessServiceMenuItem.Visible = false;
+                startServiceMenuItem.Visible = false;
+                continueServiceMenuItem.Visible = false;
+                pauseServiceMenuItem.Visible = false;
+                stopServiceMenuItem.Visible = false;
+
+                copyServiceMenuItem.Enabled = true;
+                propertiesServiceMenuItem.Enabled = true;
+                selectAllServiceMenuItem.Enabled = true;
+            }
+
+            if (listServices.List.Items.Count == 0)
+                selectAllServiceMenuItem.Enabled = false;
+        }
 
         private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
         {
@@ -2209,7 +2314,7 @@ namespace ProcessHacker
 
         private void selectAllServiceMenuItem_Click(object sender, EventArgs e)
         {
-            this.listServices.Items.SelectAll();
+            Utils.SelectAll(listServices.Items);
         }
 
         #endregion
@@ -2328,26 +2433,22 @@ namespace ProcessHacker
 
         private void findHandlesToolStripButton_Click(object sender, EventArgs e)
         {
-            findHandlesMenuItem.PerformClick();
+            findHandlesMenuItem_Click(sender, e);
         }
 
         private void refreshToolStripButton_Click(object sender, EventArgs e)
         {
-            if (Program.ProcessProvider.RunCount > 1)
-                Program.ProcessProvider.Boost();
-
-            if (Program.ServiceProvider.RunCount > 1)
-                Program.ServiceProvider.Boost();
+            updateNowMenuItem_Click(sender, e);
         }
 
         private void sysInfoToolStripButton_Click(object sender, EventArgs e)
         {
-            sysInfoMenuItem.PerformClick();
+            sysInfoMenuItem_Click(sender, e);
         }
 
         private void optionsToolStripButton_Click(object sender, EventArgs e)
         {
-            optionsMenuItem.PerformClick();
+            optionsMenuItem_Click(sender, e);
         }
 
         #endregion
@@ -2422,18 +2523,18 @@ namespace ProcessHacker
 
         private void CreateShutdownMenuItems()
         {
-            AddMenuItemDelegate addMenuItem = (text, onClick) =>
+            AddMenuItemDelegate addMenuItem = (string text, EventHandler onClick) =>
             {
-                shutdownMenuItem.DropDownItems.Add(text, null, onClick);
-                shutdownTrayMenuItem.DropDownItems.Add(text, null, onClick);
+                shutdownMenuItem.MenuItems.Add(new MenuItem(text, onClick));
+                shutdownTrayMenuItem.MenuItems.Add(new MenuItem(text, onClick));
                 shutDownToolStripMenuItem.DropDownItems.Add(text, null, onClick);
             };
 
-            addMenuItem("Lock", (sender, e) => Win32.LockWorkStation());
-            addMenuItem("Logoff", (sender, e) => Win32.ExitWindowsEx(ExitWindowsFlags.Logoff, 0));
+            addMenuItem("Lock", (sender, e) => { Win32.LockWorkStation(); });
+            addMenuItem("Logoff", (sender, e) => { Win32.ExitWindowsEx(ExitWindowsFlags.Logoff, 0); });
             addMenuItem("-", null);
-            addMenuItem("Sleep", (sender, e) => Win32.SetSuspendState(false, false, false));
-            addMenuItem("Hibernate", (sender, e) => Win32.SetSuspendState(true, false, false));
+            addMenuItem("Sleep", (sender, e) => { Win32.SetSuspendState(false, false, false); });
+            addMenuItem("Hibernate", (sender, e) => { Win32.SetSuspendState(true, false, false); });
             addMenuItem("-", null);
             addMenuItem("Restart", (sender, e) =>
             {
@@ -2471,7 +2572,7 @@ namespace ProcessHacker
             const int height = 50;
             const int margin = 4;
             Bitmap shieldImage;
-            Button button = new Button
+            Button button = new Button()
             {
                 Text = " ",
                 Size = new Size(width, height),
@@ -2614,10 +2715,25 @@ namespace ProcessHacker
             if (Loader.LoadDll(Settings.Instance.DbgHelpPath) == IntPtr.Zero)
                 Loader.LoadDll("dbghelp.dll");
 
-            // Load symsrv.dll from the same directory as dbghelp.dll.
-            // TODO: improve logic.
-            if (Loader.LoadDll(System.IO.Path.GetDirectoryName(Settings.Instance.DbgHelpPath) + "\\symsrv.dll") == IntPtr.Zero)
-                Loader.LoadDll("symsrv.dll");
+            // Find the location of the dbghelp.dll we loaded and load symsrv.dll.
+            try
+            {
+                ProcessHandle.Current.EnumModules((module) =>
+                    {
+                        if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
+                        {
+                            // Load symsrv.dll from the same directory as dbghelp.dll.
+
+                            Loader.LoadDll(System.IO.Path.GetDirectoryName(module.FileName) + "\\symsrv.dll");
+
+                            return false;
+                        }
+
+                        return true;
+                    });
+            }
+            catch
+            { }
 
             // Set the first run setting here.
             Settings.Instance.FirstRun = false;
@@ -2657,12 +2773,12 @@ namespace ProcessHacker
             Settings.Instance.ServiceListViewColumns = ColumnSettings.SaveSettings(listServices.List);
             Settings.Instance.NetworkListViewColumns = ColumnSettings.SaveSettings(listNetwork.List);
 
-            Settings.Instance.NewProcesses = newProcessesToolStripMenuItem.Checked;
-            Settings.Instance.TerminatedProcesses = terminatedProcessesToolStripMenuItem.Checked;
-            Settings.Instance.NewServices = newServicesToolStripMenuItem.Checked;
-            Settings.Instance.StartedServices = startedServicesToolStripMenuItem.Checked;
-            Settings.Instance.StoppedServices = stoppedServicesToolStripMenuItem.Checked;
-            Settings.Instance.DeletedServices = deletedServicesToolStripMenuItem.Checked;
+            Settings.Instance.NewProcesses = NPMenuItem.Checked;
+            Settings.Instance.TerminatedProcesses = TPMenuItem.Checked;
+            Settings.Instance.NewServices = NSMenuItem.Checked;
+            Settings.Instance.StartedServices = startedSMenuItem.Checked;
+            Settings.Instance.StoppedServices = stoppedSMenuItem.Checked;
+            Settings.Instance.DeletedServices = DSMenuItem.Checked;
 
             try
             {
@@ -2705,18 +2821,20 @@ namespace ProcessHacker
         {
             checkForUpdatesMenuItem.Enabled = false;
 
-            NativeThreadPool.QueueWorkItem(o =>
-            {
-                Updater.Update(this, interactive);
-                this.BeginInvoke(new MethodInvoker(() => this.checkForUpdatesMenuItem.Enabled = true));
-            }, null);
+            Thread t = new Thread(new ThreadStart(() =>
+                {
+                    Updater.Update(this, interactive);
+                    this.Invoke(new MethodInvoker(() => checkForUpdatesMenuItem.Enabled = true));
+                }), Utils.SixteenthStackSize);
+            t.IsBackground = true;
+            t.Start();
         }
 
         private void UpdateSessions()
         {
-            TerminalServerHandle currentServer = TerminalServerHandle.GetCurrent();
+            var currentServer = TerminalServerHandle.GetCurrent();
 
-            usersToolStripMenuItem.DropDownItems.Clear();
+            usersMenuItem.MenuItems.Clear();
 
             foreach (var session in currentServer.GetSessions())
             {
@@ -2729,82 +2847,88 @@ namespace ProcessHacker
                     continue;
                 }
 
-                AddMenuItemDelegate addMenuItem = (text, onClick) =>
+                MenuItem userMenuItem = new MenuItem();
+
+                userMenuItem.Text = session.SessionId + ": " + displayName;
+
+                MenuItem currentMenuItem;
+
+                currentMenuItem = new MenuItem() { Text = "Disconnect", Tag = session.SessionId };
+                currentMenuItem.Click += (sender, e) =>
+                    {
+                        int sessionId = (int)((MenuItem)sender).Tag;
+
+                        SessionActions.Disconnect(this, sessionId, false);
+                    };
+                userMenuItem.MenuItems.Add(currentMenuItem);
+                currentMenuItem = new MenuItem() { Text = "Logoff", Tag = session.SessionId };
+                currentMenuItem.Click += (sender, e) =>
                 {
-                    usersToolStripMenuItem.DropDownItems.Add(text, null, onClick);
-                    shutdownTrayMenuItem.DropDownItems.Add(text, null, onClick);
-                    shutDownToolStripMenuItem.DropDownItems.Add(text, null, onClick);
+                    int sessionId = (int)((MenuItem)sender).Tag;
+
+                    SessionActions.Logoff(this, sessionId, true);
                 };
-
-                addMenuItem("Disconnect", (sender, e) =>
+                userMenuItem.MenuItems.Add(currentMenuItem);
+                currentMenuItem = new MenuItem() { Text = "Send Message...", Tag = session.SessionId };
+                currentMenuItem.Click += (sender, e) =>
                 {
                     int sessionId = (int)((MenuItem)sender).Tag;
 
-                    SessionActions.Disconnect(this, session.SessionId, false);
-                });
-
-                //MenuItem userMenuItem = new MenuItem();
-                //userMenuItem.Text = session.SessionId + ": " + displayName;
-                addMenuItem("Logoff", (sender, e) =>
-                {
-                    int sessionId = (int)((MenuItem)sender).Tag;
-
-                    SessionActions.Logoff(this, session.SessionId, true);
-                });
-
-                addMenuItem("Send Message...", (sender, e) =>
-                {
                     try
                     {
-                        MessageBoxWindow mbw = new MessageBoxWindow
-                        {
-                            MessageBoxTitle = "Message from " + Program.CurrentUsername
-                        };
+                        var mbw = new MessageBoxWindow();
 
+                        mbw.MessageBoxTitle = "Message from " + Program.CurrentUsername;
                         mbw.OkButtonClicked += () =>
-                        {
-                            try
                             {
-                                TerminalServerHandle.GetCurrent().GetSession(session.SessionId).SendMessage(
-                                    mbw.MessageBoxTitle,
-                                    mbw.MessageBoxText,
-                                    MessageBoxButtons.OK,
-                                    mbw.MessageBoxIcon,
-                                    0,
-                                    0,
-                                    mbw.MessageBoxTimeout,
-                                    false
-                                    );
-
-                                return true;
-                            }
-                            catch (Exception ex)
-                            {
-                                PhUtils.ShowException("Unable to send the message", ex);
-                                return false;
-                            }
-                        };
+                                try
+                                {
+                                    TerminalServerHandle.GetCurrent().GetSession(sessionId).SendMessage(
+                                        mbw.MessageBoxTitle,
+                                        mbw.MessageBoxText,
+                                        MessageBoxButtons.OK,
+                                        mbw.MessageBoxIcon,
+                                        0,
+                                        0,
+                                        mbw.MessageBoxTimeout,
+                                        false
+                                        );
+                                    return true;
+                                }
+                                catch (Exception ex)
+                                {
+                                    PhUtils.ShowException("Unable to send the message", ex);
+                                    return false;
+                                }
+                            };
                         mbw.ShowDialog();
                     }
                     catch (Exception ex)
                     {
                         PhUtils.ShowException("Unable to show the message window", ex);
                     }
-                });
-
-                addMenuItem("Properties...", (sender, e) =>
+                };
+                userMenuItem.MenuItems.Add(currentMenuItem);
+                currentMenuItem = new MenuItem() { Text = "Properties...", Tag = session.SessionId };
+                currentMenuItem.Click += (sender, e) =>
                 {
+                    int sessionId = (int)((MenuItem)sender).Tag;
+
                     try
                     {
-                        using (var sessionWindow = new SessionInformationWindow(TerminalServerHandle.GetCurrent().GetSession(session.SessionId)))
-                            sessionWindow.ShowDialog();
+                        var sessionInformationWindow =
+                            new SessionInformationWindow(TerminalServerHandle.GetCurrent().GetSession(sessionId));
+
+                        sessionInformationWindow.ShowDialog();
                     }
                     catch (Exception ex)
                     {
                         PhUtils.ShowException("Unable to show session properties", ex);
                     }
-                });
+                };
+                userMenuItem.MenuItems.Add(currentMenuItem);
 
+                usersMenuItem.MenuItems.Add(userMenuItem);
                 session.Dispose();
             }
         }
@@ -2830,8 +2954,8 @@ namespace ProcessHacker
         {
             try
             {
-                using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
-                    phandle.PriorityClass = priority;
+                using (var phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
+                    phandle.SetPriorityClass(priority);
             }
             catch (Exception ex)
             {
@@ -2843,8 +2967,8 @@ namespace ProcessHacker
         {
             try
             {
-                using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
-                    phandle.IoPriority = ioPriority;
+                using (var phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
+                    phandle.SetIoPriority(ioPriority);
             }
             catch (Exception ex)
             {
@@ -2942,6 +3066,11 @@ namespace ProcessHacker
                         }
                     }
                     break;
+
+                case (int)WindowMessage.Paint:
+                    this.Painting();
+                    break;
+
                 case (int)WindowMessage.Activate:
                 case (int)WindowMessage.KillFocus:
                     {
@@ -2974,7 +3103,7 @@ namespace ProcessHacker
                 case (int)WindowMessage.SettingChange:
                     {
                         // Refresh icon sizes.
-                        this.ExecuteOnIcons(icon => icon.Size = UsageIcon.GetSmallIconSize());
+                        this.ExecuteOnIcons((icon) => icon.Size = UsageIcon.GetSmallIconSize());
                         // Refresh the tree view visual style.
                         treeProcesses.Tree.RefreshVisualStyles();
                     }
@@ -2991,27 +3120,29 @@ namespace ProcessHacker
 
         public void Exit(bool saveSettings)
         {
-            Program.ProcessProvider.Enabled = false;
-            Program.ProcessProvider.Dispose();
+            //processP.Dispose();
+            //serviceP.Dispose();
+            //networkP.Dispose();
 
-            Program.ServiceProvider.Enabled = false;
-            Program.ServiceProvider.Dispose();
-
-            Program.NetworkProvider.Enabled = false;
-            Program.NetworkProvider.Dispose();
-
-            this.ExecuteOnIcons(icon => icon.Visible = false);
-            this.ExecuteOnIcons(icon => icon.Dispose());
+            this.ExecuteOnIcons((icon) => icon.Visible = false);
+            this.ExecuteOnIcons((icon) => icon.Dispose());
 
             // Only save settings if requested and no other instance of 
             // PH is running.
             if (saveSettings && !Program.CheckPreviousInstance())
                 SaveSettings();
 
-            if (KProcessHacker2.Instance != null)
-                KProcessHacker2.Instance.Dispose();
+            this.Visible = false;
 
-            Win32.NtTerminateProcess(ProcessHandle.Current, NtStatus.Success);
+            if (KProcessHacker.Instance != null)
+                KProcessHacker.Instance.Close();
+
+            try
+            {
+                Win32.ExitProcess(0);
+            }
+            catch
+            { }
         }
 
         private void HackerWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -3023,7 +3154,7 @@ namespace ProcessHacker
                 )
             {
                 e.Cancel = true;
-                this.showHideProcessHackerToolStripMenuItem.PerformClick();
+                showHideMenuItem_Click(sender, null);
                 return;
             }
 
@@ -3037,26 +3168,26 @@ namespace ProcessHacker
 
         public void LoadFixOSSpecific()
         {
-            //if (KProcessHacker.Instance == null)
-                //hiddenProcessesMenuItem.Visible = false;
+            if (KProcessHacker.Instance == null)
+                hiddenProcessesMenuItem.Visible = false;
 
-            //if (KProcessHacker.Instance == null || !OSVersion.HasSetAccessToken)
-                setTokenToolStripMenuItem.Visible = false;
+            if (KProcessHacker.Instance == null || !OSVersion.HasSetAccessToken)
+                setTokenProcessMenuItem.Visible = false;
 
-            //if (KProcessHacker.Instance == null || !Settings.Instance.EnableExperimentalFeatures)
-                protectionToolStripMenuItem.Visible = false;
+            if (KProcessHacker.Instance == null || !Settings.Instance.EnableExperimentalFeatures)
+                protectionProcessMenuItem.Visible = false;
 
             if (!OSVersion.HasUac)
-                virtualizationToolStripMenuItem.Visible = false;
+                virtualizationProcessMenuItem.Visible = false;
 
             if (OSVersion.IsBelow(WindowsVersion.Vista))
-                analyzeWaitChainToolStripMenuItem.Visible = false;
+                analyzeWaitChainProcessMenuItem.Visible = false;
 
             if (OSVersion.IsBelow(WindowsVersion.XP))
                 tabControl.TabPages.Remove(tabNetwork);
 
             if (!OSVersion.HasIoPriority)
-                iOPriorityToolStripMenuItem.Visible = false;
+                ioPriorityThreadMenuItem.Visible = false;
         }
 
         private void LoadFixNProcessHacker()
@@ -3105,8 +3236,9 @@ namespace ProcessHacker
         {
             if (Program.ElevationType == TokenElevationType.Limited)
             {
-                this.showDetailsForAllProcessesMenuItem.Image = this.GetUacShieldIcon();
-                //vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
+                uacShieldIcon = this.GetUacShieldIcon();
+
+                vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
                 //vistaMenu.SetImage(startServiceMenuItem, uacShieldIcon);
                 //vistaMenu.SetImage(continueServiceMenuItem, uacShieldIcon);
                 //vistaMenu.SetImage(pauseServiceMenuItem, uacShieldIcon);
@@ -3143,39 +3275,42 @@ namespace ProcessHacker
             foreach (var icon in notifyIcons)
                 icon.Icon = (Icon)blackIcon.Clone();
 
-            this.ExecuteOnIcons(icon => icon.ContextMenu = contextMenuStripTray);
-            this.ExecuteOnIcons(icon => icon.MouseDoubleClick += notifyIcon_MouseDoubleClick);
-
-            this.cpuHistoryMenuItem.Checked = Settings.Instance.CpuHistoryIconVisible;
-            this.cpuUsageMenuItem.Checked = Settings.Instance.CpuUsageIconVisible;
-            this.ioHistoryMenuItem.Checked = Settings.Instance.IoHistoryIconVisible;
-            this.commitHistoryMenuItem.Checked = Settings.Instance.CommitHistoryIconVisible;
-            this.physMemHistoryMenuItem.Checked = Settings.Instance.PhysMemHistoryIconVisible;
+            this.ExecuteOnIcons((icon) => icon.ContextMenu = menuIcon);
+            this.ExecuteOnIcons((icon) => icon.MouseDoubleClick += notifyIcon_MouseDoubleClick);
+            cpuHistoryMenuItem.Checked = Settings.Instance.CpuHistoryIconVisible;
+            cpuUsageMenuItem.Checked = Settings.Instance.CpuUsageIconVisible;
+            ioHistoryMenuItem.Checked = Settings.Instance.IoHistoryIconVisible;
+            commitHistoryMenuItem.Checked = Settings.Instance.CommitHistoryIconVisible;
+            physMemHistoryMenuItem.Checked = Settings.Instance.PhysMemHistoryIconVisible;
             this.ApplyIconVisibilities();
 
-            this.newProcessesToolStripMenuItem.Checked = Settings.Instance.NewProcesses;
-            this.terminatedProcessesToolStripMenuItem.Checked = Settings.Instance.TerminatedProcesses;
-            this.newServicesToolStripMenuItem.Checked = Settings.Instance.NewServices;
-            this.startedServicesToolStripMenuItem.Checked = Settings.Instance.StartedServices;
-            this.stoppedServicesToolStripMenuItem.Checked = Settings.Instance.StoppedServices;
-            this.deletedServicesToolStripMenuItem.Checked = Settings.Instance.DeletedServices;
+            NPMenuItem.Checked = Settings.Instance.NewProcesses;
+            TPMenuItem.Checked = Settings.Instance.TerminatedProcesses;
+            NSMenuItem.Checked = Settings.Instance.NewServices;
+            startedSMenuItem.Checked = Settings.Instance.StartedServices;
+            stoppedSMenuItem.Checked = Settings.Instance.StoppedServices;
+            DSMenuItem.Checked = Settings.Instance.DeletedServices;
 
-            this.newProcessesToolStripMenuItem.Click += this.CheckedMenuItem_Click;
-            this.terminatedProcessesToolStripMenuItem.Click += this.CheckedMenuItem_Click;
-            this.newServicesToolStripMenuItem.Click += this.CheckedMenuItem_Click;
-            this.startedServicesToolStripMenuItem.Click += this.CheckedMenuItem_Click;
-            this.stoppedServicesToolStripMenuItem.Click += this.CheckedMenuItem_Click;
-            this.deletedServicesToolStripMenuItem.Click += this.CheckedMenuItem_Click;
+            NPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            TPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            NSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            startedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            stoppedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            DSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
         }
 
         private void LoadControls()
         {
             networkInfomationMenuItem.Visible = false; // not ready
-            analyzeWaitChainToolStripMenuItem.Visible = false; // not ready
+            analyzeWaitChainProcessMenuItem.Visible = false; // not ready
 
-            //GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
-            //GenericViewMenu.AddMenuItems(copyToolStripMenuItem1.MenuItems, listServices.List, null);
-            //GenericViewMenu.AddMenuItems(copyNetworkMenuItem.MenuItems, listNetwork.List, null);
+            GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
+            GenericViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
+            GenericViewMenu.AddMenuItems(copyNetworkMenuItem.MenuItems, listNetwork.List, null);
+
+            treeProcesses.ContextMenu = menuProcess;
+            listServices.ContextMenu = menuService;
+            listNetwork.ContextMenu = menuNetwork;
 
             treeProcesses.Provider = Program.ProcessProvider;
             treeProcesses.Tree.BeginUpdate();
@@ -3205,33 +3340,30 @@ namespace ProcessHacker
             }
 
             treeProcesses.Tree.MouseDown += (sender, e) =>
-            {
-                if (e.Button == MouseButtons.Right && e.Location.Y < treeProcesses.Tree.ColumnHeaderHeight)
                 {
-                    ContextMenu menu = new ContextMenu();
-
-                    menu.MenuItems.Add(new MenuItem("Choose Columns...", (sender_, e_) =>
+                    if (e.Button == MouseButtons.Right && e.Location.Y < treeProcesses.Tree.ColumnHeaderHeight)
                     {
-                        using (var c = new ChooseColumnsWindow(treeProcesses.Tree))
-                        {
-                            c.ShowDialog();
-                        }
+                        ContextMenu menu = new ContextMenu();
 
-                        copyProcessMenuItem.DropDownItems.Clear();
-                        //GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
-                        treeProcesses.Tree.InvalidateNodeControlCache();
-                        treeProcesses.Tree.Invalidate();
-                    }));
+                        menu.MenuItems.Add(new MenuItem("Choose Columns...", (sender_, e_) =>
+                            {
+                                (new ChooseColumnsWindow(treeProcesses.Tree)
+                                { }).ShowDialog();
 
-                    menu.Show(treeProcesses.Tree, e.Location);
-                }
-            };
+                                copyProcessMenuItem.MenuItems.DisposeAndClear();
+                                GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
+                                treeProcesses.Tree.InvalidateNodeControlCache();
+                                treeProcesses.Tree.Invalidate();
+                            }));
 
-            treeProcesses.Tree.ColumnClicked += (sender, e) => this.DeselectAll(this.treeProcesses.Tree);
+                        menu.Show(treeProcesses.Tree, e.Location);
+                    }
+                };
+            treeProcesses.Tree.ColumnClicked += (sender, e) => { DeselectAll(treeProcesses.Tree); };
             treeProcesses.Tree.ColumnReordered += (sender, e) =>
             {
-                copyProcessMenuItem.DropDownItems.Clear();
-               // GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
+                copyProcessMenuItem.MenuItems.DisposeAndClear();
+                GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
             };
 
             tabControlBig_SelectedIndexChanged(null, null);
@@ -3239,17 +3371,17 @@ namespace ProcessHacker
 
         private void LoadAddShortcuts()
         {
-            treeProcesses.Tree.KeyDown += (sender, e) =>
-            {
-                if (e.Control && e.KeyCode == Keys.A)
+            treeProcesses.Tree.KeyDown +=
+                (sender, e) =>
                 {
-                    treeProcesses.TreeNodes.SelectAll();
-                    treeProcesses.Tree.Invalidate();
-                }
+                    if (e.Control && e.KeyCode == Keys.A)
+                    {
+                        treeProcesses.TreeNodes.SelectAll();
+                        treeProcesses.Tree.Invalidate();
+                    }
 
-                if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.TreeViewAdvCopy(treeProcesses.Tree, -1);
-            };
-
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.TreeViewAdvCopy(treeProcesses.Tree, -1);
+                };
             listServices.List.AddShortcuts();
             listNetwork.List.AddShortcuts();
         }
@@ -3261,31 +3393,31 @@ namespace ProcessHacker
 
         private void LoadStructs()
         {
-            WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
-            {
-                try
+            WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
                 {
-                    if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
+                    try
                     {
-                        Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
+                        if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
+                        {
+                            Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
 
-                        parser.Parse(Application.StartupPath + "\\structs.txt");
+                            parser.Parse(Application.StartupPath + "\\structs.txt");
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    QueueMessage("Error loading structure definitions: " + ex.Message);
-                }
-            }), "load-structs");
+                    catch (Exception ex)
+                    {
+                        QueueMessage("Error loading structure definitions: " + ex.Message);
+                    }
+                }), "load-structs");
         }
 
         private void LoadOther()
         {
             try
             {
-                using (TokenHandle thandle = ProcessHandle.Current.GetToken(TokenAccess.Query))
-                using (Sid sid = thandle.User)
-                    this.Text += " [" + sid.GetFullName(true) + "]" + (KProcessHacker2.Instance != null ? "+" : string.Empty);
+                using (var thandle = ProcessHandle.Current.GetToken(TokenAccess.Query))
+                using (var sid = thandle.GetUser())
+                    this.Text += " [" + sid.GetFullName(true) + (KProcessHacker.Instance != null ? "+" : "") + "]";
             }
             catch
             { }
@@ -3303,6 +3435,10 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            // Force the handle to be created
+            { var handle = this.Handle; }
+            Program.HackerWindowHandle = this.Handle;
+
             if (OSVersion.HasExtendedTaskbar)
             {
                 // We need to call this here or we don't receive the TaskbarButtonCreated message
@@ -3311,7 +3447,7 @@ namespace ProcessHacker
                 Windows7Taskbar.ProcessAppId = "ProcessHacker";
 
                 thumbButtonManager = new ThumbButtonManager(this);
-                thumbButtonManager.TaskbarButtonCreated += this.thumbButtonManager_TaskbarButtonCreated;
+                thumbButtonManager.TaskbarButtonCreated += new EventHandler(thumbButtonManager_TaskbarButtonCreated);
             }
 
             this.AddEscapeToClose();
@@ -3323,8 +3459,11 @@ namespace ProcessHacker
                     Program.NetworkProvider.Enabled = true;
                     Program.NetworkProvider.Boost();
                 }, 2);
-
-            _refreshHighlightingSync = new ActionSync(() => this.BeginInvoke(new MethodInvoker(this.treeProcesses.RefreshItems), null), 2);
+            _refreshHighlightingSync = new ActionSync(
+                () =>
+                {
+                    this.BeginInvoke(new Action(treeProcesses.RefreshItems), null);
+                }, 2);
 
             Logging.Logged += this.QueueMessage;
             this.LoadWindowSettings();
@@ -3332,7 +3471,8 @@ namespace ProcessHacker
             this.LoadControls();
             this.LoadNotificationIcons();
 
-            if ((!Settings.Instance.StartHidden && !Program.StartHidden) || Program.StartVisible)
+            if ((!Settings.Instance.StartHidden && !Program.StartHidden) ||
+                Program.StartVisible)
             {
                 this.Visible = true;
             }
@@ -3343,53 +3483,25 @@ namespace ProcessHacker
             this.LoadOther();
             this.LoadStructs();
 
+            vistaMenu.DelaySetImageCalls = false;
+            vistaMenu.PerformPendingSetImageCalls();
+
             Program.ServiceProvider.Enabled = true;
             Program.ServiceProvider.Boost();
 
-            ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
-            //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
-
-            this.CreateShutdownMenuItems();
-            this.LoadFixOSSpecific();
-            this.LoadUac();
-            this.LoadAddShortcuts();
-            this.LoadFixNProcessHacker();
-
-            toolStrip.Items.Add(new ToolStripSeparator());
-            var targetButton = new TargetWindowButton();
-            targetButton.TargetWindowFound += (pid, tid) => this.SelectProcess(pid);
-            toolStrip.Items.Add(targetButton);
-
-            var targetThreadButton = new TargetWindowButton();
-            targetThreadButton.TargetWindowFound += (pid, tid) => Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], f =>
-            {
-                Program.FocusWindow(f);
-                f.SelectThread(tid);
-            });
-            targetThreadButton.Image = Properties.Resources.application_go;
-            targetThreadButton.Text = "Find window and select thread";
-            targetThreadButton.ToolTipText = "Find window and select thread";
-            toolStrip.Items.Add(targetThreadButton);
-
-            try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
-            catch (Exception ex) { Logging.Log(ex); }
-            try { this.UpdateSessions(); }
-            catch (Exception ex) { Logging.Log(ex); }
-
-            try { Win32.SetProcessShutdownParameters(0x100, 0); }
-            catch { }
-
-            if (Settings.Instance.AppUpdateAutomatic)
-                this.UpdateProgram(false);
-
-            ToolStripManager.Renderer = new AeroRenderer(ToolbarTheme.Blue);
+            _dontCalculate = false;
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindowMenu(windowToolStripMenuItem, this);
+            Program.UpdateWindowMenu(windowMenuItem, this);
             this.ApplyFont(Settings.Instance.Font);
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
+        }
+
+        private void HackerWindow_SizeChanged(object sender, EventArgs e)
+        {
+            tabControl.Invalidate(false);
         }
 
         private void HackerWindow_VisibleChanged(object sender, EventArgs e)
@@ -3397,91 +3509,84 @@ namespace ProcessHacker
             treeProcesses.Draw = this.Visible;
         }
 
-        private void contextMenuStripService_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        // ==== Performance hacks section ====
+        private bool _dontCalculate = true;
+        private int _layoutCount = 0;
+
+        protected override void OnLayout(LayoutEventArgs levent)
         {
-            switch (this.listServices.SelectedItems.Count)
+            _layoutCount++;
+
+            if (_layoutCount < 3)
+                return;
+
+            base.OnLayout(levent);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            if (_dontCalculate)
+                return;
+
+            //
+            // Size grip bug fix as per
+            // http://jelle.druyts.net/2003/10/20/StatusBarResizeBug.aspx
+            //
+            if (statusBar != null)
             {
-                case 0:
-                    this.goToProcessServiceMenuItem.Visible = true;
-                    this.startToolStripMenuItem.Visible = true;
-                    this.continueToolStripMenuItem.Visible = true;
-                    this.pauseToolStripMenuItem.Visible = true;
-                    this.stopToolStripMenuItem.Visible = true;
-                    this.selectAllServiceMenuItem.Enabled = true;
-                    break;
-                case 1:
-                    this.goToProcessServiceMenuItem.Visible = true;
-                    this.startToolStripMenuItem.Visible = true;
-                    this.continueToolStripMenuItem.Visible = true;
-                    this.pauseToolStripMenuItem.Visible = true;
-                    this.stopToolStripMenuItem.Visible = true;
-                    try
-                    {
-                        ServiceItem item = Program.ServiceProvider.Dictionary[this.listServices.SelectedItems[0].Name];
-
-                        if (item.Status.ServiceStatusProcess.ProcessID != 0)
-                        {
-                            this.goToProcessServiceMenuItem.Enabled = true;
-                        }
-                        else
-                        {
-                            this.goToProcessServiceMenuItem.Enabled = false;
-                        }
-
-                        if ((item.Status.ServiceStatusProcess.ControlsAccepted & ServiceAccept.PauseContinue) == 0)
-                        {
-                            this.continueToolStripMenuItem.Visible = false;
-                            this.pauseToolStripMenuItem.Visible = false;
-                        }
-                        else
-                        {
-                            this.continueToolStripMenuItem.Visible = true;
-                            this.pauseToolStripMenuItem.Visible = true;
-                        }
-
-                        switch (item.Status.ServiceStatusProcess.CurrentState)
-                        {
-                            case ServiceState.Paused:
-                                this.startToolStripMenuItem.Enabled = false;
-                                this.pauseToolStripMenuItem.Enabled = false;
-                                break;
-                            case ServiceState.Running:
-                                this.startToolStripMenuItem.Enabled = false;
-                                this.continueToolStripMenuItem.Enabled = false;
-                                break;
-                            case ServiceState.Stopped:
-                                this.pauseToolStripMenuItem.Enabled = false;
-                                this.stopToolStripMenuItem.Enabled = false;
-                                break;
-                        }
-
-                        if ((item.Status.ServiceStatusProcess.ControlsAccepted & ServiceAccept.Stop) == 0 &&
-                            item.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
-                        {
-                            this.stopToolStripMenuItem.Enabled = false;
-                        }
-                    }
-                    catch
-                    {
-                        //contextMenuStripService.DisableAll();
-                        this.copyToolStripMenuItem1.Enabled = true;
-                        this.propertiesToolStripMenuItem.Enabled = true;
-                    }
-                    break;
-                default:
-                    this.goToProcessServiceMenuItem.Visible = false;
-                    this.startToolStripMenuItem.Visible = false;
-                    this.continueToolStripMenuItem.Visible = false;
-                    this.pauseToolStripMenuItem.Visible = false;
-                    this.stopToolStripMenuItem.Visible = false;
-                    this.copyToolStripMenuItem1.Enabled = true;
-                    this.propertiesToolStripMenuItem.Enabled = true;
-                    this.selectAllServiceMenuItem.Enabled = true;
-                    break;
+                statusBar.SizingGrip = (WindowState == FormWindowState.Normal);
             }
 
-            if (listServices.List.Items.Count == 0)
-                selectAllServiceMenuItem.Enabled = false;
+            base.OnResize(e);
+        }
+
+        private bool isFirstPaint = true;
+
+        private void Painting()
+        {
+            if (isFirstPaint)
+            {
+                isFirstPaint = false;
+    
+                ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
+                //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
+
+                this.CreateShutdownMenuItems();
+                this.LoadFixOSSpecific();
+                this.LoadUac();
+                this.LoadAddShortcuts();
+                this.LoadFixNProcessHacker();
+
+                toolStrip.Items.Add(new ToolStripSeparator());
+                var targetButton = new TargetWindowButton();
+                targetButton.TargetWindowFound += (pid, tid) => this.SelectProcess(pid);
+                toolStrip.Items.Add(targetButton);
+
+                var targetThreadButton = new TargetWindowButton();
+                targetThreadButton.TargetWindowFound += (pid, tid) =>
+                    {
+                        Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], (f) =>
+                            {
+                                Program.FocusWindow(f);
+                                f.SelectThread(tid);
+                            });
+                    };
+                targetThreadButton.Image = Properties.Resources.application_go;
+                targetThreadButton.Text = "Find window and select thread";
+                targetThreadButton.ToolTipText = "Find window and select thread";
+                toolStrip.Items.Add(targetThreadButton);
+
+                try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
+                catch (Exception ex) { Logging.Log(ex); }
+                try { this.UpdateSessions(); }
+                catch (Exception ex) { Logging.Log(ex); }
+
+                try { Win32.SetProcessShutdownParameters(0x100, 0); }
+                catch { }
+
+                if (Settings.Instance.AppUpdateAutomatic)
+                    this.UpdateProgram(false);
+            }
         }
     }
 }

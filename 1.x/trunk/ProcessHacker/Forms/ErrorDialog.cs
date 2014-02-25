@@ -27,14 +27,13 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ProcessHacker.Common;
-using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
     public partial class ErrorDialog : Form
     {
-        private readonly Exception _exception;
+        private Exception _exception;
         private string _trackerItem;
 
         public ErrorDialog(Exception ex, bool terminating)
@@ -79,12 +78,12 @@ namespace ProcessHacker
                 Settings.Instance.Save();
 
                 // Remove the icons or they remain in the system try.
-                Program.HackerWindow.ExecuteOnIcons(icon => icon.Visible = false);
-                Program.HackerWindow.ExecuteOnIcons(icon => icon.Dispose());
+                Program.HackerWindow.ExecuteOnIcons((icon) => icon.Visible = false);
+                Program.HackerWindow.ExecuteOnIcons((icon) => icon.Dispose());
 
                 // Make sure KPH connection is closed.
-                if (KProcessHacker2.Instance != null)
-                   KProcessHacker2.Instance.Dispose();
+                if (ProcessHacker.Native.KProcessHacker.Instance != null)
+                    ProcessHacker.Native.KProcessHacker.Instance.Close();
             }
             catch (Exception ex)
             {
@@ -102,8 +101,8 @@ namespace ProcessHacker
             this.statusLinkLabel.Visible = true;
 
             SFBugReporter wc = new SFBugReporter();
-            wc.DownloadProgressChanged += wc_DownloadProgressChanged;
-            wc.DownloadStringCompleted += wc_DownloadStringCompleted;
+            wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
 
             NameValueCollection qc = new NameValueCollection();
             qc.Add("group_id", "242527"); //PH BugTracker ID: Required Do Not Change!
@@ -136,7 +135,7 @@ namespace ProcessHacker
             buttonContinue.Enabled = true;
             buttonQuit.Enabled = true;
 
-            if (e.Error != null || this.GetTitle(e.Result).Contains("ERROR", StringComparison.OrdinalIgnoreCase))
+            if (e.Error != null || this.GetTitle(e.Result).Contains("ERROR"))
             {
                 buttonSubmitReport.Enabled = true;
                 statusLinkLabel.Visible = false;
@@ -170,8 +169,10 @@ namespace ProcessHacker
             {
                 return m.Groups[1].Value;
             }
-
-            return string.Empty;
+            else
+            {
+                return "";
+            }
         }
 
         private string GetResult(string data)
@@ -182,8 +183,10 @@ namespace ProcessHacker
             {
                 return m.Groups[1].Value;
             }
-
-            return string.Empty;
+            else
+            {
+                return "";
+            }
         }
 
         private string GetUrl(string data)
@@ -194,15 +197,17 @@ namespace ProcessHacker
             {
                 return m.Value;
             }
-
-            return string.Empty;
+            else
+            {
+                return "";
+            }
         }
 
-        public class SFBugReporter : WebClient
+        public partial class SFBugReporter : WebClient
         {
             protected override WebRequest GetWebRequest(Uri uri)
             {
-                HttpWebRequest webRequest = (HttpWebRequest)base.GetWebRequest(uri);
+                System.Net.HttpWebRequest webRequest = (System.Net.HttpWebRequest)base.GetWebRequest(uri);
                 webRequest.UserAgent = "Process Hacker " + Application.ProductVersion;
                 webRequest.Timeout = System.Threading.Timeout.Infinite;
                 webRequest.ServicePoint.Expect100Continue = true; //fix for Sourceforge's lighttpd Server

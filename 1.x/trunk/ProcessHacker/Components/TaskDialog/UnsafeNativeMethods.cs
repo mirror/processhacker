@@ -9,13 +9,14 @@
 namespace ProcessHacker.Components
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
 
     /// <summary>
     /// Class to hold native code interop declarations.
     /// </summary>
     [System.Security.SuppressUnmanagedCodeSecurity]
-    internal static class UnsafeNativeMethods
+    internal static partial class UnsafeNativeMethods
     {
         /// <summary>
         /// WM_USER taken from WinUser.h
@@ -31,7 +32,7 @@ namespace ProcessHacker.Components
         /// <param name="lParam">wParam which is interpreted differently depending on the message.</param>
         /// <param name="refData">The refrence data that was set to TaskDialog.CallbackData.</param>
         /// <returns>A HRESULT value. The return value is specific to the message being processed. </returns>
-        internal delegate int TaskDialogCallback([In] IntPtr hwnd, [In] TaskDialogNotification msg, [In] UIntPtr wParam, [In] IntPtr lParam, [In] IntPtr refData);
+        internal delegate int TaskDialogCallback([In] IntPtr hwnd, [In] uint msg, [In] UIntPtr wParam, [In] IntPtr lParam, [In] IntPtr refData);
 
         /// <summary>
         /// TASKDIALOG_FLAGS taken from CommCtrl.h.
@@ -312,8 +313,6 @@ namespace ProcessHacker.Components
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
         internal struct TASKDIALOGCONFIG
         {
-            public static readonly int SizeOf;
-
             /// <summary>
             /// Size of the structure in bytes.
             /// </summary>
@@ -441,12 +440,7 @@ namespace ProcessHacker.Components
             /// Width of the Task Dialog's client area in DLU's.
             /// If 0, Task Dialog will calculate the ideal width.
             /// </summary>
-            public uint cxWidth;
-
-            static TASKDIALOGCONFIG()
-            {
-                SizeOf = Marshal.SizeOf(typeof(TASKDIALOGCONFIG));
-            }     
+            public uint cxWidth;                                 
         }
     }
 }

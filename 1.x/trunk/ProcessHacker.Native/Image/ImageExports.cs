@@ -21,7 +21,11 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Image
 {
@@ -29,12 +33,12 @@ namespace ProcessHacker.Native.Image
     {
         public delegate bool EnumEntriesDelegate(ImageExportEntry entry);
 
-        private readonly MappedImage _mappedImage;
-        private readonly ImageDataDirectory* _dataDirectory;
-        private readonly ImageExportDirectory* _exportDirectory;
-        private readonly int* _addressTable;
-        private readonly int* _namePointerTable;
-        private readonly short* _ordinalTable;
+        private MappedImage _mappedImage;
+        private ImageDataDirectory* _dataDirectory;
+        private ImageExportDirectory* _exportDirectory;
+        private int* _addressTable;
+        private int* _namePointerTable;
+        private short* _ordinalTable;
 
         internal ImageExports(MappedImage mappedImage)
         {
@@ -56,8 +60,8 @@ namespace ProcessHacker.Native.Image
             {
                 if (_exportDirectory != null)
                     return _exportDirectory->NumberOfFunctions;
-                
-                return 0;
+                else
+                    return 0;
             }
         }
 
@@ -68,10 +72,9 @@ namespace ProcessHacker.Native.Image
             if (index >= _exportDirectory->NumberOfFunctions)
                 return ImageExportEntry.Empty;
 
-            ImageExportEntry entry = new ImageExportEntry
-            {
-                Ordinal = (short)(this._ordinalTable[index] + this._exportDirectory->Base)
-            };
+            ImageExportEntry entry = new ImageExportEntry();
+
+            entry.Ordinal = (short)(_ordinalTable[index] + _exportDirectory->Base);
 
             if (index < _exportDirectory->NumberOfNames)
                 entry.Name = new string((sbyte*)_mappedImage.RvaToVa(_namePointerTable[index]));
@@ -84,7 +87,9 @@ namespace ProcessHacker.Native.Image
             if (_exportDirectory == null || _namePointerTable == null || _ordinalTable == null)
                 return ImageExportFunction.Empty;
 
-            int index = this.LookupName(name);
+            int index;
+
+            index = this.LookupName(name);
 
             if (index == -1)
                 return ImageExportFunction.Empty;
@@ -107,17 +112,13 @@ namespace ProcessHacker.Native.Image
                 )
             {
                 // This is a forwarder RVA.
-                return new ImageExportFunction
-                { 
-                    ForwardedName = new string((sbyte*)_mappedImage.RvaToVa(rva)) 
-                };
+                return new ImageExportFunction() { ForwardedName = new string((sbyte*)_mappedImage.RvaToVa(rva)) };
             }
-            
-            // This is a function RVA.
-            return new ImageExportFunction
-            { 
-                Function = (IntPtr)this._mappedImage.RvaToVa(rva) 
-            };
+            else
+            {
+                // This is a function RVA.
+                return new ImageExportFunction() { Function = (IntPtr)_mappedImage.RvaToVa(rva) };
+            }
         }
 
         private int LookupName(string name)
@@ -154,7 +155,7 @@ namespace ProcessHacker.Native.Image
 
     public struct ImageExportEntry
     {
-        public static readonly ImageExportEntry Empty;
+        public static readonly ImageExportEntry Empty = new ImageExportEntry();
 
         public string Name;
         public short Ordinal;
@@ -162,7 +163,7 @@ namespace ProcessHacker.Native.Image
 
     public struct ImageExportFunction
     {
-        public static readonly ImageExportFunction Empty;
+        public static readonly ImageExportFunction Empty = new ImageExportFunction();
 
         public IntPtr Function;
         public string ForwardedName;

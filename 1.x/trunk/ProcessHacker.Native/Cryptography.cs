@@ -56,7 +56,7 @@ namespace ProcessHacker.Native
             new Guid("{fc451c16-ac75-11d1-b4b8-00c04fb66ea0}");
         public static readonly Guid WintrustActionGenericVerifyV2 = 
             new Guid("{00aac56b-cd44-11d0-8cc2-00c04fc295ee}");
-        public static readonly Guid WintrustActionTrustProviderTest = 
+        public static readonly System.Guid WintrustActionTrustProviderTest = 
             new Guid("{573e31f8-ddba-11d0-8ccb-00c04fc295ee}");
 
         private static string GetX500Value(string subject, string keyName)
@@ -106,12 +106,14 @@ namespace ProcessHacker.Native
             // Well, here's a shitload of indirection for you...
 
             // 1. State data -> Provider data
+
             IntPtr provData = Win32.WTHelperProvDataFromStateData(stateData);
 
             if (provData == IntPtr.Zero)
                 return null;
 
             // 2. Provider data -> Provider signer
+
             IntPtr signerInfo = Win32.WTHelperGetProvSignerFromChain(provData, 0, false, 0);
 
             if (signerInfo == IntPtr.Zero)
@@ -125,22 +127,25 @@ namespace ProcessHacker.Native
                 return null;
 
             // 3. Provider signer -> Provider cert
+
             CryptProviderCert cert = (CryptProviderCert)Marshal.PtrToStructure(sngr.CertChain, typeof(CryptProviderCert));
 
             if (cert.Cert == IntPtr.Zero)
                 return null;
 
             // 4. Provider cert -> Cert context
+
             CertContext context = (CertContext)Marshal.PtrToStructure(cert.Cert, typeof(CertContext));
 
             if (context.CertInfo != IntPtr.Zero)
             {
                 // 5. Cert context -> Cert info
+
                 CertInfo certInfo = (CertInfo)Marshal.PtrToStructure(context.CertInfo, typeof(CertInfo));
 
                 unsafe
                 {
-                    using (MemoryAlloc buffer = new MemoryAlloc(0x200))
+                    using (var buffer = new MemoryAlloc(0x200))
                     {
                         int length;
 
@@ -168,12 +173,13 @@ namespace ProcessHacker.Native
                         }
 
                         string name = buffer.ReadUnicodeString(0);
+                        string value;
 
                         // 7. Subject X.500 string -> CN or OU value
 
-                        string value = GetX500Value(name, "CN");
+                        value = GetX500Value(name, "CN");
 
-                        if (string.IsNullOrEmpty(value))
+                        if (value == null)
                             value = GetX500Value(name, "OU");
 
                         return value;
@@ -186,23 +192,20 @@ namespace ProcessHacker.Native
 
         public static VerifyResult StatusToVerifyResult(uint status)
         {
-            switch (status)
-            {
-                case 0:
-                    return VerifyResult.Trusted;
-                case 0x800b0100:
-                    return VerifyResult.NoSignature;
-                case 0x800b0101:
-                    return VerifyResult.Expired;
-                case 0x800b010c:
-                    return VerifyResult.Revoked;
-                case 0x800b0111:
-                    return VerifyResult.Distrust;
-                case 0x80092026:
-                    return VerifyResult.SecuritySettings;
-                default:
-                    return VerifyResult.SecuritySettings;
-            }
+            if (status == 0)
+                return VerifyResult.Trusted;
+            else if (status == 0x800b0100)
+                return VerifyResult.NoSignature;
+            else if (status == 0x800b0101)
+                return VerifyResult.Expired;
+            else if (status == 0x800b010c)
+                return VerifyResult.Revoked;
+            else if (status == 0x800b0111)
+                return VerifyResult.Distrust;
+            else if (status == 0x80092026)
+                return VerifyResult.SecuritySettings;
+            else
+                return VerifyResult.SecuritySettings;
         }
 
         public static VerifyResult VerifyFile(string fileName)
@@ -214,7 +217,7 @@ namespace ProcessHacker.Native
 
         public static VerifyResult VerifyFile(string fileName, out string signerName)
         {
-            VerifyResult result;
+            VerifyResult result = VerifyResult.NoSignature;
 
             using (MemoryAlloc strMem = new MemoryAlloc(fileName.Length * 2 + 2))
             {
@@ -223,25 +226,24 @@ namespace ProcessHacker.Native
                 strMem.WriteUnicodeString(0, fileName);
                 strMem.WriteInt16(fileName.Length * 2, 0);
 
-                fileInfo.Size = WintrustFileInfo.SizeOf;
+                fileInfo.Size = Marshal.SizeOf(fileInfo);
                 fileInfo.FilePath = strMem;
 
-                WintrustData trustData = new WintrustData
-                {
-                    Size = WintrustData.SizeOf,
-                    UIChoice = 2, // WTD_UI_NONE
-                    UnionChoice = 1, // WTD_CHOICE_FILE
-                    RevocationChecks = WtdRevocationChecks.None,
-                    ProvFlags = WtdProvFlags.Safer,
-                    StateAction = WtdStateAction.Verify
-                };
+                WintrustData trustData = new WintrustData();
+
+                trustData.Size = Marshal.SizeOf(typeof(WintrustData));
+                trustData.UIChoice = 2; // WTD_UI_NONE
+                trustData.UnionChoice = 1; // WTD_CHOICE_FILE
+                trustData.RevocationChecks = WtdRevocationChecks.None;
+                trustData.ProvFlags = WtdProvFlags.Safer;
+                trustData.StateAction = WtdStateAction.Verify;
 
                 if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                     trustData.ProvFlags |= WtdProvFlags.CacheOnlyUrlRetrieval;
 
                 using (MemoryAlloc mem = new MemoryAlloc(fileInfo.Size))
                 {
-                    mem.WriteStruct(fileInfo);
+                    mem.WriteStruct<WintrustFileInfo>(fileInfo);
                     trustData.UnionData = mem;
 
                     uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, ref trustData);
@@ -268,7 +270,8 @@ namespace ProcessHacker.Native
 
             signerName = null;
 
-            using (FileHandle sourceFile = FileHandle.CreateWin32(fileName, FileAccess.GenericRead, FileShareMode.Read, FileCreationDispositionWin32.OpenExisting))
+            using (FileHandle sourceFile = FileHandle.CreateWin32(fileName, FileAccess.GenericRead, FileShareMode.Read,
+                FileCreationDispositionWin32.OpenExisting))
             {
                 byte[] hash = new byte[256];
                 int hashLength = 256;
@@ -308,29 +311,27 @@ namespace ProcessHacker.Native
                     return VerifyResult.NoSignature;
                 }
 
-                WintrustCatalogInfo wci = new WintrustCatalogInfo
-                {
-                    Size = WintrustCatalogInfo.SizeOf, 
-                    CatalogFilePath = ci.CatalogFile, 
-                    MemberFilePath = fileName, 
-                    MemberTag = memberTag.ToString()
-                };
+                WintrustCatalogInfo wci = new WintrustCatalogInfo();
 
-                WintrustData trustData = new WintrustData
-                {
-                    Size = WintrustData.SizeOf, 
-                    UIChoice = 1, 
-                    UnionChoice = 2, 
-                    RevocationChecks = WtdRevocationChecks.None, 
-                    StateAction = WtdStateAction.Verify
-                };
+                wci.Size = Marshal.SizeOf(wci);
+                wci.CatalogFilePath = ci.CatalogFile;
+                wci.MemberFilePath = fileName;
+                wci.MemberTag = memberTag.ToString();
+
+                WintrustData trustData = new WintrustData();
+
+                trustData.Size = Marshal.SizeOf(typeof(WintrustData));
+                trustData.UIChoice = 1;
+                trustData.UnionChoice = 2;
+                trustData.RevocationChecks = WtdRevocationChecks.None;
+                trustData.StateAction = WtdStateAction.Verify;
 
                 if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                     trustData.ProvFlags = WtdProvFlags.CacheOnlyUrlRetrieval;
 
                 using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
                 {
-                    mem.WriteStruct(wci);
+                    mem.WriteStruct<WintrustCatalogInfo>(wci);
 
                     try
                     {

@@ -9,7 +9,7 @@ namespace ProcessHacker.Native
     /// </summary>
     public sealed class Section : NativeObject<SectionHandle>
     {
-        private readonly MemoryProtection _originalProtection = MemoryProtection.ReadWrite;
+        private MemoryProtection _originalProtection = MemoryProtection.ReadWrite;
 
         /// <summary>
         /// Opens an existing section.
@@ -64,7 +64,7 @@ namespace ProcessHacker.Native
                 name,
                 ObjectFlags.OpenIf,
                 null,
-                fileHandle.FileSize,
+                fileHandle.GetSize(),
                 image ? SectionAttributes.Image : SectionAttributes.Commit,
                 protection,
                 fileHandle

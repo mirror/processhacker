@@ -24,12 +24,13 @@ using System;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Components
 {
     public partial class ProcessStatistics : UserControl
     {
-        private readonly int _pid;
+        private int _pid;
 
         public ProcessStatistics(int pid)
         {
@@ -45,37 +46,49 @@ namespace ProcessHacker.Components
             {
                 labelCPUCyclesText.Text = "N/A";
             }
+
+            _dontCalculate = false;
+        }
+
+        private bool _dontCalculate = true;
+
+        protected override void OnResize(EventArgs e)
+        {
+            if (_dontCalculate)
+                return;
+
+            base.OnResize(e);
         }
 
         public void ClearStatistics()
         {
-            labelCPUPriority.Text = string.Empty;
-            labelCPUCycles.Text = string.Empty;
-            labelCPUKernelTime.Text = string.Empty;
-            labelCPUUserTime.Text = string.Empty;
-            labelCPUTotalTime.Text = string.Empty;
+            labelCPUPriority.Text = "";
+            labelCPUCycles.Text = "";
+            labelCPUKernelTime.Text = "";
+            labelCPUUserTime.Text = "";
+            labelCPUTotalTime.Text = "";
 
-            labelMemoryPB.Text = string.Empty;
-            labelMemoryWS.Text = string.Empty;
-            labelMemoryPWS.Text = string.Empty;
-            labelMemoryVS.Text = string.Empty;
-            labelMemoryPVS.Text = string.Empty;
-            labelMemoryPU.Text = string.Empty;
-            labelMemoryPPU.Text = string.Empty;
-            labelMemoryPF.Text = string.Empty;
-            labelMemoryPP.Text = string.Empty;
+            labelMemoryPB.Text = "";
+            labelMemoryWS.Text = "";
+            labelMemoryPWS.Text = "";
+            labelMemoryVS.Text = "";
+            labelMemoryPVS.Text = "";
+            labelMemoryPU.Text = "";
+            labelMemoryPPU.Text = "";
+            labelMemoryPF.Text = "";
+            labelMemoryPP.Text = "";
 
-            labelIOReads.Text = string.Empty;
-            labelIOReadBytes.Text = string.Empty;
-            labelIOWrites.Text = string.Empty;
-            labelIOWriteBytes.Text = string.Empty;
-            labelIOOther.Text = string.Empty;
-            labelIOOtherBytes.Text = string.Empty;
-            labelIOPriority.Text = string.Empty;
+            labelIOReads.Text = "";
+            labelIOReadBytes.Text = "";
+            labelIOWrites.Text = "";
+            labelIOWriteBytes.Text = "";
+            labelIOOther.Text = "";
+            labelIOOtherBytes.Text = "";
+            labelIOPriority.Text = "";
 
-            labelOtherHandles.Text = string.Empty;
-            labelOtherGDIHandles.Text = string.Empty;
-            labelOtherUSERHandles.Text = string.Empty;
+            labelOtherHandles.Text = "";
+            labelOtherGDIHandles.Text = "";
+            labelOtherUSERHandles.Text = "";
         }
 
         public void UpdateStatistics()
@@ -99,31 +112,34 @@ namespace ProcessHacker.Components
             labelMemoryPPU.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PeakPagefileUsage);
             labelMemoryPF.Text = ((ulong)item.Process.VirtualMemoryCounters.PageFaultCount).ToString("N0");
 
-            labelIOReads.Text = item.Process.IoCounters.ReadOperationCount.ToString("N0");
+            labelIOReads.Text = ((ulong)item.Process.IoCounters.ReadOperationCount).ToString("N0");
             labelIOReadBytes.Text = Utils.FormatSize(item.Process.IoCounters.ReadTransferCount);
-            labelIOWrites.Text = item.Process.IoCounters.WriteOperationCount.ToString("N0");
+            labelIOWrites.Text = ((ulong)item.Process.IoCounters.WriteOperationCount).ToString("N0");
             labelIOWriteBytes.Text = Utils.FormatSize(item.Process.IoCounters.WriteTransferCount);
-            labelIOOther.Text = item.Process.IoCounters.OtherOperationCount.ToString("N0");
+            labelIOOther.Text = ((ulong)item.Process.IoCounters.OtherOperationCount).ToString("N0");
             labelIOOtherBytes.Text = Utils.FormatSize(item.Process.IoCounters.OtherTransferCount);
 
             labelOtherHandles.Text = ((ulong)item.Process.HandleCount).ToString("N0");
-            
+
             if (_pid > 0)
             {
                 try
                 {
-                    labelOtherGDIHandles.Text = item.ProcessQueryHandle.GetGuiResources(false).ToString("N0");
-                    labelOtherUSERHandles.Text = item.ProcessQueryHandle.GetGuiResources(true).ToString("N0");
-
-                    if (OSVersion.HasCycleTime)
-                        labelCPUCycles.Text = item.ProcessQueryHandle.GetCycleTime().ToString("N0");
-                    else
-                        labelCPUCycles.Text = "N/A";
-
-                    if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                     {
-                        labelMemoryPP.Text = item.ProcessQueryHandle.PagePriority.ToString();
-                        labelIOPriority.Text = item.ProcessQueryHandle.IoPriority.ToString();
+                        labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
+                        labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
+
+                        if (OSVersion.HasCycleTime)
+                            labelCPUCycles.Text = phandle.GetCycleTime().ToString("N0");
+                        else
+                            labelCPUCycles.Text = "N/A";
+
+                        if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                        {
+                            labelMemoryPP.Text = phandle.GetPagePriority().ToString();
+                            labelIOPriority.Text = phandle.GetIoPriority().ToString();
+                        }
                     }
                 }
                 catch

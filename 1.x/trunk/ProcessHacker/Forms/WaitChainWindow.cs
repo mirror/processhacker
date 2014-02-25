@@ -1,22 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
     public partial class WaitChainWindow : Form
     {
-        private readonly int processPid;
-        private readonly string processName;
+        private int processPid;
+        private string processName;
 
         public WaitChainWindow(string procName, int procPid)
         {
             InitializeComponent();
-
+            this.SetPhParent();
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -113,7 +119,7 @@ namespace ProcessHacker
                 {
                     sb.Append(string.Format(" {0} Status: {1}", node.ObjectType, node.ObjectStatus));
 
-                    String name = node.ObjectName;
+                    String name = node.ObjectName();
                     if (!String.IsNullOrEmpty(name))
                     {
                         sb.Append(string.Format(" Name: {0}", name));
@@ -132,12 +138,13 @@ namespace ProcessHacker
         {
             try
             {
-                Program.GetProcessWindow(Program.ProcessProvider.Dictionary[processPid], f =>
-                {
-                    Settings.Instance.ProcessWindowSelectedTab = "tabThreads";
-                    f.Show();
-                    f.Activate();
-                });
+                ProcessWindow pForm = Program.GetProcessWindow(Program.ProcessProvider.Dictionary[processPid],
+                    new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                    {
+                        Settings.Instance.ProcessWindowSelectedTab = "tabThreads";
+                        f.Show();
+                        f.Activate();
+                    }));
             }
             catch (Exception ex)
             {
@@ -149,7 +156,7 @@ namespace ProcessHacker
     /// <summary>
     /// Wraps all the native Wait Chain Traversal code.
     /// </summary>
-    public static class WaitChainNativeMethods
+    public static partial class WaitChainNativeMethods
     {
         // Keep the module handle around for the life of the application as the WCT code has pointers into it.
         private static SafeModuleHandle oleModule;
@@ -213,7 +220,7 @@ namespace ProcessHacker
 
             // The name union.
             [FieldOffset(0x8)]
-            public fixed ushort RealObjectName[WCT_OBJNAME_LENGTH];
+            private fixed ushort RealObjectName[WCT_OBJNAME_LENGTH];
             [FieldOffset(0x108)]
             public int TimeOutLowPart;
             [FieldOffset(0x10C)]
@@ -233,14 +240,11 @@ namespace ProcessHacker
 
             //TODO: fix this... fixes old VS05 bug thats now non-existent
             //Does the work to get the ObjectName field.
-            public string ObjectName
+            public String ObjectName()
             {
-                get
+                fixed (WAITCHAIN_NODE_INFO* p = &this)
                 {
-                    fixed (WAITCHAIN_NODE_INFO* p = &this)
-                    {
-                        return (p->RealObjectName[0] != '\0') ? new string((char*)p->RealObjectName) : string.Empty;
-                    }
+                    return (p->RealObjectName[0] != '\0') ? new string((char*)p->RealObjectName) : string.Empty;
                 }
             }
         }
@@ -337,9 +341,9 @@ namespace ProcessHacker
 
     public sealed class WaitData
     {
-        private readonly WaitChainNativeMethods.WAITCHAIN_NODE_INFO[] data;
-        private readonly bool isDeadlock;
-        private readonly int nodeCount;
+        private WaitChainNativeMethods.WAITCHAIN_NODE_INFO[] data;
+        private bool isDeadlock;
+        private int nodeCount;
 
         public WaitData(WaitChainNativeMethods.WAITCHAIN_NODE_INFO[] data, int nodeCount, bool isDeadlock)
         {
@@ -350,23 +354,32 @@ namespace ProcessHacker
 
         public WaitChainNativeMethods.WAITCHAIN_NODE_INFO[] Nodes
         {
-            get { return (data); }
+            get
+            {
+                return (data);
+            }
         }
 
         public int NodeCount
         {
-            get { return (nodeCount); }
+            get
+            {
+                return (nodeCount);
+            }
         }
 
         public bool IsDeadlock
         {
-            get { return (isDeadlock); }
+            get
+            {
+                return (isDeadlock);
+            }
         }
     }
 
     public sealed class WaitChainTraversal : IDisposable
     {
-        private readonly SafeWaitChainHandle waitChainHandle;
+        private SafeWaitChainHandle waitChainHandle;
 
         public WaitChainTraversal()
         {
@@ -376,14 +389,14 @@ namespace ProcessHacker
         public WaitData GetThreadWaitChain(int threadId)
         {
             WaitChainNativeMethods.WAITCHAIN_NODE_INFO[] data = new WaitChainNativeMethods.WAITCHAIN_NODE_INFO[WaitChainNativeMethods.WCT_MAX_NODE_COUNT];
-            int isDeadlock;
+            int isDeadlock = 0;
             int nodeCount = WaitChainNativeMethods.WCT_MAX_NODE_COUNT;
 
             WaitData retData = null;
 
             if (WaitChainNativeMethods.GetThreadWaitChain(waitChainHandle, threadId, ref nodeCount, data, out isDeadlock))
             {
-                retData = new WaitData(data, nodeCount, isDeadlock == 1);
+                retData = new WaitData(data, (int)nodeCount, isDeadlock == 1);
             }
 
             return (retData);

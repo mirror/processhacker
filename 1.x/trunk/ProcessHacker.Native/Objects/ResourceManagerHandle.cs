@@ -39,26 +39,34 @@ namespace ProcessHacker.Native.Objects
             string description
             )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
-            UnicodeString descriptionStr = new UnicodeString(description);
 
             try
             {
-                Win32.NtCreateResourceManager(
-                    out handle,
-                    access,
-                    tmHandle,
-                    ref guid,
-                    ref oa,
-                    createOptions,
-                    ref descriptionStr
-                    ).ThrowIf();
+                UnicodeString descriptionStr = new UnicodeString(description);
+
+                try
+                {
+                    if ((status = Win32.NtCreateResourceManager(
+                        out handle,
+                        access,
+                        tmHandle,
+                        ref guid,
+                        ref oa,
+                        createOptions,
+                        ref descriptionStr
+                        )) >= NtStatus.Error)
+                        Win32.Throw(status);
+                }
+                finally
+                {
+                    descriptionStr.Dispose();
+                }
             }
             finally
             {
-                descriptionStr.Dispose();
-
                 oa.Dispose();
             }
 
@@ -83,18 +91,20 @@ namespace ProcessHacker.Native.Objects
             ResourceManagerAccess access
             )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenResourceManager(
+                if ((status = Win32.NtOpenResourceManager(
                     out handle,
                     access,
                     tmHandle,
                     ref guid,
                     ref oa
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -109,7 +119,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
             int retLength;
 
-            MemoryAlloc data = new MemoryAlloc(0x1000);
+            var data = new MemoryAlloc(0x1000);
 
             status = Win32.NtQueryInformationResourceManager(
                 this,
@@ -133,7 +143,7 @@ namespace ProcessHacker.Native.Objects
                     );
             }
 
-            if (status.IsError())
+            if (status >= NtStatus.Error)
             {
                 data.Dispose();
                 Win32.Throw(status);
@@ -142,36 +152,33 @@ namespace ProcessHacker.Native.Objects
             return data;
         }
 
-        public string Description
+        public string GetDescription()
         {
-            get
+            using (var data = this.GetBasicInformation())
             {
-                using (MemoryAlloc data = this.GetBasicInformation())
-                {
-                    ResourceManagerBasicInformation basicInfo = data.ReadStruct<ResourceManagerBasicInformation>();
+                var basicInfo = data.ReadStruct<ResourceManagerBasicInformation>();
 
-                    return data.ReadUnicodeString(
-                        ResourceManagerBasicInformation.DescriptionOffset,
-                        basicInfo.DescriptionLength / 2
-                        );
-                }
+                return data.ReadUnicodeString(
+                    ResourceManagerBasicInformation.DescriptionOffset,
+                    basicInfo.DescriptionLength / 2
+                    );
             }
         }
 
-        public Guid Guid
+        public Guid GetGuid()
         {
-            get
+            using (var data = this.GetBasicInformation())
             {
-                using (MemoryAlloc data = this.GetBasicInformation())
-                {
-                    return data.ReadStruct<ResourceManagerBasicInformation>().ResourceManagerId;
-                }
+                return data.ReadStruct<ResourceManagerBasicInformation>().ResourceManagerId;
             }
         }
 
         public void Recover()
         {
-            Win32.NtRecoverResourceManager(this).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.NtRecoverResourceManager(this)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
     }
 }

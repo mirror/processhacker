@@ -21,15 +21,17 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using ProcessHacker.Common;
 
 namespace ProcessHacker.Native.Mfs
 {
     public class MemoryDataWriteStream : Stream
     {
-        private readonly MemoryObject _obj;
-        private readonly byte[] _buffer;
+        private MemoryObject _obj;
+        private byte[] _buffer;
         private int _bufferLength;
 
         internal MemoryDataWriteStream(MemoryObject obj, int bufferSize)

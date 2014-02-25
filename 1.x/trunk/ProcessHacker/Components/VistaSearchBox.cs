@@ -9,7 +9,7 @@ namespace ProcessHacker
 {
 	[DefaultEvent("TextChanged")]
 	[DefaultProperty("Text")]
-	public sealed partial class VistaSearchBox : Control
+	public partial class VistaSearchBox : Control
 	{
         private const string DefaultInactiveText = "Search";
         private string _inactiveText;
@@ -29,9 +29,9 @@ namespace ProcessHacker
             [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
             get
             {
-                const int WS_BORDER = 0x00800000;
-                const int WS_EX_CLIENTEDGE = 0x00000200;
-                const int WS_EX_CONTROLPARENT = 0x00010000;
+                int WS_BORDER = 0x00800000;
+                int WS_EX_CLIENTEDGE = 0x00000200;
+                int WS_EX_CONTROLPARENT = 0x00010000;
 
                 CreateParams createParams = base.CreateParams;
                 createParams.ExStyle |= WS_EX_CONTROLPARENT;
@@ -202,7 +202,7 @@ namespace ProcessHacker
 			set { searchText.Text = value; }
 		}
 
-	    private bool TextEntered
+		protected bool TextEntered
 		{
 			get { return !String.IsNullOrEmpty(searchText.Text); }
 		}
@@ -283,7 +283,7 @@ namespace ProcessHacker
 
 		protected override void OnTextChanged(EventArgs e)
 		{
-			searchImage.Image = TextEntered ? Properties.Resources.active_search : Properties.Resources.inactive_search;
+			searchImage.Image = TextEntered ? ProcessHacker.Properties.Resources.active_search : ProcessHacker.Properties.Resources.inactive_search;
 
 			base.OnTextChanged(e);
 		}
@@ -293,7 +293,7 @@ namespace ProcessHacker
         [DllImport("user32.dll", EntryPoint = "SetCapture")]
         public static extern IntPtr StartMouseCapture(IntPtr hWnd);
 
-		private void searchImage_MouseMove(object sender, MouseEventArgs e)
+		private void searchImage_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
 			if (e.X < 0 || e.X > searchImage.Width || e.Y < 0 || e.Y > searchImage.Height)
 			{
@@ -308,7 +308,7 @@ namespace ProcessHacker
 			}
 		}
 
-		private void searchImage_Click(object sender, EventArgs e)
+		private void searchImage_Click(object sender, System.EventArgs e)
 		{
 			if (TextEntered)
 			{
@@ -322,12 +322,12 @@ namespace ProcessHacker
 			OnTextChanged(e);
 		}
 
-		private void searchText_LostFocus(object sender, EventArgs e)
+		private void searchText_LostFocus(object sender, System.EventArgs e)
 		{
 			OnLostFocus(e);
 		}
 
-		private void searchText_GotFocus(object sender, EventArgs e)
+		private void searchText_GotFocus(object sender, System.EventArgs e)
 		{
 			OnGotFocus(e);
 		}

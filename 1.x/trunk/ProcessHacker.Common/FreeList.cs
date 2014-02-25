@@ -20,6 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Threading;
 
 namespace ProcessHacker.Common
@@ -27,10 +28,11 @@ namespace ProcessHacker.Common
     /// <summary>
     /// Manages a list of free objects that can be re-used.
     /// </summary>
-    public class FreeList<T> where T : IResettable, new()
+    public class FreeList<T>
+        where T : IResettable, new()
     {
-        private readonly T[] _list;
-        private int _freeIndex;
+        private T[] _list;
+        private int _freeIndex = 0;
 
         public FreeList(int maximumCount)
         {

@@ -1,4 +1,7 @@
-﻿using ProcessHacker.Native.Api;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.SsLogging
 {
@@ -8,13 +11,12 @@ namespace ProcessHacker.Native.SsLogging
         {
             KphSsUnicodeString unicodeStringInfo = data.ReadStruct<KphSsUnicodeString>();
 
-            this.Original = new UnicodeString
+            this.Original = new UnicodeString()
             {
                 Length = unicodeStringInfo.Length,
                 MaximumLength = unicodeStringInfo.MaximumLength,
                 Buffer = unicodeStringInfo.Pointer
             };
-
             this.String = data.ReadUnicodeString(
                 KphSsUnicodeString.BufferOffset,
                 unicodeStringInfo.Length / 2

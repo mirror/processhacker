@@ -21,11 +21,8 @@
  */
 
 #define DEFER_EVENT_CREATION
-
-#if DEBUG
-#define ENABLE_STATISTICS
-#define RIGOROUS_CHECKS
-#endif
+//#define ENABLE_STATISTICS
+//#define RIGOROUS_CHECKS
 
 using System;
 using System.Threading;
@@ -201,24 +198,21 @@ namespace ProcessHacker.Common.Threading
         private IntPtr _exclusiveWakeEvent;
 
 #if ENABLE_STATISTICS
-        private int _acqExclCount;
-        private int _acqShrdCount;
-        private int _acqExclContCount;
-        private int _acqShrdContCount;
-        private int _acqExclSlpCount;
-        private int _acqShrdSlpCount;
-        private int _peakExclWtrsCount;
-        private int _peakShrdWtrsCount;
+        private int _acqExclCount = 0;
+        private int _acqShrdCount = 0;
+        private int _acqExclContCount = 0;
+        private int _acqShrdContCount = 0;
+        private int _acqExclSlpCount = 0;
+        private int _acqShrdSlpCount = 0;
+        private int _peakExclWtrsCount = 0;
+        private int _peakShrdWtrsCount = 0;
 #endif
 
         /// <summary>
         /// Creates a FastResourceLock.
         /// </summary>
         public FastResourceLock()
-        {     
-#if ENABLE_STATISTICS
-            this._acqExclContCount = 0;
-#endif
+        {
             _value = 0;
 
 #if !DEFER_EVENT_CREATION
@@ -353,8 +347,8 @@ namespace ProcessHacker.Common.Threading
 
                         Interlocked2.Set(
                             ref _peakExclWtrsCount,
-                            p => p < exclWtrsCount,
-                            p => exclWtrsCount
+                            (p) => p < exclWtrsCount,
+                            (p) => exclWtrsCount
                             );
 
 #endif
@@ -463,8 +457,8 @@ namespace ProcessHacker.Common.Threading
 
                         Interlocked2.Set(
                             ref _peakShrdWtrsCount,
-                            p => p < shrdWtrsCount,
-                            p => shrdWtrsCount
+                            (p) => p < shrdWtrsCount,
+                            (p) => shrdWtrsCount
                             );
 
 #endif
@@ -534,10 +528,12 @@ namespace ProcessHacker.Common.Threading
         /// <param name="handle">A reference to the event handle.</param>
         private void EnsureEventCreated(ref IntPtr handle)
         {
+            IntPtr eventHandle;
+
             if (Thread.VolatileRead(ref handle) != IntPtr.Zero)
                 return;
 
-            IntPtr eventHandle = NativeMethods.CreateSemaphore(IntPtr.Zero, 0, int.MaxValue, null);
+            eventHandle = NativeMethods.CreateSemaphore(IntPtr.Zero, 0, int.MaxValue, null);
 
             if (Interlocked.CompareExchange(ref handle, eventHandle, IntPtr.Zero) != IntPtr.Zero)
                 NativeMethods.CloseHandle(eventHandle);
@@ -551,7 +547,7 @@ namespace ProcessHacker.Common.Threading
         public Statistics GetStatistics()
         {
 #if ENABLE_STATISTICS
-            return new Statistics
+            return new Statistics()
             {
                 AcqExcl = _acqExclCount,
                 AcqShrd = _acqShrdCount,
@@ -601,7 +597,9 @@ namespace ProcessHacker.Common.Threading
                 // Case 2: if we have shared waiters, release all of them.
                 else
                 {
-                    int sharedWaiters = (value >> LockSharedWaitersShift) & LockSharedWaitersMask;
+                    int sharedWaiters;
+
+                    sharedWaiters = (value >> LockSharedWaitersShift) & LockSharedWaitersMask;
 
                     if (Interlocked.CompareExchange(
                         ref _value,
@@ -824,17 +822,18 @@ namespace ProcessHacker.Common.Threading
                     value
                     ) == value;
             }
-
-            if (((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0)
+            else if (((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0)
             {
                 return Interlocked.CompareExchange(
-                    ref this._value,
+                    ref _value,
                     value + LockSharedOwnersIncrement,
                     value
                     ) == value;
             }
-
-            return false;
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>

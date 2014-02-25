@@ -21,6 +21,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -40,17 +42,19 @@ namespace ProcessHacker.Native.Objects
 
         public static DebugObjectHandle Create(DebugObjectAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, DebugObjectFlags flags)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtCreateDebugObject(
+                if ((status = Win32.NtCreateDebugObject(
                     out handle,
                     access,
                     ref oa,
                     flags
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -80,26 +84,31 @@ namespace ProcessHacker.Native.Objects
 
         public void Continue(ClientId cid, NtStatus continueStatus)
         {
-            Win32.NtDebugContinue(
+            NtStatus status;
+
+            if ((status = Win32.NtDebugContinue(
                 this,
                 ref cid,
                 continueStatus
-                ).ThrowIf();
+                )) > NtStatus.Error)
+                Win32.Throw(status);
         }
 
         public void SetFlags(DebugObjectFlags flags)
         {
             unsafe
             {
+                NtStatus status;
                 int retLength;
 
-                Win32.NtSetInformationDebugObject(
+                if ((status = Win32.NtSetInformationDebugObject(
                     this,
                     DebugObjectInformationClass.DebugObjectFlags,
                     new IntPtr(&flags),
                     sizeof(DebugObjectFlags),
                     out retLength
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
         }
 
@@ -111,12 +120,13 @@ namespace ProcessHacker.Native.Objects
             //NtStatus status;
             //long realTimeout = timeoutRelative ? -timeout : timeout;
 
-            //Win32.NtWaitForDebugEvent(
+            //if ((status = Win32.NtWaitForDebugEvent(
             //    this,
             //    alertable,
             //    ref realTimeout,
             //    IntPtr.Zero
-            //    ).ThrowIf();
+            //    )) >= NtStatus.Error)
+            //    Win32.ThrowLastError(status);
 
             //return IntPtr.Zero;
         }

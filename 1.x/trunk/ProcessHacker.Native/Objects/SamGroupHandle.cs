@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -33,19 +34,22 @@ namespace ProcessHacker.Native.Objects
     {
         public static SamGroupHandle Create(SamGroupAccess access, SamDomainHandle domainHandle, string name, out int groupId)
         {
+            NtStatus status;
+            UnicodeString nameStr;
             IntPtr handle;
 
-            UnicodeString nameStr = new UnicodeString(name);
+            nameStr = new UnicodeString(name);
 
             try
             {
-                Win32.SamCreateGroupInDomain(
+                if ((status = Win32.SamCreateGroupInDomain(
                     domainHandle,
                     ref nameStr,
                     access,
                     out handle,
                     out groupId
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -62,7 +66,7 @@ namespace ProcessHacker.Native.Objects
 
         public static SamGroupHandle Open(Sid sid, SamGroupAccess access)
         {
-            using (SamDomainHandle dhandle = new SamDomainHandle(sid.DomainName, SamDomainAccess.Lookup))
+            using (var dhandle = new SamDomainHandle(sid.DomainName, SamDomainAccess.Lookup))
             {
                 return new SamGroupHandle(dhandle, dhandle.LookupName(sid.Name), access);
             }
@@ -80,89 +84,95 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the group.</param>
         public SamGroupHandle(SamDomainHandle domainHandle, int groupId, SamGroupAccess access)
         {
+            NtStatus status;
             IntPtr handle;
 
-            Win32.SamOpenGroup(
+            if ((status = Win32.SamOpenGroup(
                 domainHandle,
                 access,
                 groupId,
                 out handle
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             this.Handle = handle;
         }
 
         public void AddMember(int memberId)
         {
-            Win32.SamAddMemberToGroup(this, memberId, 0).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.SamAddMemberToGroup(this, memberId, 0)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         public void Delete()
         {
-            Win32.SamDeleteGroup(this).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.SamDeleteGroup(this)) >= NtStatus.Error)
+                Win32.Throw(status);
         } 
 
         private SamMemoryAlloc GetInformation(GroupInformationClass infoClass)
         {
+            NtStatus status;
             IntPtr buffer;
 
-            Win32.SamQueryInformationGroup(
+            if ((status = Win32.SamQueryInformationGroup(
                 this,
                 infoClass,
                 out buffer
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return new SamMemoryAlloc(buffer);
         }
 
-        public string AdminComment
+        public string GetAdminComment()
         {
-            get
+            using (var data = this.GetInformation(GroupInformationClass.GroupAdminCommentInformation))
             {
-                using (SamMemoryAlloc data = this.GetInformation(GroupInformationClass.GroupAdminCommentInformation))
-                {
-                    return data.ReadStruct<GroupAdmInformation>().AdminComment.Text;
-                }
+                return data.ReadStruct<GroupAdmInformation>().AdminComment.Read();
             }
         }
 
-        public int[] Members
+        public int[] GetMembers()
         {
-            get
+            NtStatus status;
+            IntPtr memberIds;
+            IntPtr attributes;
+            int count;
+
+            if ((status = Win32.SamGetMembersInGroup(
+                this,
+                out memberIds,
+                out attributes,
+                out count
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            using (var memberIdsAlloc = new SamMemoryAlloc(memberIds))
+            using (var attributesAlloc = new SamMemoryAlloc(attributes))
             {
-                IntPtr memberIds;
-                IntPtr attributes;
-                int count;
-
-                Win32.SamGetMembersInGroup(
-                    this,
-                    out memberIds,
-                    out attributes,
-                    out count
-                    ).ThrowIf();
-
-                using (SamMemoryAlloc memberIdsAlloc = new SamMemoryAlloc(memberIds))
-                using (new SamMemoryAlloc(attributes))
-                {
-                    return memberIdsAlloc.ReadInt32Array(0, count);
-                }
+                return memberIdsAlloc.ReadInt32Array(0, count);
             }
         }
 
-        public string Name
+        public string GetName()
         {
-            get
+            using (var data = this.GetInformation(GroupInformationClass.GroupNameInformation))
             {
-                using (SamMemoryAlloc data = this.GetInformation(GroupInformationClass.GroupNameInformation))
-                {
-                    return data.ReadStruct<GroupNameInformation>().Name.Text;
-                }
+                return data.ReadStruct<GroupNameInformation>().Name.Read();
             }
         }
 
         public void RemoveMember(int memberId)
         {
-            Win32.SamRemoveMemberFromGroup(this, memberId).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.SamRemoveMemberFromGroup(this, memberId)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
     }
 }

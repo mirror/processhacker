@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace ProcessHacker.Common
 {
@@ -108,8 +110,8 @@ namespace ProcessHacker.Common
 
             fixed (char* buffer = this.Buffer)
             {
-                foreach (char t in str)
-                    buffer[this.Length++] = t;
+                for (int i = 0; i < str.Length; i++)
+                    buffer[this.Length++] = str[i];
 
                 buffer[this.Length] = '\0';
             }
@@ -119,11 +121,14 @@ namespace ProcessHacker.Common
         {
             fixed (char* buffer = this.Buffer)
             {
-                int result = LibC.WMemCmp(buffer, str.Buffer, this.Length < str.Length ? this.Length : str.Length);
+                int result;
+
+                result = LibC.WMemCmp(buffer, str.Buffer, this.Length < str.Length ? this.Length : str.Length);
 
                 if (result == 0)
                     return this.Length - str.Length;
-                return result;
+                else
+                    return result;
             }
         }
 
@@ -140,9 +145,10 @@ namespace ProcessHacker.Common
         {
             if (other is String255)
                 return this.Equals((String255)other);
-            if (other is string)
+            else if (other is string)
                 return this.Equals((string)other);
-            return false;
+            else
+                return false;
         }
 
         public bool Equals(String255 other)
@@ -189,8 +195,8 @@ namespace ProcessHacker.Common
 
                 if (ptr != null)
                     return (int)(ptr - buffer);
-                
-                return -1;
+                else
+                    return -1;
             }
         }
 
@@ -198,9 +204,12 @@ namespace ProcessHacker.Common
         {
             int hashCode = 0x15051505;
 
-            for (int i = 0; i < this.Length; i += 4)
+            fixed (char* buffer = this.Buffer)
             {
-                hashCode += hashCode ^ (hashCode << ((i % 4) * 8));
+                for (int i = 0; i < this.Length; i += 4)
+                {
+                    hashCode += hashCode ^ (hashCode << ((i % 4) * 8));
+                }
             }
 
             return hashCode;

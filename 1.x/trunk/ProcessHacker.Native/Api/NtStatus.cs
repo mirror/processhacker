@@ -20,7 +20,6 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 namespace ProcessHacker.Native.Api
 {
     /// <summary>
@@ -390,7 +389,7 @@ namespace ProcessHacker.Native.Api
             {
                 // Fix those messages which are formatted like:
                 // {Asdf}\r\nAsdf asdf asdf...
-                if (message.StartsWith("{", StringComparison.OrdinalIgnoreCase))
+                if (message.StartsWith("{"))
                 {
                     string[] split = message.Split('\n');
 

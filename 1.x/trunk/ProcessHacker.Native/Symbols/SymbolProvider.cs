@@ -38,7 +38,7 @@ namespace ProcessHacker.Native.Symbols
     {
         private sealed class SymbolHandle : BaseObject
         {
-            private readonly ProcessHandle _processHandle;
+            private ProcessHandle _processHandle;
             private IntPtr _handle;
 
             public static implicit operator IntPtr(SymbolHandle symbolHandle)
@@ -99,7 +99,7 @@ namespace ProcessHacker.Native.Symbols
         }
 
         private const int _maxNameLen = 0x100;
-        private static readonly IdGenerator _idGen = new IdGenerator();
+        private static IdGenerator _idGen = new IdGenerator();
 
         public static SymbolOptions Options
         {
@@ -116,8 +116,8 @@ namespace ProcessHacker.Native.Symbols
             }
         }
 
-        private readonly SymbolHandle _handle;
-        private readonly List<KeyValuePair<ulong, string>> _modules = new List<KeyValuePair<ulong, string>>();
+        private SymbolHandle _handle;
+        private List<KeyValuePair<ulong, string>> _modules = new List<KeyValuePair<ulong, string>>();
 
         public SymbolProvider()
         {
@@ -142,9 +142,11 @@ namespace ProcessHacker.Native.Symbols
                 {
                     return true;
                 }
-                
-                Win32.DbgHelpLock.Release();
-                return false;
+                else
+                {
+                    Win32.DbgHelpLock.Release();
+                    return false;
+                }
             }
         }
 
@@ -164,7 +166,7 @@ namespace ProcessHacker.Native.Symbols
                 using (Win32.DbgHelpLock.AcquireContext())
                 {
                     if (!Win32.SymGetSearchPath(_handle, data, data.Capacity))
-                        return string.Empty;
+                        return "";
                 }
 
                 return data.ToString();
@@ -195,9 +197,10 @@ namespace ProcessHacker.Native.Symbols
                     _handle,
                     moduleBase,
                     mask,
-                    (symbolInfo, symbolSize, userContext) => enumDelegate(new SymbolInformation(symbolInfo, symbolSize)), 
-                    IntPtr.Zero)
-                    )
+                    (symbolInfo, symbolSize, userContext) =>
+                        enumDelegate(new SymbolInformation(symbolInfo, symbolSize)),
+                    IntPtr.Zero
+                    ))
                     Win32.Throw();
             }
         }
@@ -209,10 +212,10 @@ namespace ProcessHacker.Native.Symbols
 
             this.GetLineFromAddress(address, out fileName, out lineNumber);
 
-            if (!string.IsNullOrEmpty(fileName))
-                return fileName + ": line " + lineNumber;
-            
-            return null;
+            if (fileName != null)
+                return fileName + ": line " + lineNumber.ToString();
+            else
+                return null;
         }
 
         public void GetLineFromAddress(ulong address, out string fileName, out int lineNumber)
@@ -334,15 +337,14 @@ namespace ProcessHacker.Native.Symbols
             }
 
             // Allocate some memory for the symbol information.
-            using (MemoryAlloc data = new MemoryAlloc(SymbolInfo.SizeOf + _maxNameLen))
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
             {
-                SymbolInfo info = new SymbolInfo
-                {
-                    SizeOfStruct = SymbolInfo.SizeOf, 
-                    MaxNameLen = _maxNameLen - 1
-                };
+                var info = new SymbolInfo();
 
-                data.WriteStruct(info);
+                info.SizeOfStruct = Marshal.SizeOf(info);
+                info.MaxNameLen = _maxNameLen - 1;
+
+                Marshal.StructureToPtr(info, data, false);
 
                 // Hack for drivers, since we don't get their module sizes. 
                 // Preloading modules will fix this.
@@ -384,7 +386,7 @@ namespace ProcessHacker.Native.Symbols
                 }
 
                 // If we don't have a module name, return an address.
-                if (string.IsNullOrEmpty(modFileName))
+                if (modFileName == null)
                 {
                     level = SymbolResolveLevel.Address;
                     flags = 0;
@@ -418,10 +420,12 @@ namespace ProcessHacker.Native.Symbols
                     {
                         return fi.Name + "+0x" + (address - modBase).ToString("x");
                     }
+                    else
+                    {
+                        var s = modFileName.Split('\\');
 
-                    var s = modFileName.Split('\\');
-
-                    return s[s.Length - 1] + "+0x" + (address - modBase).ToString("x");
+                        return s[s.Length - 1] + "+0x" + (address - modBase).ToString("x");
+                    }
                 }
 
                 // If we have everything, return the full symbol name: module!symbol+offset.
@@ -433,22 +437,21 @@ namespace ProcessHacker.Native.Symbols
 
                 if (displacement == 0)
                     return fi.Name + "!" + name;
-
-                return fi.Name + "!" + name + "+0x" + displacement.ToString("x");
+                else
+                    return fi.Name + "!" + name + "+0x" + displacement.ToString("x");
             }
         }
 
         public SymbolInformation GetSymbolFromName(string symbolName)
         {
-            using (MemoryAlloc data = new MemoryAlloc(SymbolInfo.SizeOf + _maxNameLen))
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
             {
-                SymbolInfo info = new SymbolInfo
-                {
-                    SizeOfStruct = SymbolInfo.SizeOf, 
-                    MaxNameLen = _maxNameLen - 1
-                };
+                var info = new SymbolInfo();
 
-                data.WriteStruct(info);
+                info.SizeOfStruct = Marshal.SizeOf(info);
+                info.MaxNameLen = _maxNameLen - 1;
+
+                Marshal.StructureToPtr(info, data, false);
 
                 using (Win32.DbgHelpLock.AcquireContext())
                 {

@@ -1,6 +1,4 @@
-﻿using ProcessHacker.Components;
-
-namespace ProcessHacker
+﻿namespace ProcessHacker
 {
     partial class TerminatorWindow
     {
@@ -33,9 +31,9 @@ namespace ProcessHacker
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TerminatorWindow));
             this.labelProgress = new System.Windows.Forms.Label();
-            this.listTests = new ProcessHacker.Components.ExtendedListView();
-            this.columnID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listTests = new System.Windows.Forms.ListView();
+            this.columnID = new System.Windows.Forms.ColumnHeader();
+            this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.buttonRun = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -45,7 +43,7 @@ namespace ProcessHacker
             this.labelProgress.AutoSize = true;
             this.labelProgress.Location = new System.Drawing.Point(12, 9);
             this.labelProgress.Name = "labelProgress";
-            this.labelProgress.Size = new System.Drawing.Size(55, 13);
+            this.labelProgress.Size = new System.Drawing.Size(53, 13);
             this.labelProgress.TabIndex = 0;
             this.labelProgress.Text = "Message.";
             // 
@@ -54,7 +52,6 @@ namespace ProcessHacker
             this.listTests.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnID,
             this.columnDescription});
-            this.listTests.DoubleClickChecks = true;
             this.listTests.FullRowSelect = true;
             this.listTests.Location = new System.Drawing.Point(12, 38);
             this.listTests.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -100,7 +97,6 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(466, 437);
             this.Controls.Add(this.buttonRun);
             this.Controls.Add(this.listTests);
@@ -122,7 +118,7 @@ namespace ProcessHacker
         #endregion
 
         private System.Windows.Forms.Label labelProgress;
-        private ExtendedListView listTests;
+        private System.Windows.Forms.ListView listTests;
         private System.Windows.Forms.Button buttonRun;
         private System.Windows.Forms.ColumnHeader columnDescription;
         private System.Windows.Forms.ImageList imageList;

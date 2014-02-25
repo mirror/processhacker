@@ -44,7 +44,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(84, 13);
+            this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Current Count:";
             // 
@@ -53,7 +53,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 26);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(71, 13);
+            this.label3.Size = new System.Drawing.Size(65, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "Abandoned:";
             // 
@@ -71,7 +71,7 @@
             this.labelAbandoned.AutoSize = true;
             this.labelAbandoned.Location = new System.Drawing.Point(102, 26);
             this.labelAbandoned.Name = "labelAbandoned";
-            this.labelAbandoned.Size = new System.Drawing.Size(33, 13);
+            this.labelAbandoned.Size = new System.Drawing.Size(32, 13);
             this.labelAbandoned.TabIndex = 0;
             this.labelAbandoned.Text = "False";
             // 
@@ -80,14 +80,14 @@
             this.labelLabelOwner.AutoSize = true;
             this.labelLabelOwner.Location = new System.Drawing.Point(6, 49);
             this.labelLabelOwner.Name = "labelLabelOwner";
-            this.labelLabelOwner.Size = new System.Drawing.Size(45, 13);
+            this.labelLabelOwner.Size = new System.Drawing.Size(41, 13);
             this.labelLabelOwner.TabIndex = 1;
             this.labelLabelOwner.Text = "Owner:";
             // 
             // labelOwner
             // 
-            this.labelOwner.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelOwner.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.labelOwner.AutoEllipsis = true;
             this.labelOwner.Location = new System.Drawing.Point(102, 49);
             this.labelOwner.Name = "labelOwner";
@@ -99,7 +99,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.labelOwner);
             this.Controls.Add(this.labelLabelOwner);
             this.Controls.Add(this.label3);

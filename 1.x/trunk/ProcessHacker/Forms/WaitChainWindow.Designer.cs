@@ -39,25 +39,25 @@
             // 
             // textDescription
             // 
-            this.textDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textDescription.BackColor = System.Drawing.SystemColors.Control;
             this.textDescription.Location = new System.Drawing.Point(12, 12);
             this.textDescription.Name = "textDescription";
-            this.textDescription.Size = new System.Drawing.Size(361, 22);
+            this.textDescription.Size = new System.Drawing.Size(361, 20);
             this.textDescription.TabIndex = 1;
             // 
             // labelIntro
             // 
-            this.labelIntro.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelIntro.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.labelIntro.Location = new System.Drawing.Point(12, 253);
             this.labelIntro.Name = "labelIntro";
             this.labelIntro.Size = new System.Drawing.Size(390, 41);
             this.labelIntro.TabIndex = 2;
             this.labelIntro.Text = "Analyzing the Wait Chain for a process helps diagnose application hangs and deadl" +
-    "ocks caused by a process using or waiting to use a resource that is being used b" +
-    "y another process.";
+                "ocks caused by a process using or waiting to use a resource that is being used b" +
+                "y another process.";
             this.labelIntro.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // buttonCancel
@@ -90,7 +90,7 @@
             this.moreInfoLink.AutoSize = true;
             this.moreInfoLink.Location = new System.Drawing.Point(9, 304);
             this.moreInfoLink.Name = "moreInfoLink";
-            this.moreInfoLink.Size = new System.Drawing.Size(133, 13);
+            this.moreInfoLink.Size = new System.Drawing.Size(121, 13);
             this.moreInfoLink.TabIndex = 5;
             this.moreInfoLink.TabStop = true;
             this.moreInfoLink.Text = "More about Wait Chains";
@@ -98,8 +98,8 @@
             // 
             // buttonProperties
             // 
-            this.buttonProperties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonProperties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonProperties.Image = global::ProcessHacker.Properties.Resources.application_form_magnify;
             this.buttonProperties.Location = new System.Drawing.Point(379, 9);
             this.buttonProperties.Name = "buttonProperties";
@@ -120,7 +120,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(415, 329);
             this.Controls.Add(this.threadTree);
             this.Controls.Add(this.buttonProperties);

@@ -1,4 +1,8 @@
-﻿namespace ProcessHacker.UI.Actions
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ProcessHacker.UI.Actions
 {
     public enum ElevationLevel
     {

@@ -37,10 +37,10 @@ namespace ProcessHacker
     {
         private delegate bool Matcher(string s1, string s2);
 
-        private readonly int _pid;
+        private int _pid;
         private SearchOptions _so;
         private Thread _searchThread;
-        private readonly int _id;
+        private int _id;
 
         public string Id
         {
@@ -52,6 +52,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
             this.SetTopMost();
+
+            listResults.SetDoubleBuffered(true);
+            listResults.SetTheme("explorer");
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
@@ -80,13 +83,14 @@ namespace ProcessHacker
 
         private void ResultsWindow_Load(object sender, EventArgs e)
         {
-            //Program.UpdateWindowMenu(windowMenuItem, this);
+            Program.UpdateWindowMenu(windowMenuItem, this);
 
             listResults.ContextMenu = listResults.GetCopyMenu(listResults_RetrieveVirtualItem);
 
             this.Size = Settings.Instance.ResultsWindowSize;
 
             ColumnSettings.LoadSettings(Settings.Instance.ResultsListViewColumns, listResults);
+            this.SetPhParent(false);
         }
 
         private void ResultsWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -131,28 +135,27 @@ namespace ProcessHacker
             return EditSearch(type, this.Location, this.Size);
         }
 
-        public DialogResult EditSearch(SearchType type, Point location, Size size)
+        public DialogResult EditSearch(SearchType type, System.Drawing.Point location, System.Drawing.Size size)
         {
             DialogResult dr = DialogResult.Cancel;
 
             _so.Type = type;
 
-            using (SearchWindow sw = new SearchWindow(_pid, _so))
+            SearchWindow sw = new SearchWindow(_pid, _so);
+
+            sw.StartPosition = FormStartPosition.Manual;
+            sw.Location = new System.Drawing.Point(
+                location.X + (size.Width - sw.Width) / 2,
+                location.Y + (size.Height - sw.Height) / 2);
+
+            Rectangle newRect = Utils.FitRectangle(new Rectangle(sw.Location, sw.Size), Screen.GetWorkingArea(sw));
+
+            sw.Location = newRect.Location;
+            sw.Size = newRect.Size;
+
+            if ((dr = sw.ShowDialog()) == DialogResult.OK)
             {
-                sw.StartPosition = FormStartPosition.Manual;
-                sw.Location = new Point(
-                    location.X + (size.Width - sw.Width)/2,
-                    location.Y + (size.Height - sw.Height)/2);
-
-                Rectangle newRect = Utils.FitRectangle(new Rectangle(sw.Location, sw.Size), Screen.GetWorkingArea(sw));
-
-                sw.Location = newRect.Location;
-                sw.Size = newRect.Size;
-
-                if ((dr = sw.ShowDialog()) == DialogResult.OK)
-                {
-                    _so = sw.SearchOptions;
-                }
+                _so = sw.SearchOptions;
             }
 
             return dr;
@@ -172,7 +175,7 @@ namespace ProcessHacker
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                buttonFind.Image = Properties.Resources.cross;
+                buttonFind.Image = global::ProcessHacker.Properties.Resources.cross;
                 toolTip.SetToolTip(buttonFind, "Cancel");
                 buttonEdit.Enabled = false;
                 buttonFilter.Enabled = false;
@@ -184,11 +187,11 @@ namespace ProcessHacker
 
                 // refresh
                 _so.Type = _so.Type;
-                _so.Searcher.SearchFinished += this.Searcher_SearchFinished;
-                _so.Searcher.SearchProgressChanged += this.Searcher_SearchProgressChanged;
-                _so.Searcher.SearchError += this.SearchError;
+                _so.Searcher.SearchFinished += new SearchFinished(Searcher_SearchFinished);
+                _so.Searcher.SearchProgressChanged += new SearchProgressChanged(Searcher_SearchProgressChanged);
+                _so.Searcher.SearchError += new SearchError(SearchError);
 
-                _searchThread = new Thread(this._so.Searcher.Search, Utils.SixteenthStackSize);
+                _searchThread = new Thread(new ThreadStart(_so.Searcher.Search), Utils.SixteenthStackSize);
 
                 _searchThread.Start();
             }
@@ -196,35 +199,38 @@ namespace ProcessHacker
 
         private void SearchError(string message)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            this.Invoke(new MethodInvoker(delegate
             {
                 PhUtils.ShowError("Unable to search memory: " + message);
-                this._searchThread = null;
-                this.Searcher_SearchFinished();
+                _searchThread = null;
+                Searcher_SearchFinished();
             }));
         }
 
         private void Searcher_SearchProgressChanged(string progress)
         {
-            this.BeginInvoke(new MethodInvoker(() => this.labelText.Text = progress));
+            this.BeginInvoke(new MethodInvoker(delegate
+            {
+                labelText.Text = progress;
+            }));
         }
 
         private void Searcher_SearchFinished()
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            this.Invoke(new MethodInvoker(delegate
             {
-                this.listResults.VirtualListSize = this._so.Searcher.Results.Count;
+                listResults.VirtualListSize = _so.Searcher.Results.Count;
 
-                this.labelText.Text = String.Format("{0} results.", this.listResults.Items.Count);
+                labelText.Text = String.Format("{0} results.", listResults.Items.Count);
 
-                this.buttonFind.Image = Properties.Resources.arrow_refresh;
-                this.toolTip.SetToolTip(this.buttonFind, "Search");
+                buttonFind.Image = global::ProcessHacker.Properties.Resources.arrow_refresh;
+                toolTip.SetToolTip(buttonFind, "Search");
                 this.Cursor = Cursors.Default;
-                this.buttonEdit.Enabled = true;
-                this.buttonFilter.Enabled = true;
-                this.buttonIntersect.Enabled = true;
-                this.buttonSave.Enabled = true;
-                this.buttonFind.Enabled = true;
+                buttonEdit.Enabled = true;
+                buttonFilter.Enabled = true;
+                buttonIntersect.Enabled = true;
+                buttonSave.Enabled = true;
+                buttonFind.Enabled = true;
             }));
 
             _searchThread = null;
@@ -247,29 +253,29 @@ namespace ProcessHacker
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
+            string filename = "";
             DialogResult dr = DialogResult.Cancel;
             ResultsWindow rw = this;
 
-            using (SaveFileDialog sfd = new SaveFileDialog())
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.Filter = "Text Document (*.txt)|*.txt|All Files (*.*)|*.*";
+            dr = sfd.ShowDialog();
+            filename = sfd.FileName;
+
+            if (dr == DialogResult.OK)
             {
-                sfd.Filter = "Text Document (*.txt)|*.txt|All Files (*.*)|*.*";
-                dr = sfd.ShowDialog();
-                string filename = sfd.FileName;
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(filename);
 
-                if (dr == DialogResult.OK)
+                foreach (string[] s in _so.Searcher.Results)
                 {
-                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filename))
-                    {
-
-                        foreach (string[] s in _so.Searcher.Results)
-                        {
-                            sw.Write("0x{0:x} ({1}){2}\r\n", int.Parse(s[0].Replace("0x", string.Empty),
-                                System.Globalization.NumberStyles.HexNumber) + int.Parse(s[1].Replace("0x", string.Empty),
-                                System.Globalization.NumberStyles.HexNumber), int.Parse(s[2]),
-                                     s[3] != string.Empty ? (": " + s[3]) : string.Empty);
-                        }
-                    }
+                    sw.Write("0x{0:x} ({1}){2}\r\n", Int32.Parse(s[0].Replace("0x", ""),
+                        System.Globalization.NumberStyles.HexNumber) + Int32.Parse(s[1].Replace("0x", ""),
+                        System.Globalization.NumberStyles.HexNumber), Int32.Parse(s[2]),
+                        s[3] != "" ? (": " + s[3]) : "");
                 }
+
+                sw.Close();
             }
         }
 
@@ -305,32 +311,35 @@ namespace ProcessHacker
                     return;
                 }
 
-                phandle.EnumMemory(info =>
-                {
-                    if (info.BaseAddress.ToInt64() > s_a)
+                phandle.EnumMemory((info) =>
                     {
-                        long selectlength =
-                            (long)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][2]);
-
-                        Program.GetMemoryEditor(_pid, lastInfo.BaseAddress, lastInfo.RegionSize.ToInt64(), f =>
+                        if (info.BaseAddress.ToInt64() > s_a)
                         {
-                            try
-                            {
-                                f.ReadOnly = false;
-                                f.Activate();
-                                f.Select(s_a - lastInfo.BaseAddress.ToInt64(), selectlength);
-                            }
-                            catch
-                            { }
-                        });
+                            long selectlength =
+                                (long)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][2]);
 
-                        return false;
-                    }
+                            MemoryEditor ed = Program.GetMemoryEditor(_pid,
+                                lastInfo.BaseAddress,
+                                lastInfo.RegionSize.ToInt64(),
+                                new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f)
+                                {
+                                    try
+                                    {
+                                        f.ReadOnly = false;
+                                        f.Activate();
+                                        f.Select(s_a - lastInfo.BaseAddress.ToInt64(), selectlength);
+                                    }
+                                    catch
+                                    { }
+                                }));
 
-                    lastInfo = info;
+                            return false;
+                        }
 
-                    return true;
-                });
+                        lastInfo = info;
+
+                        return true;
+                    });
             }
             catch { }
 
@@ -401,7 +410,7 @@ namespace ProcessHacker
                 item.Click += new EventHandler(intersectItemClicked);
                 menu.MenuItems.Add(item);
 
-                //vistaMenu.SetImage(item, global::ProcessHacker.Properties.Resources.table);
+                vistaMenu.SetImage(item, global::ProcessHacker.Properties.Resources.table);
             }
 
             menu.Show(buttonIntersect, new System.Drawing.Point(buttonIntersect.Size.Width, 0));
@@ -413,140 +422,116 @@ namespace ProcessHacker
 
             foreach (ColumnHeader ch in listResults.Columns)
             {
-                MenuItem columnMenu = new MenuItem(ch.Text)
-                {
-                    Tag = ch.Index
-                };
+                MenuItem columnMenu = new MenuItem(ch.Text);
+                MenuItem item;
 
-                MenuItem item = new MenuItem("Contains...", this.filterMenuItem_Clicked)
+                columnMenu.Tag = ch.Index;
+
+                item = new MenuItem("Contains...", new EventHandler(filterMenuItem_Clicked));
+                item.Tag = new Matcher(delegate(string s1, string s2)
                 {
-                    Tag = new Matcher((s1, s2) => s1.Contains(s2, StringComparison.OrdinalIgnoreCase))
-                };
+                    return s1.Contains(s2);
+                });
                 columnMenu.MenuItems.Add(item);
 
-                item = new MenuItem("Contains (case-insensitive)...", this.filterMenuItem_Clicked)
+                item = new MenuItem("Contains (case-insensitive)...", new EventHandler(filterMenuItem_Clicked));
+                item.Tag = new Matcher(delegate(string s1, string s2)
                 {
-                    Tag = new Matcher((s1, s2) => s1.Contains(s2, StringComparison.OrdinalIgnoreCase))
-                };
+                    return s1.ToUpperInvariant().Contains(s2.ToUpperInvariant());
+                });
                 columnMenu.MenuItems.Add(item);
 
-                item = new MenuItem("Regex...", this.filterMenuItem_Clicked)
+                item = new MenuItem("Regex...", new EventHandler(filterMenuItem_Clicked));
+                item.Tag = new Matcher(delegate(string s1, string s2)
                 {
-                    Tag = new Matcher((s1, s2) =>
+                    try
                     {
-                        try
-                        {
-                            System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(s2);
+                        System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(s2);
 
-                            return r.IsMatch(s1);
-                        }
-                        catch
-                        {
-                            return false;
-                        }
-                    })
-                };
-                columnMenu.MenuItems.Add(item);
-
-                item = new MenuItem("Regex (case-insensitive)...", this.filterMenuItem_Clicked)
-                {
-                    Tag = new Matcher((s1, s2) =>
+                        return r.IsMatch(s1);
+                    }
+                    catch
                     {
-                        try
-                        {
-                            System.Text.RegularExpressions.Regex r =
-                                new System.Text.RegularExpressions.Regex(s2, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-
-                            return r.IsMatch(s1);
-                        }
-                        catch
-                        {
-                            return false;
-                        }
-                    })
-                };
-                columnMenu.MenuItems.Add(item);
-
-                columnMenu.MenuItems.Add(new MenuItem("-"));
-                item = new MenuItem("Numerical relation...", this.filterMenuItem_Clicked)
-                {
-                    Tag = new Matcher((s1, s2) =>
-                    {
-                        if (s2.Contains("!=", StringComparison.OrdinalIgnoreCase))
-                        {
-                            decimal n1 = BaseConverter.ToNumberParse(s1);
-                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
-                            {
-                                "!="
-                            }, StringSplitOptions.None)[1]);
-
-                            return n1 != n2;
-                        }
-
-                        if (s2.Contains("<=", StringComparison.OrdinalIgnoreCase))
-                        {
-                            decimal n1 = BaseConverter.ToNumberParse(s1);
-                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
-                            {
-                                "<="
-                            }, StringSplitOptions.None)[1]);
-
-                            return n1 <= n2;
-                        }
-
-                        if (s2.Contains(">=", StringComparison.OrdinalIgnoreCase))
-                        {
-                            decimal n1 = BaseConverter.ToNumberParse(s1);
-                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
-                            {
-                                ">="
-                            }, StringSplitOptions.None)[1]);
-
-                            return n1 >= n2;
-                        }
-
-                        if (s2.Contains("<", StringComparison.OrdinalIgnoreCase))
-                        {
-                            decimal n1 = BaseConverter.ToNumberParse(s1);
-                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
-                            {
-                                "<"
-                            }, StringSplitOptions.None)[1]);
-
-                            return n1 < n2;
-                        }
-                        
-                        if (s2.Contains(">", StringComparison.OrdinalIgnoreCase))
-                        {
-                            decimal n1 = BaseConverter.ToNumberParse(s1);
-                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
-                            {
-                                ">"
-                            }, StringSplitOptions.None)[1]);
-
-                            return n1 > n2;
-                        }
-                        
-                        if (s2.Contains("=", StringComparison.OrdinalIgnoreCase))
-                        {
-                            decimal n1 = BaseConverter.ToNumberParse(s1);
-                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
-                            {
-                                "="
-                            }, StringSplitOptions.None)[1]);
-
-                            return n1 == n2;
-                        }
-                       
                         return false;
-                    })
-                };
+                    }
+                });
+                columnMenu.MenuItems.Add(item);
+
+                item = new MenuItem("Regex (case-insensitive)...", new EventHandler(filterMenuItem_Clicked));
+                item.Tag = new Matcher(delegate(string s1, string s2)
+                {
+                    try
+                    {
+                        System.Text.RegularExpressions.Regex r =
+                            new System.Text.RegularExpressions.Regex(s2, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+                        return r.IsMatch(s1);
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                });
+                columnMenu.MenuItems.Add(item);
+
+                columnMenu.MenuItems.Add(new MenuItem("-")); 
+
+                item = new MenuItem("Numerical relation...", new EventHandler(filterMenuItem_Clicked));
+                item.Tag = new Matcher(delegate(string s1, string s2)
+                {
+                    if (s2.Contains("!="))
+                    {
+                        decimal n1 = BaseConverter.ToNumberParse(s1);
+                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "!=" }, StringSplitOptions.None)[1]);
+
+                        return n1 != n2;
+                    }
+                    else if (s2.Contains("<="))
+                    {
+                        decimal n1 = BaseConverter.ToNumberParse(s1);
+                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "<=" }, StringSplitOptions.None)[1]);
+
+                        return n1 <= n2;
+                    }
+                    else if (s2.Contains(">="))
+                    {
+                        decimal n1 = BaseConverter.ToNumberParse(s1);
+                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { ">=" }, StringSplitOptions.None)[1]);
+
+                        return n1 >= n2;
+                    }
+                    else if (s2.Contains("<"))
+                    {
+                        decimal n1 = BaseConverter.ToNumberParse(s1);
+                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "<" }, StringSplitOptions.None)[1]);
+
+                        return n1 < n2;
+                    }
+                    else if (s2.Contains(">"))
+                    {
+                        decimal n1 = BaseConverter.ToNumberParse(s1);
+                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { ">" }, StringSplitOptions.None)[1]);
+
+                        return n1 > n2;
+                    }
+                    else if (s2.Contains("="))
+                    {
+                        decimal n1 = BaseConverter.ToNumberParse(s1);
+                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "=" }, StringSplitOptions.None)[1]);
+
+                        return n1 == n2;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                });
                 columnMenu.MenuItems.Add(item);
 
                 menu.MenuItems.Add(columnMenu);
             }
 
-            menu.Show(buttonFilter, new Point(buttonFilter.Size.Width, 0));
+            menu.Show(buttonFilter, new System.Drawing.Point(buttonFilter.Size.Width, 0));
         }
 
         private void filterMenuItem_Clicked(object sender, EventArgs e)
@@ -566,32 +551,31 @@ namespace ProcessHacker
 
         private void Filter(int index, Matcher m)
         {
-            using (PromptBox prompt = new PromptBox())
+            PromptBox prompt = new PromptBox();
+
+            if (prompt.ShowDialog() == DialogResult.OK)
             {
-                if (prompt.ShowDialog() == DialogResult.OK)
+                this.Cursor = Cursors.WaitCursor;
+
+                ResultsWindow rw = Program.GetResultsWindow(_pid, new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
                 {
-                    this.Cursor = Cursors.WaitCursor;
+                    f.ResultsList.VirtualListSize = 0;
 
-                    Program.GetResultsWindow(_pid, f =>
-                    {
-                        f.ResultsList.VirtualListSize = 0;
-
-                        foreach (string[] s in this.Results)
+                    foreach (string[] s in Results)
+                    {                
+                        if (m(s[index], prompt.Value))    
                         {
-                            if (m(s[index], prompt.Value))
-                            {
-                                f.Results.Add(s);
-                                f.ResultsList.VirtualListSize++;
-                            }
+                            f.Results.Add(s);
+                            f.ResultsList.VirtualListSize++;
                         }
+                    }
 
-                        f.Label = "Filter: " + f.Results.Count + " results.";
+                    f.Label = "Filter: " + f.Results.Count + " results.";
+                           
+                    f.Show();
+                }));
 
-                        f.Show();
-                    });
-
-                    this.Cursor = Cursors.Default;
-                }
+                this.Cursor = Cursors.Default;   
             }
         }
     }

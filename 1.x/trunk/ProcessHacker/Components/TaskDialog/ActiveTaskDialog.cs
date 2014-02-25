@@ -11,6 +11,8 @@ namespace ProcessHacker.Components
     using System;
     using System.Drawing;
     using System.Windows.Forms;
+    using System.Runtime.InteropServices;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// The active Task Dialog window. Provides several methods for acting on the active TaskDialog.
@@ -22,7 +24,7 @@ namespace ProcessHacker.Components
         /// <summary>
         /// The Task Dialog's window handle.
         /// </summary>
-        private readonly IntPtr handle;
+        private IntPtr handle;
 
         /// <summary>
         /// Creates a ActiveTaskDialog.
@@ -125,7 +127,7 @@ namespace ProcessHacker.Components
             // TDM_SET_PROGRESS_BAR_RANGE          = WM_USER+105, // lParam = MAKELPARAM(nMinRange, nMaxRange)
             // #define MAKELPARAM(l, h)      ((LPARAM)(DWORD)MAKELONG(l, h))
             // #define MAKELONG(a, b)      ((LONG)(((WORD)(((DWORD_PTR)(a)) & 0xffff)) | ((DWORD)((WORD)(((DWORD_PTR)(b)) & 0xffff))) << 16))
-            IntPtr lparam = (IntPtr)((minRange & 0xffff) | ((maxRange & 0xffff) << 16));
+            IntPtr lparam = (IntPtr)((((Int32)minRange) & 0xffff) | ((((Int32)maxRange) & 0xffff) << 16));
             return UnsafeNativeMethods.SendMessage(
                 this.handle,
                 (uint)UnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_PROGRESS_BAR_RANGE,
@@ -365,7 +367,7 @@ namespace ProcessHacker.Components
                 this.handle,
                 (uint)UnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_SET_BUTTON_ELEVATION_REQUIRED_STATE,
                 (IntPtr)buttonId,
-                elevationRequired ? new IntPtr(1) : IntPtr.Zero);
+                (IntPtr)(elevationRequired ? new IntPtr(1) : IntPtr.Zero));
         }
 
         /// <summary>

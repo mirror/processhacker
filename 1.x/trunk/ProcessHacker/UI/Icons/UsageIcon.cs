@@ -45,7 +45,7 @@ namespace ProcessHacker
                     {
                         TaskbarLib.Windows7Taskbar.SetTaskbarOverlayIcon(
                             null,
-                            string.Empty
+                            ""
                             );
                     }
                 }
@@ -65,14 +65,14 @@ namespace ProcessHacker
 
         private Control _parent;
         private Size _size;
-        private readonly NotifyIcon _notifyIcon;
+        private NotifyIcon _notifyIcon;
 
         public UsageIcon()
         {
             _notifyIcon = new NotifyIcon();
 
-            _notifyIcon.MouseClick += this.notifyIcon_MouseClick;
-            _notifyIcon.MouseDoubleClick += this.notifyIcon_MouseDoubleClick;
+            _notifyIcon.MouseClick += new MouseEventHandler(notifyIcon_MouseClick);
+            _notifyIcon.MouseDoubleClick += new MouseEventHandler(notifyIcon_MouseDoubleClick);
 
             _size = GetSmallIconSize();
         }
@@ -105,10 +105,10 @@ namespace ProcessHacker
             set { _parent = value; }
         }
 
-        public ContextMenuStrip ContextMenu
+        public ContextMenu ContextMenu
         {
-            get { return _notifyIcon.ContextMenuStrip; }
-            set { _notifyIcon.ContextMenuStrip = value; }
+            get { return _notifyIcon.ContextMenu; }
+            set { _notifyIcon.ContextMenu = value; }
         }
 
         public Icon Icon

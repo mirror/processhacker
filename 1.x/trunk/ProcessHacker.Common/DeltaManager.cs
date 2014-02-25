@@ -20,6 +20,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.Collections.Generic;
+
 namespace ProcessHacker.Common
 {
     /// <summary>
@@ -36,10 +38,10 @@ namespace ProcessHacker.Common
 
     public static class Subtractor
     {
-        private static readonly Int64Subtractor _int64Subtractor = new Int64Subtractor();
-        private static readonly Int32Subtractor _int32Subtractor = new Int32Subtractor();
-        private static readonly DoubleSubtractor _doubleSubtractor = new DoubleSubtractor();
-        private static readonly FloatSubtractor _floatSubtractor = new FloatSubtractor();
+        private static Int64Subtractor _int64Subtractor = new Int64Subtractor();
+        private static Int32Subtractor _int32Subtractor = new Int32Subtractor();
+        private static DoubleSubtractor _doubleSubtractor = new DoubleSubtractor();
+        private static FloatSubtractor _floatSubtractor = new FloatSubtractor();
 
         public static Int64Subtractor Int64Subtractor
         {
@@ -115,7 +117,7 @@ namespace ProcessHacker.Common
 
     public struct DeltaValue<T> : IDeltaValue<T>
     {
-        private readonly ISubtractor<T> _subtractor;
+        private ISubtractor<T> _subtractor;
         private T _value;
         private T _delta;
 

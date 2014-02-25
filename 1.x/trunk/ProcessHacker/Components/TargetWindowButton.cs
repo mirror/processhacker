@@ -28,14 +28,14 @@ namespace ProcessHacker.Components
 {
     public delegate void TargetWindowFoundDelegate(int pid, int tid);
 
-    public sealed class TargetWindowButton : ToolStripButton
+    public class TargetWindowButton : ToolStripButton
     {
         public event TargetWindowFoundDelegate TargetWindowFound;
 
         private Control _parent;
-        private readonly Control _dummy;
+        private Control _dummy;
         private IntPtr _currentHWnd;
-        private bool _targeting;
+        private bool _targeting = false;
 
         public TargetWindowButton()
         {
@@ -93,7 +93,12 @@ namespace ProcessHacker.Components
             }
         }
 
-        private void RedrawWindow(IntPtr hWnd, bool workaround = true)
+        private void RedrawWindow(IntPtr hWnd)
+        {
+            this.RedrawWindow(hWnd, true);
+        }
+
+        private void RedrawWindow(IntPtr hWnd, bool workaround)
         {
             if (!Win32.RedrawWindow(
                hWnd,
@@ -150,10 +155,11 @@ namespace ProcessHacker.Components
             if (oldHWnd != IntPtr.Zero)
                 this.RedrawWindow(oldHWnd);
 
-            int pid;
+            bool isPhWindow = false;
+            int pid, tid;
 
-            Win32.GetWindowThreadProcessId(this._currentHWnd, out pid);
-            bool isPhWindow = pid == Program.CurrentProcessId;
+            tid = Win32.GetWindowThreadProcessId(_currentHWnd, out pid);
+            isPhWindow = pid == Program.CurrentProcessId;
 
             // Draw a rectangle over the current window.
             if (
@@ -174,9 +180,9 @@ namespace ProcessHacker.Components
                 // Redraw the window we found.
                 this.RedrawWindow(_currentHWnd, false);
 
-                int pid;
+                int pid, tid;
 
-                int tid = Win32.GetWindowThreadProcessId(this._currentHWnd, out pid);
+                tid = Win32.GetWindowThreadProcessId(_currentHWnd, out pid);
 
                 if (this.TargetWindowFound != null)
                     this.TargetWindowFound(pid, tid);

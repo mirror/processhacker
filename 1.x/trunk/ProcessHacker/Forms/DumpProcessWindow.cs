@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
@@ -33,11 +32,11 @@ using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
-    public sealed partial class DumpProcessWindow : Form
+    public partial class DumpProcessWindow : Form
     {
-        private readonly DumpHackerWindow _hw;
-        private readonly ProcessItem _item;
-        private readonly MemoryObject _processMo;
+        private DumpHackerWindow _hw;
+        private ProcessItem _item;
+        private MemoryObject _processMo;
 
         private TokenProperties _tokenProps;
 
@@ -66,10 +65,8 @@ namespace ProcessHacker
         {
             this.LoadProperties();
 
-            _tokenProps = new TokenProperties(null)
-            {
-                Dock = DockStyle.Fill
-            };
+            _tokenProps = new TokenProperties(null);
+            _tokenProps.Dock = DockStyle.Fill;
             tabToken.Controls.Add(_tokenProps);
             _tokenProps.DumpInitialize();
             this.LoadToken();
@@ -77,6 +74,7 @@ namespace ProcessHacker
             // Modules
             if (_item.FileName != null)
                 listModules.DumpSetMainModule(_item.FileName);
+            listModules.List.SetTheme("explorer");
             listModules.List.AddShortcuts();
             listModules.List.ContextMenu = listModules.List.GetCopyMenu();
 
@@ -84,6 +82,7 @@ namespace ProcessHacker
             listModules.UpdateItems();
 
             // Environment
+            listEnvironment.SetTheme("explorer");
             listEnvironment.AddShortcuts();
             listEnvironment.ContextMenu = listEnvironment.GetCopyMenu();
 
@@ -91,6 +90,7 @@ namespace ProcessHacker
 
             // Handles
             listHandles.DumpDisableEvents();
+            listHandles.List.SetTheme("explorer");
             listHandles.List.AddShortcuts();
             listHandles.List.ContextMenu = listHandles.List.GetCopyMenu();
 
@@ -110,7 +110,7 @@ namespace ProcessHacker
 
         private void LoadProperties()
         {
-            var names = _processMo.ChildNames;
+            var names = _processMo.GetChildNames();
 
             if (names.Contains("LargeIcon"))
             {
@@ -131,8 +131,8 @@ namespace ProcessHacker
             else
             {
                 textFileDescription.Text = _item.Name;
-                textFileCompany.Text = string.Empty;
-                textFileVersion.Text = string.Empty;
+                textFileCompany.Text = "";
+                textFileVersion.Text = "";
             }
 
             textFileName.Text = _item.FileName;
@@ -297,7 +297,7 @@ namespace ProcessHacker
             if (modulesMo == null)
                 return;
 
-            modulesMo.EnumChildren(childMo =>
+            modulesMo.EnumChildren((childMo) =>
             {
                 using (childMo)
                     this.LoadModule(childMo);
@@ -331,17 +331,17 @@ namespace ProcessHacker
 
         private void LoadEnvironment()
         {
-            MemoryObject env = _processMo.GetChild("Environment");
+            var env = _processMo.GetChild("Environment");
 
             if (env == null)
                 return;
 
-            IDictionary<string, string> dict = Dump.GetDictionary(env);
+            var dict = Dump.GetDictionary(env);
 
             foreach (var kvp in dict)
             {
                 if (!string.IsNullOrEmpty(kvp.Key))
-                    listEnvironment.Items.Add(new ListViewItem(new[] { kvp.Key, kvp.Value }));
+                    listEnvironment.Items.Add(new ListViewItem(new string[] { kvp.Key, kvp.Value }));
             }
 
             env.Dispose();
@@ -356,7 +356,7 @@ namespace ProcessHacker
             if (handlesMo == null)
                 return;
 
-            handlesMo.EnumChildren(childMo =>
+            handlesMo.EnumChildren((childMo) =>
             {
                 using (childMo)
                     this.LoadHandles(childMo);

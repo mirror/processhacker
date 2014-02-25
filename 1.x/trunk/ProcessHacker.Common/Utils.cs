@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -69,6 +70,8 @@ namespace ProcessHacker.Common
         /// The maximum unit specifier to use when formatting sizes.
         /// </summary>
         public static int UnitSpecifier = 4;
+
+        private static PropertyInfo _doubleBufferedProperty;
 
         /// <summary>
         /// Aligns a number to the specified power-of-two alignment value.
@@ -130,7 +133,7 @@ namespace ProcessHacker.Common
         /// <returns>True if the array contains the value, otherwise false.</returns>
         public static bool Contains<T>(this T[] array, T value)
         {
-            return Array.IndexOf(array, value) != -1;
+            return Array.IndexOf<T>(array, value) != -1;
         }
 
         /// <summary>
@@ -195,8 +198,8 @@ namespace ProcessHacker.Common
         {
             if (s.Length <= len)
                 return s;
-            
-            return s.Substring(0, len - 4) + " ...";
+            else
+                return s.Substring(0, len - 4) + " ...";
         }
 
         /// <summary>
@@ -216,10 +219,23 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Clears and cleans up resources held by the menu items.
+        /// </summary>
+        public static void DisposeAndClear(this Menu.MenuItemCollection items)
+        {
+            //foreach (MenuItem item in items)
+            //{
+            //    item.Dispose();
+            //}
+
+            items.Clear();
+        }
+
+        /// <summary>
         /// Disables the menu items contained in the specified menu. 
         /// </summary>
         /// <param name="menu">The menu.</param>
-        public static void DisableAllMenuItems(MenuItem menu)
+        public static void DisableAllMenuItems(Menu menu)
         {
             foreach (MenuItem item in menu.MenuItems)
                 item.Enabled = false;
@@ -228,7 +244,7 @@ namespace ProcessHacker.Common
         /// <summary>
         /// Disables all menu items. 
         /// </summary>
-        public static void DisableAll(this MenuItem menu)
+        public static void DisableAll(this Menu menu)
         {
             DisableAllMenuItems(menu);
         }
@@ -521,7 +537,7 @@ namespace ProcessHacker.Common
             double months = span.TotalDays * 12 / 365;
             double years = months / 12;
             double centuries = years / 100;
-            string str;
+            string str = "";
 
             // Start from the most general time unit and see if they can be used 
             // without any fractional component.
@@ -577,7 +593,7 @@ namespace ProcessHacker.Common
                 str = "a very short time";
 
             // Turn 1 into "a", e.g. 1 minute -> a minute
-            if (str.StartsWith("1 ", StringComparison.OrdinalIgnoreCase))
+            if (str.StartsWith("1 "))
             {
                 // Special vowel case: a hour -> an hour
                 if (str[2] != 'h')
@@ -605,7 +621,7 @@ namespace ProcessHacker.Common
         public static string FormatSize(uint size)
         {
             int i = 0;
-            double s = size;
+            double s = (double)size;
 
             while (s > 1024 && i < SizeUnitNames.Length && i < UnitSpecifier)
             {
@@ -644,7 +660,7 @@ namespace ProcessHacker.Common
         public static string FormatSize(ulong size)
         {
             int i = 0;
-            double s = size;
+            double s = (double)size;
 
             while (s > 1024 && i < SizeUnitNames.Length && i < UnitSpecifier)
             {
@@ -708,7 +724,7 @@ namespace ProcessHacker.Common
         // <returns>The last write time of the assembly, or DateTime.MaxValue if an exception occurred.</returns>
         public static DateTime GetAssemblyLastWriteTime(Assembly assembly)
         {
-            if (string.IsNullOrEmpty(assembly.Location))
+            if (assembly.Location == null || assembly.Location == "")
                 return DateTime.MaxValue;
 
             try
@@ -824,10 +840,10 @@ namespace ProcessHacker.Common
             if (minimum < 0)
                 throw new ArgumentOutOfRangeException("minimum");
 
-            foreach (int t in Primes)
+            for (int i = 0; i < Primes.Length; i++)
             {
-                if (t >= minimum)
-                    return t;
+                if (Primes[i] >= minimum)
+                    return Primes[i];
             }
 
             for (int i = minimum | 1; i < int.MaxValue; i += 2)
@@ -936,8 +952,8 @@ namespace ProcessHacker.Common
         {
             if (c >= ' ' && c <= '~')
                 return c;
-            
-            return '.';
+            else
+                return '.';
         }
 
         /// <summary>
@@ -949,8 +965,8 @@ namespace ProcessHacker.Common
         {
             StringBuilder sb = new StringBuilder();
 
-            foreach (char t in s)
-                sb.Append(MakePrintable(t));
+            for (int i = 0; i < s.Length; i++)
+                sb.Append(MakePrintable(s[i]));
 
             return sb.ToString();
         }
@@ -1043,7 +1059,7 @@ namespace ProcessHacker.Common
 
             foreach (string s in args)
             {
-                if (s.StartsWith("-", StringComparison.OrdinalIgnoreCase))
+                if (s.StartsWith("-"))
                 {
                     if (dict.ContainsKey(s))
                         throw new ArgumentException("Option already specified.");
@@ -1108,7 +1124,7 @@ namespace ProcessHacker.Common
             if (s.Read(buffer, 0, length) == 0)
                 throw new EndOfStreamException();
 
-            return Encoding.ASCII.GetString(buffer);
+            return System.Text.Encoding.ASCII.GetString(buffer);
         }
 
         public static uint ReadUInt32(Stream s, Endianness type)
@@ -1145,7 +1161,7 @@ namespace ProcessHacker.Common
                 if (b == 0 && b2 == 0)
                     break;
 
-                str.Append(Encoding.Unicode.GetChars(new[] { (byte)b, (byte)b2 }));
+                str.Append(Encoding.Unicode.GetChars(new byte[] { (byte)b, (byte)b2 }));
             }
 
             return str.ToString();
@@ -1174,7 +1190,7 @@ namespace ProcessHacker.Common
                 if (b2 == -1)
                     break;
 
-                str.Append(Encoding.Unicode.GetChars(new[] { (byte)b, (byte)b2 }));
+                str.Append(Encoding.Unicode.GetChars(new byte[] { (byte)b, (byte)b2 }));
                 i += 2;
             }
 
@@ -1299,6 +1315,35 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Enables or disables double buffering for a control.
+        /// </summary>
+        /// <param name="c">The control.</param>
+        /// <param name="t">The type of the control.</param>
+        /// <param name="value">The new setting.</param>
+        public static void SetDoubleBuffered(this Control c, Type t, bool value)
+        {
+            PropertyInfo doubleBufferedProperty = _doubleBufferedProperty;
+
+            if (doubleBufferedProperty == null)
+            {
+                _doubleBufferedProperty = doubleBufferedProperty = t.GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+            }
+
+            doubleBufferedProperty.SetValue(c, value, null);
+        }
+
+        /// <summary>
+        /// Enables or disables double buffering for a control.
+        /// </summary>
+        /// <param name="c">The control to set the property on.</param>
+        /// <param name="value">The new value.</param>
+        public static void SetDoubleBuffered(this Control c, bool value)
+        {
+            c.SetDoubleBuffered(c.GetType(), value);
+        }
+
+        /// <summary>
         /// Shows a file in Windows Explorer.
         /// </summary>
         /// <param name="fileName">The file to show.</param>
@@ -1310,13 +1355,23 @@ namespace ProcessHacker.Common
         /// <summary>
         /// Calculates the size of a structure.
         /// </summary>
-        /// <param name="alignment">A power-of-two whole-structure alignment to apply.</param>
-        /// <param name="size"></param>
+        /// <typeparam name="T">The structure type.</typeparam>
         /// <returns>The size of the structure.</returns>
-        public static int SizeOf(int alignment, int size)
+        public static int SizeOf<T>()
+        {
+            return System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
+        }
+
+        /// <summary>
+        /// Calculates the size of a structure.
+        /// </summary>
+        /// <typeparam name="T">The structure type.</typeparam>
+        /// <param name="alignment">A power-of-two whole-structure alignment to apply.</param>
+        /// <returns>The size of the structure.</returns>
+        public static int SizeOf<T>(int alignment)
         {
             // HACK: This is wrong, but it works.
-            return size + alignment;
+            return SizeOf<T>() + alignment;
         }
 
         /// <summary>
@@ -1381,14 +1436,17 @@ namespace ProcessHacker.Common
 
         public static int ToInt32(this byte[] data, Endianness type)
         {
-            switch (type)
+            if (type == Endianness.Little)
             {
-                case Endianness.Little:
-                    return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
-                case Endianness.Big:
-                    return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
-                default:
-                    throw new ArgumentException();
+                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
+            }
+            else if (type == Endianness.Big)
+            {
+                return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
+            }
+            else
+            {
+                throw new ArgumentException();
             }
         }
 
@@ -1399,16 +1457,19 @@ namespace ProcessHacker.Common
 
         public static long ToInt64(this byte[] data, Endianness type)
         {
-            switch (type)
+            if (type == Endianness.Little)
             {
-                case Endianness.Little:
-                    return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24) |
-                           (data[4] << 32) | (data[5] << 40) | (data[6] << 48) | (data[7] << 56);
-                case Endianness.Big:
-                    return (data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) |
-                           (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | (data[7]);
-                default:
-                    throw new ArgumentException();
+                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24) |
+                    (data[4] << 32) | (data[5] << 40) | (data[6] << 48) | (data[7] << 56);
+            }
+            else if (type == Endianness.Big)
+            {
+                return (data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) |
+                    (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | (data[7]);
+            }
+            else
+            {
+                throw new ArgumentException();
             }
         }
 
@@ -1417,15 +1478,12 @@ namespace ProcessHacker.Common
             if (IntPtr.Size != data.Length)
                 throw new ArgumentException("data");
 
-            switch (IntPtr.Size)
-            {
-                case sizeof(int):
-                    return new IntPtr(data.ToInt32(Endianness.Little));
-                case sizeof(long):
-                    return new IntPtr(data.ToInt64(Endianness.Little));
-                default:
-                    throw new ArgumentException("data");
-            }
+            if (IntPtr.Size == sizeof(int))
+                return new IntPtr(data.ToInt32(Endianness.Little));
+            else if (IntPtr.Size == sizeof(long))
+                return new IntPtr(data.ToInt64(Endianness.Little));
+            else
+                throw new ArgumentException("data");
         }
 
         public static ushort ToUInt16(this byte[] data, Endianness type)
@@ -1435,14 +1493,17 @@ namespace ProcessHacker.Common
 
         public static ushort ToUInt16(this byte[] data, int offset, Endianness type)
         {
-            switch (type)
+            if (type == Endianness.Little)
             {
-                case Endianness.Little:
-                    return (ushort)(data[offset] | (data[offset + 1] << 8));
-                case Endianness.Big:
-                    return (ushort)((data[offset] << 8) | data[offset + 1]);
-                default:
-                    throw new ArgumentException();
+                return (ushort)(data[offset] | (data[offset + 1] << 8));
+            }
+            else if (type == Endianness.Big)
+            {
+                return (ushort)((data[offset] << 8) | data[offset + 1]);
+            }
+            else
+            {
+                throw new ArgumentException();
             }
         }
 
@@ -1453,16 +1514,19 @@ namespace ProcessHacker.Common
 
         public static uint ToUInt32(this byte[] data, int offset, Endianness type)
         {
-            switch (type)
+            if (type == Endianness.Little)
             {
-                case Endianness.Little:
-                    return (uint)(data[offset]) | (uint)(data[offset + 1] << 8) |
-                           (uint)(data[offset + 2] << 16) | (uint)(data[offset + 3] << 24);
-                case Endianness.Big:
-                    return (uint)(data[offset] << 24) | (uint)(data[offset + 1] << 16) |
-                           (uint)(data[offset + 2] << 8) | (uint)(data[offset + 3]);
-                default:
-                    throw new ArgumentException();
+                return (uint)(data[offset]) | (uint)(data[offset + 1] << 8) |
+                    (uint)(data[offset + 2] << 16) | (uint)(data[offset + 3] << 24);
+            }
+            else if (type == Endianness.Big)
+            {
+                return (uint)(data[offset] << 24) | (uint)(data[offset + 1] << 16) |
+                    (uint)(data[offset + 2] << 8) | (uint)(data[offset + 3]);
+            }
+            else
+            {
+                throw new ArgumentException();
             }
         }
 
@@ -1485,7 +1549,7 @@ namespace ProcessHacker.Common
             if (buffer != null)
             {
                 if (buffer.Length - offset < length)
-                    throw new ArgumentOutOfRangeException("buffer", "The buffer is too small for the specified offset and length.");
+                    throw new ArgumentOutOfRangeException("The buffer is too small for the specified offset and length.");
             }
             else
             {
@@ -1494,7 +1558,7 @@ namespace ProcessHacker.Common
 
                 // We don't have a buffer, so make sure the offset and length are zero.
                 if (offset != 0 || length != 0)
-                    throw new ArgumentOutOfRangeException("offset", "The offset and length must be zero for a null buffer.");
+                    throw new ArgumentOutOfRangeException("The offset and length must be zero for a null buffer.");
             }
         }
     }

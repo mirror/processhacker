@@ -29,7 +29,7 @@ namespace ProcessHacker
 {
     public partial class TokenWindow : Form
     {
-        readonly TokenProperties _tokenProps;
+        TokenProperties _tokenProps;
 
         public TokenWindow(IWithToken obj)
         {

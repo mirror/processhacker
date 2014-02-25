@@ -1,11 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessHacker", "ProcessHacker\ProcessHacker.csproj", "{EEEA1778-1702-4964-8793-A98FE37E4D2B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessHacker.Common", "ProcessHacker.Common\ProcessHacker.Common.csproj", "{8E10F5E8-D4FA-4980-BB23-2EDD134AC15E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessHacker.Native", "ProcessHacker.Native\ProcessHacker.Native.csproj", "{8A448157-E1A7-4DDF-954E-287F1117832B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aga.Controls", "TreeViewAdv\Aga.Controls.csproj", "{E73BB233-D88B-44A7-A98F-D71EE158381D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,10 @@ Global
 		{8A448157-E1A7-4DDF-954E-287F1117832B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A448157-E1A7-4DDF-954E-287F1117832B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A448157-E1A7-4DDF-954E-287F1117832B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

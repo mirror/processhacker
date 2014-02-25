@@ -36,10 +36,9 @@
             // 
             // textValues
             // 
-            this.textValues.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textValues.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.textValues.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textValues.HideSelection = false;
             this.textValues.Location = new System.Drawing.Point(12, 12);
             this.textValues.Multiline = true;
@@ -52,7 +51,6 @@
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonClose.Location = new System.Drawing.Point(462, 306);
             this.buttonClose.Name = "buttonClose";
@@ -88,11 +86,8 @@
             // 
             // InformationBox
             // 
-            this.AcceptButton = this.buttonSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.CancelButton = this.buttonClose;
             this.ClientSize = new System.Drawing.Size(549, 341);
             this.Controls.Add(this.buttonCopy);
             this.Controls.Add(this.buttonSave);
@@ -106,8 +101,8 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Information";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InformationBox_FormClosing);
             this.Load += new System.EventHandler(this.InformationBox_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InformationBox_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.InformationBox_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -14,7 +14,7 @@ namespace Be.Windows.Forms
 		/// <summary>
 		/// Contains a byte collection.
 		/// </summary>
-		readonly ByteCollection _bytes;
+		ByteCollection _bytes;
 
 		/// <summary>
 		/// Initializes a new instance of the DynamicByteProvider class.

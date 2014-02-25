@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -33,14 +34,16 @@ namespace ProcessHacker.Native.Objects
     {
         public static LsaAccountHandle Create(LsaAccountAccess access, LsaPolicyHandle policyHandle, Sid sid)
         {
+            NtStatus status;
             IntPtr handle;
 
-            Win32.LsaCreateAccount(
+            if ((status = Win32.LsaCreateAccount(
                 policyHandle,
                 sid,
                 access,
                 out handle
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return new LsaAccountHandle(handle, true);
         }
@@ -57,14 +60,16 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the account.</param>
         public LsaAccountHandle(LsaPolicyHandle policyHandle, Sid sid, LsaAccountAccess access)
         {
+            NtStatus status;
             IntPtr handle;
 
-            Win32.LsaOpenAccount(
+            if ((status = Win32.LsaOpenAccount(
                 policyHandle,
                 sid,
                 access,
                 out handle
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             this.Handle = handle;
         }
@@ -76,62 +81,61 @@ namespace ProcessHacker.Native.Objects
 
         public void AddPrivileges(PrivilegeSet privileges)
         {
-            using (MemoryAlloc privilegeSetMemory = privileges.ToMemory())
+            NtStatus status;
+
+            using (var privilegeSetMemory = privileges.ToMemory())
             {
-                Win32.LsaAddPrivilegesToAccount(
+                if ((status = Win32.LsaAddPrivilegesToAccount(
                     this,
                     privilegeSetMemory
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
         }
 
-        public PrivilegeSet Privileges
+        public PrivilegeSet GetPrivileges()
         {
-            get
+            NtStatus status;
+            IntPtr privileges;
+
+            if ((status = Win32.LsaEnumeratePrivilegesOfAccount(
+                this,
+                out privileges
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            using (var privilegesAlloc = new LsaMemoryAlloc(privileges))
             {
-                IntPtr privileges;
-
-                Win32.LsaEnumeratePrivilegesOfAccount(
-                    this,
-                    out privileges
-                    ).ThrowIf();
-
-                using (LsaMemoryAlloc privilegesAlloc = new LsaMemoryAlloc(privileges))
-                {
-                    return new PrivilegeSet(privilegesAlloc);
-                }
+                return new PrivilegeSet(privilegesAlloc);
             }
         }
 
-        public QuotaLimits Quotas
+        public QuotaLimits GetQuotas()
         {
-            get
-            {
-                QuotaLimits quotas;
+            NtStatus status;
+            QuotaLimits quotas;
 
-                Win32.LsaGetQuotasForAccount(
-                    this,
-                    out quotas
-                    ).ThrowIf();
+            if ((status = Win32.LsaGetQuotasForAccount(
+                this,
+                out quotas
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
-                return quotas;
-            }
+            return quotas;
         }
 
-
-        public SecuritySystemAccess SystemAccess
+        public SecuritySystemAccess GetSystemAccess()
         {
-            get
-            {
-                SecuritySystemAccess access;
+            NtStatus status;
+            SecuritySystemAccess access;
 
-                Win32.LsaGetSystemAccessAccount(
-                    this,
-                    out access
-                    ).ThrowIf();
+            if ((status = Win32.LsaGetSystemAccessAccount(
+                this,
+                out access
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
-                return access;
-            }
+            return access;
         }
 
         public void RemovePrivilege(Privilege privilege)
@@ -141,39 +145,51 @@ namespace ProcessHacker.Native.Objects
 
         public void RemovePrivileges()
         {
-            Win32.LsaRemovePrivilegesFromAccount(
+            NtStatus status;
+
+            if ((status = Win32.LsaRemovePrivilegesFromAccount(
                 this,
                 true,
                 IntPtr.Zero
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         public void RemovePrivileges(PrivilegeSet privileges)
         {
-            using (MemoryAlloc privilegeSetMemory = privileges.ToMemory())
+            NtStatus status;
+
+            using (var privilegeSetMemory = privileges.ToMemory())
             {
-                Win32.LsaRemovePrivilegesFromAccount(
+                if ((status = Win32.LsaRemovePrivilegesFromAccount(
                     this,
                     false,
                     privilegeSetMemory
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
         }
 
         public void SetQuotas(QuotaLimits quotas)
         {
-            Win32.LsaSetQuotasForAccount(
+            NtStatus status;
+
+            if ((status = Win32.LsaSetQuotasForAccount(
                 this,
                 ref quotas
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         public void SetSystemAccess(SecuritySystemAccess access)
         {
-            Win32.LsaSetSystemAccessAccount(
+            NtStatus status;
+
+            if ((status = Win32.LsaSetSystemAccessAccount(
                 this,
                 access
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
         }
     }
 }

@@ -31,14 +31,13 @@ using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
-using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Common
 {
     public static class PhUtils
     {
-        public static readonly string[] DangerousNames = 
+        public static string[] DangerousNames = 
         {
             "csrss.exe", "dwm.exe", "logonui.exe", "lsass.exe", "lsm.exe", "services.exe",
             "smss.exe", "wininit.exe", "winlogon.exe"
@@ -60,27 +59,28 @@ namespace ProcessHacker.Common
         /// <param name="retrieveVirtualItem">A virtual item handler, if any.</param>
         public static void AddShortcuts(this ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
         {
-            lv.KeyDown += (sender, e) =>
-            {
-                if (e.Control && e.KeyCode == Keys.A)
+            lv.KeyDown +=
+                (sender, e) =>
                 {
-                    if (retrieveVirtualItem != null)
+                    if (e.Control && e.KeyCode == Keys.A)
                     {
-                        for (int i = 0; i < lv.VirtualListSize; i++)
-                            if (!lv.SelectedIndices.Contains(i))
-                                lv.SelectedIndices.Add(i);
+                        if (retrieveVirtualItem != null)
+                        {
+                            for (int i = 0; i < lv.VirtualListSize; i++)
+                                if (!lv.SelectedIndices.Contains(i))
+                                    lv.SelectedIndices.Add(i);
+                        }
+                        else
+                        {
+                            lv.Items.SelectAll();
+                        }
                     }
-                    else
-                    {
-                        lv.Items.SelectAll();
-                    }
-                }
 
-                if (e.Control && e.KeyCode == Keys.C)
-                {
-                    GenericViewMenu.ListViewCopy(lv, -1, retrieveVirtualItem);
-                }
-            };
+                    if (e.Control && e.KeyCode == Keys.C)
+                    {
+                        GenericViewMenu.ListViewCopy(lv, -1, retrieveVirtualItem);
+                    }
+                };
         }
 
         /// <summary>
@@ -95,11 +95,13 @@ namespace ProcessHacker.Common
 
             try
             {
-                using (ProcessHandle phandle = new ProcessHandle(pid, OSVersion.MinProcessQueryInfoAccess))
+                using (var phandle = new ProcessHandle(pid, OSVersion.MinProcessQueryInfoAccess))
                 {
                     foreach (string s in DangerousNames)
                     {
-                        if ((Environment.SystemDirectory + "\\" + s).Equals(FileUtils.GetFileName(FileUtils.GetFileName(phandle.ImageFileName)), StringComparison.OrdinalIgnoreCase))
+                        if ((Environment.SystemDirectory + "\\" + s).Equals(
+                            FileUtils.GetFileName(FileUtils.GetFileName(phandle.GetImageFileName())),
+                            StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
                         }
@@ -123,9 +125,9 @@ namespace ProcessHacker.Common
         private static string FormatException(string operation, Exception ex)
         {
             if (!string.IsNullOrEmpty(operation))
-                return operation + ": " + ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : string.Empty);
-            
-            return ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : string.Empty);
+                return operation + ": " + ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
+            else
+                return ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
         }
 
         public static string FormatFileInfo(
@@ -183,17 +185,18 @@ namespace ProcessHacker.Common
                     return "Normal";
                 case ProcessPriorityClass.RealTime:
                     return "Realtime";
+                case ProcessPriorityClass.Unknown:
                 default:
-                    return string.Empty;
+                    return "";
             }
         }
 
         public static string GetBestUserName(string userName, bool includeDomain)
         {
-            if (string.IsNullOrEmpty(userName))
-                return string.Empty;
+            if (userName == null)
+                return "";
 
-            if (!userName.Contains("\\", StringComparison.OrdinalIgnoreCase))
+            if (!userName.Contains("\\"))
                 return userName;
 
             string[] split = userName.Split(new char[] { '\\' }, 2);
@@ -202,8 +205,8 @@ namespace ProcessHacker.Common
 
             if (includeDomain)
                 return domain + "\\" + user;
-            
-            return user;
+            else
+                return user;
         }
 
         /// <summary>
@@ -219,8 +222,8 @@ namespace ProcessHacker.Common
         {
             if (backColor.GetBrightness() > 0.4)
                 return Color.Black;
-            
-            return Color.White;
+            else
+                return Color.White;
         }
 
         public static IWin32Window GetForegroundWindow()
@@ -228,49 +231,40 @@ namespace ProcessHacker.Common
             var window = WindowHandle.GetForegroundWindow();
 
             // Make sure the foreground window belongs to us.
-            if (window.ClientId.ProcessId == ProcessHandle.CurrentId)
+            if (window.GetClientId().ProcessId == ProcessHandle.GetCurrentId())
                 return window;
-            
-            return new WindowFromHandle(Program.HackerWindowHandle);
+            else
+                return new WindowFromHandle(Program.HackerWindowHandle);
         }
 
         public static string GetIntegrity(this TokenHandle tokenHandle, out int integrityLevel)
         {
-            var groups = tokenHandle.Groups;
+            var groups = tokenHandle.GetGroups();
             string integrity = null;
 
             integrityLevel = 0;
 
-            foreach (Sid t in groups)
+            for (int i = 0; i < groups.Length; i++)
             {
-                if ((t.Attributes & SidAttributes.IntegrityEnabled) != 0)
+                if ((groups[i].Attributes & SidAttributes.IntegrityEnabled) != 0)
                 {
-                    integrity = t.GetFullName(false).Replace(" Mandatory Level", string.Empty);
+                    integrity = groups[i].GetFullName(false).Replace(" Mandatory Level", "");
 
-                    switch (integrity)
-                    {
-                        case "Untrusted":
-                            integrityLevel = 0;
-                            break;
-                        case "Low":
-                            integrityLevel = 1;
-                            break;
-                        case "Medium":
-                            integrityLevel = 2;
-                            break;
-                        case "High":
-                            integrityLevel = 3;
-                            break;
-                        case "System":
-                            integrityLevel = 4;
-                            break;
-                        case "Installer":
-                            integrityLevel = 5;
-                            break;
-                    }
+                    if (integrity == "Untrusted")
+                        integrityLevel = 0;
+                    else if (integrity == "Low")
+                        integrityLevel = 1;
+                    else if (integrity == "Medium")
+                        integrityLevel = 2;
+                    else if (integrity == "High")
+                        integrityLevel = 3;
+                    else if (integrity == "System")
+                        integrityLevel = 4;
+                    else if (integrity == "Installer")
+                        integrityLevel = 5;
                 }
 
-                t.Dispose();
+                groups[i].Dispose();
             }
 
             return integrity;
@@ -350,7 +344,7 @@ namespace ProcessHacker.Common
         {
             try
             {
-                IPHostEntry entry = Dns.GetHostEntry("www.msftncsi.com");
+                System.Net.IPHostEntry entry = System.Net.Dns.GetHostEntry("www.msftncsi.com");
                 return true;
                
                 //http://www.msftncsi.com/ncsi.txt 
@@ -399,13 +393,13 @@ namespace ProcessHacker.Common
             string lastKey = keyName;
 
             // Expand the abbreviations.
-            if (lastKey.StartsWith("hkcu", StringComparison.OrdinalIgnoreCase))
+            if (lastKey.ToLowerInvariant().StartsWith("hkcu"))
                 lastKey = "HKEY_CURRENT_USER" + lastKey.Substring(4);
-            else if (lastKey.StartsWith("hku", StringComparison.OrdinalIgnoreCase))
+            else if (lastKey.ToLowerInvariant().StartsWith("hku"))
                 lastKey = "HKEY_USERS" + lastKey.Substring(3);
-            else if (lastKey.StartsWith("hkcr", StringComparison.OrdinalIgnoreCase))
+            else if (lastKey.ToLowerInvariant().StartsWith("hkcr"))
                 lastKey = "HKEY_CLASSES_ROOT" + lastKey.Substring(4);
-            else if (lastKey.StartsWith("hklm", StringComparison.OrdinalIgnoreCase))
+            else if (lastKey.ToLowerInvariant().StartsWith("hklm"))
                 lastKey = "HKEY_LOCAL_MACHINE" + lastKey.Substring(4);
 
             // Set the last opened key in regedit config. Note that if we are on 
@@ -431,7 +425,7 @@ namespace ProcessHacker.Common
             {
                 Program.StartProgramAdmin(
                     Environment.SystemDirectory + "\\..\\regedit.exe",
-                    string.Empty,
+                    "",
                     null,
                     ShowWindowType.Normal,
                     window != null ? window.Handle : IntPtr.Zero
@@ -459,7 +453,21 @@ namespace ProcessHacker.Common
         /// <param name="visible">Whether the shield icon is visible.</param>
         public static void SetShieldIcon(this Button button, bool visible)
         {
-            Win32.SendMessage(button.Handle, WindowMessage.BcmSetShield, IntPtr.Zero, visible ? (IntPtr)1 : IntPtr.Zero);
+            Win32.SendMessage(button.Handle, WindowMessage.BcmSetShield, 0, visible ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Sets the theme of a control.
+        /// </summary>
+        /// <param name="control">The control to modify.</param>
+        /// <param name="theme">A name of a theme.</param>
+        public static void SetTheme(this Control control, string theme)
+        {
+            // Don't set on XP, doesn't look better than without SetWindowTheme.
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                Win32.SetWindowTheme(control.Handle, theme, null);
+            }
         }
 
         /// <summary>
@@ -500,13 +508,11 @@ namespace ProcessHacker.Common
 
             if (OSVersion.HasTaskDialogs)
             {
-                TaskDialog td = new TaskDialog
-                {
-                    WindowTitle = "Process Hacker", 
-                    MainIcon = warning ? TaskDialogIcon.Warning : TaskDialogIcon.None, 
-                    MainInstruction = "Do you want to " + action + "?",
-                    PositionRelativeToWindow = true
-                };
+                TaskDialog td = new TaskDialog();
+
+                td.WindowTitle = "Process Hacker";
+                td.MainIcon = warning ? TaskDialogIcon.Warning : TaskDialogIcon.None;
+                td.MainInstruction = "Do you want to " + action + "?";
 
                 if (!string.IsNullOrEmpty(message))
                     td.Content = message + " Are you sure you want to continue?";
@@ -518,15 +524,17 @@ namespace ProcessHacker.Common
                 };
                 td.DefaultButton = (int)DialogResult.No;
 
-                return td.Show(GetForegroundWindow()) == (int)DialogResult.Yes;
+                return td.Show(PhUtils.GetForegroundWindow()) == (int)DialogResult.Yes;
             }
-            
-            return MessageBox.Show(
-                message + " Are you sure you want to " + action + "?",
-                "Process Hacker",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning
-                ) == DialogResult.Yes;
+            else
+            {
+                return MessageBox.Show(
+                    message + " Are you sure you want to " + action + "?",
+                    "Process Hacker",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning
+                    ) == DialogResult.Yes;
+            }
         }
 
         /// <summary>
@@ -573,7 +581,7 @@ namespace ProcessHacker.Common
 #else
             MessageBox.Show(
                 PhUtils.GetForegroundWindow(),
-                operation + "\n\n" + ex,
+                operation + "\n\n" + ex.ToString(),
                 "Process Hacker",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error

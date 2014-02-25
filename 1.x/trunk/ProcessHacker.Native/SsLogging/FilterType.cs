@@ -1,4 +1,8 @@
-﻿namespace ProcessHacker.Native.SsLogging
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ProcessHacker.Native.SsLogging
 {
     public enum FilterType
     {
@@ -12,8 +16,8 @@
         {
             if (filterType == FilterType.Include)
                 return KphSsFilterType.Include;
-            
-            return KphSsFilterType.Exclude;
+            else
+                return KphSsFilterType.Exclude;
         }
     }
 }

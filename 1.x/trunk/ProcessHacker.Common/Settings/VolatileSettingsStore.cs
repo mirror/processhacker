@@ -1,4 +1,8 @@
-﻿namespace ProcessHacker.Common.Settings
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ProcessHacker.Common.Settings
 {
     public sealed class VolatileSettingsStore : ISettingsStore
     {

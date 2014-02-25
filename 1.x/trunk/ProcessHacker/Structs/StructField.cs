@@ -21,12 +21,14 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace ProcessHacker.Structs
 {
     public class StructField
     {
-        private readonly FieldType _type;
+        private FieldType _type;
 
         public StructField(string name, FieldType type)
         {
@@ -115,83 +117,91 @@ namespace ProcessHacker.Structs
                 {
                     return IntPtr.Size;
                 }
-
-                int size;
-
-                switch (this._type)
+                else
                 {
-                    case FieldType.Bool32:
-                        size = 4;
-                        break;
-                    case FieldType.Bool8:
-                        size = 1;
-                        break;
-                    case FieldType.CharASCII:
-                        size = 1;
-                        break;
-                    case FieldType.CharUTF16:
-                        size = 2; // UCS-2 
-                        break;
-                    case FieldType.Double:
-                        size = 8;
-                        break;
-                    case FieldType.Int16:
-                        size = 2;
-                        break;
-                    case FieldType.Int32:
-                        size = 4;
-                        break;
-                    case FieldType.Int64:
-                        size = 8;
-                        break;
-                    case FieldType.Int8:
-                        size = 1;
-                        break;
-                    case FieldType.PVoid:
-                        size = IntPtr.Size;
-                        break;
-                    case FieldType.Single:
-                        size = 4;
-                        break;
-                    case FieldType.StringASCII:
-                        size = this.VarLength;
-                        break;
-                    case FieldType.StringUTF16:
-                        size = this.VarLength * 2;
-                        break;
-                    case FieldType.Struct:
-                        size = 0;
-                        break;
-                    case FieldType.UInt16:
-                        size = 2;
-                        break;
-                    case FieldType.UInt32:
-                        size = 4;
-                        break;
-                    case FieldType.UInt64:
-                        size = 8;
-                        break;
-                    case FieldType.UInt8:
-                        size = 1;
-                        break;
-                    default:
-                        size = 0;
-                        break;
-                }
+                    int size;
 
-                if (this.IsArray)
-                    return size * this.VarArrayLength;
-                
-                return size;
+                    switch (_type)
+                    {
+                        case FieldType.Bool32:
+                            size = 4;
+                            break;
+                        case FieldType.Bool8:
+                            size = 1;
+                            break;
+                        case FieldType.CharASCII:
+                            size = 1;
+                            break;
+                        case FieldType.CharUTF16:
+                            size = 2; // UCS-2 
+                            break;
+                        case FieldType.Double:
+                            size = 8;
+                            break;
+                        case FieldType.Int16:
+                            size = 2;
+                            break;
+                        case FieldType.Int32:
+                            size = 4;
+                            break;
+                        case FieldType.Int64:
+                            size = 8;
+                            break;
+                        case FieldType.Int8:
+                            size = 1;
+                            break;
+                        case FieldType.PVoid:
+                            size = IntPtr.Size;
+                            break;
+                        case FieldType.Single:
+                            size = 4;
+                            break;
+                        case FieldType.StringASCII:
+                            size = VarLength;
+                            break;
+                        case FieldType.StringUTF16:
+                            size = VarLength * 2;
+                            break;
+                        case FieldType.Struct:
+                            size = 0;
+                            break;
+                        case FieldType.UInt16:
+                            size = 2;
+                            break;
+                        case FieldType.UInt32:
+                            size = 4;
+                            break;
+                        case FieldType.UInt64:
+                            size = 8;
+                            break;
+                        case FieldType.UInt8:
+                            size = 1;
+                            break;
+                        default:
+                            size = 0;
+                            break;
+                    }
+
+                    if (this.IsArray)
+                        return size * VarArrayLength;
+                    else
+                        return size;
+                }
             }
         }
 
         public string Name { get; set; }
+
         internal int VarArrayLength { get; set; }
+
         internal int VarLength { get; set; }
+
         public string SetsVarOn { get; set; }
+
         public int SetsVarOnAdd { get; set; }
+
         public float SetsVarOnMultiply { get; set; }
+
         public string StructName { get; set; }
 
         public FieldType Type

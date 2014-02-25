@@ -26,8 +26,8 @@ namespace ProcessHacker
 {
     public class CpuUsageIcon : UsageIcon
     {
-        private readonly ProcessSystemProvider _provider = Program.ProcessProvider;
-        private bool _enabled;
+        private ProcessSystemProvider _provider = Program.ProcessProvider;
+        private bool _enabled = false;
 
         public CpuUsageIcon()
         { }
@@ -103,7 +103,7 @@ namespace ProcessHacker
                 var oldIcon = this.Icon;
 
                 this.Icon = newIcon;
-                Native.Api.Win32.DestroyIcon(oldIcon.Handle);
+                ProcessHacker.Native.Api.Win32.DestroyIcon(oldIcon.Handle);
             }
 
             string mostCpuProcess = _provider.MostCpuHistory[0];

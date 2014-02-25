@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -33,19 +34,22 @@ namespace ProcessHacker.Native.Objects
     {
         public static SamUserHandle Create(SamUserAccess access, SamDomainHandle domainHandle, string name, out int userId)
         {
+            NtStatus status;
+            UnicodeString nameStr;
             IntPtr handle;
 
-            UnicodeString nameStr = new UnicodeString(name);
+            nameStr = new UnicodeString(name);
 
             try
             {
-                Win32.SamCreateUserInDomain(
+                if ((status = Win32.SamCreateUserInDomain(
                     domainHandle,
                     ref nameStr,
                     access,
                     out handle,
                     out userId
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -84,30 +88,37 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the user.</param>
         public SamUserHandle(SamDomainHandle domainHandle, int userId, SamUserAccess access)
         {
+            NtStatus status;
             IntPtr handle;
 
-            Win32.SamOpenUser(
+            if ((status = Win32.SamOpenUser(
                 domainHandle,
                 access,
                 userId,
                 out handle
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             this.Handle = handle;
         }
 
         public void ChangePassword(string oldPassword, string newPassword)
         {
-            UnicodeString oldPasswordStr = new UnicodeString(oldPassword);
-            UnicodeString newPasswordStr = new UnicodeString(newPassword);
+            NtStatus status;
+            UnicodeString oldPasswordStr;
+            UnicodeString newPasswordStr;
+
+            oldPasswordStr = new UnicodeString(oldPassword);
+            newPasswordStr = new UnicodeString(newPassword);
 
             try
             {
-                Win32.SamChangePasswordUser(
+                if ((status = Win32.SamChangePasswordUser(
                     this,
                     ref oldPasswordStr,
                     ref newPasswordStr
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -118,221 +129,220 @@ namespace ProcessHacker.Native.Objects
 
         public void Delete()
         {
-            Win32.SamDeleteUser(this).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.SamDeleteUser(this)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
-        public string AdminComment
+        public string GetAdminComment()
         {
-            get { return this.Information.AdminComment; }
+            return this.GetInformation().AdminComment;
         }
 
-        public UserAccountFlags Flags
+        public UserAccountFlags GetFlags()
         {
-            get { return this.Information.UserFlags; }
+            return this.GetInformation().UserFlags;
         }
 
-        public string FullName
+        public string GetFullName()
         {
-            get
+            using (var data = this.GetInformation(UserInformationClass.UserFullNameInformation))
+                return data.ReadStruct<UserFullNameInformation>().FullName.Read();
+        }
+
+        public int[] GetGroups()
+        {
+            NtStatus status;
+            IntPtr groups;
+            int count;
+
+            if ((status = Win32.SamGetGroupsForUser(
+                this,
+                out groups,
+                out count
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            using (var groupsAlloc = new SamMemoryAlloc(groups))
             {
-                using (SamMemoryAlloc data = this.GetInformation(UserInformationClass.UserFullNameInformation))
-                {
-                    return data.ReadStruct<UserFullNameInformation>().FullName.Text;
-                }
+                return groupsAlloc.ReadInt32Array(0, count);
             }
         }
 
-        public int[] Groups
+        public SamUserInformation GetInformation()
         {
-            get
+            using (var data = this.GetInformation(UserInformationClass.UserAllInformation))
             {
-                IntPtr groups;
-                int count;
+                UserAllInformation info = data.ReadStruct<UserAllInformation>();
 
-                Win32.SamGetGroupsForUser(
-                    this,
-                    out groups,
-                    out count
-                    ).ThrowIf();
-
-                using (SamMemoryAlloc groupsAlloc = new SamMemoryAlloc(groups))
-                {
-                    return groupsAlloc.ReadInt32Array(0, count);
-                }
-            }
-        }
-
-        public SamUserInformation Information
-        {
-            get
-            {
-                using (SamMemoryAlloc data = this.GetInformation(UserInformationClass.UserAllInformation))
-                {
-                    UserAllInformation info = data.ReadStruct<UserAllInformation>();
-
-                    return new SamUserInformation(
-                        SamDomainHandle.ToDateTime(info.LastLogon),
-                        SamDomainHandle.ToDateTime(info.LastLogoff),
-                        SamDomainHandle.ToDateTime(info.PasswordLastSet),
-                        SamDomainHandle.ToDateTime(info.AccountExpires),
-                        SamDomainHandle.ToDateTime(info.PasswordCanChange),
-                        SamDomainHandle.ToDateTime(info.PasswordMustChange),
-                        info.UserName.Text,
-                        info.FullName.Text,
-                        info.AdminComment.Text,
-                        info.UserComment.Text,
-                        info.UserId,
-                        info.PrimaryGroupId,
-                        info.UserAccountControl,
-                        info.PasswordExpired
-                        );
-                }
+                return new SamUserInformation(
+                    SamDomainHandle.ToDateTime(info.LastLogon),
+                    SamDomainHandle.ToDateTime(info.LastLogoff),
+                    SamDomainHandle.ToDateTime(info.PasswordLastSet),
+                    SamDomainHandle.ToDateTime(info.AccountExpires),
+                    SamDomainHandle.ToDateTime(info.PasswordCanChange),
+                    SamDomainHandle.ToDateTime(info.PasswordMustChange),
+                    info.UserName.Read(),
+                    info.FullName.Read(),
+                    info.AdminComment.Read(),
+                    info.UserComment.Read(),
+                    info.UserId,
+                    info.PrimaryGroupId,
+                    info.UserAccountControl,
+                    info.PasswordExpired
+                    );
             }
         }
 
         private SamMemoryAlloc GetInformation(UserInformationClass infoClass)
         {
+            NtStatus status;
             IntPtr buffer;
 
-            Win32.SamQueryInformationUser(
+            if ((status = Win32.SamQueryInformationUser(
                 this,
                 infoClass,
                 out buffer
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return new SamMemoryAlloc(buffer);
         }
 
-        public string Name
+        public string GetName()
         {
-            get
+            using (var data = this.GetInformation(UserInformationClass.UserAccountNameInformation))
+                return data.ReadStruct<UserAccountNameInformation>().UserName.Read();
+        }
+
+        public string GetPasswordHint()
+        {
+            using (var data = this.GetInformation(UserInformationClass.UserExtendedInformation))
+                return data.ReadStruct<UserExtendedInformation>().PasswordHint.Read();
+        }
+
+        public void SetAdminComment(string comment)
+        {
+            unsafe
             {
-                using (SamMemoryAlloc data = this.GetInformation(UserInformationClass.UserAccountNameInformation))
+                UserAllInformation info = new UserAllInformation();
+
+                info.WhichFields = UserWhichFields.AdminComment;
+                info.AdminComment = new UnicodeString(comment);
+
+                try
                 {
-                    return data.ReadStruct<UserAccountNameInformation>().UserName.Text;
+                    this.SetInformation(UserInformationClass.UserAllInformation, new IntPtr(&info));
+                }
+                finally
+                {
+                    info.AdminComment.Dispose();
                 }
             }
         }
 
-        public string PasswordHint
+        public void SetFlags(UserAccountFlags flags)
         {
-            get
+            unsafe
             {
-                using (SamMemoryAlloc data = this.GetInformation(UserInformationClass.UserExtendedInformation))
-                {
-                    return data.ReadStruct<UserExtendedInformation>().PasswordHint.Text;
-                }
-            }
-        }
+                UserAllInformation info = new UserAllInformation();
 
-        public unsafe void SetAdminComment(string comment)
-        {
-            UserAllInformation info = new UserAllInformation
-            {
-                WhichFields = UserWhichFields.AdminComment, 
-                AdminComment = new UnicodeString(comment)
-            };
+                info.WhichFields = UserWhichFields.UserAccountControl;
+                info.UserAccountControl = flags;
 
-            try
-            {
                 this.SetInformation(UserInformationClass.UserAllInformation, new IntPtr(&info));
             }
-            finally
-            {
-                info.AdminComment.Dispose();
-            }
         }
 
-        public unsafe void SetFlags(UserAccountFlags flags)
+        public void SetFullName(string fullName)
         {
-            UserAllInformation info = new UserAllInformation
+            unsafe
             {
-                WhichFields = UserWhichFields.UserAccountControl, 
-                UserAccountControl = flags
-            };
+                UserFullNameInformation info = new UserFullNameInformation();
 
-            this.SetInformation(UserInformationClass.UserAllInformation, new IntPtr(&info));
-        }
+                info.FullName = new UnicodeString(fullName);
 
-        public unsafe void SetFullName(string fullName)
-        {
-            UserFullNameInformation info = new UserFullNameInformation
-            {
-                FullName = new UnicodeString(fullName)
-            };
-
-            try
-            {
-                this.SetInformation(UserInformationClass.UserFullNameInformation, new IntPtr(&info));
-            }
-            finally
-            {
-                info.FullName.Dispose();
+                try
+                {
+                    this.SetInformation(UserInformationClass.UserFullNameInformation, new IntPtr(&info));
+                }
+                finally
+                {
+                    info.FullName.Dispose();
+                }
             }
         }
 
         private void SetInformation(UserInformationClass infoClass, IntPtr buffer)
         {
-            Win32.SamSetInformationUser(
+            NtStatus status;
+
+            if ((status = Win32.SamSetInformationUser(
                 this,
                 infoClass,
                 buffer
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
-        public unsafe void SetPassword(string password, bool expired)
+        public void SetPassword(string password, bool expired)
         {
-            UserSetPasswordInformation info = new UserSetPasswordInformation
+            unsafe
             {
-                Password = new UnicodeString(password), 
-                PasswordExpired = expired
-            };
+                UserSetPasswordInformation info = new UserSetPasswordInformation();
 
-            try
-            {
-                this.SetInformation(UserInformationClass.UserSetPasswordInformation, new IntPtr(&info));
-            }
-            finally
-            {
-                info.Password.Dispose();
+                info.Password = new UnicodeString(password);
+                info.PasswordExpired = expired;
+
+                try
+                {
+                    this.SetInformation(UserInformationClass.UserSetPasswordInformation, new IntPtr(&info));
+                }
+                finally
+                {
+                    info.Password.Dispose();
+                }
             }
         }
 
-        public unsafe void SetPasswordHint(string passwordHint)
+        public void SetPasswordHint(string passwordHint)
         {
-            UserExtendedInformation info = new UserExtendedInformation
+            unsafe
             {
-                ExtendedWhichFields = UserExtendedWhichFields.PasswordHint, 
-                PasswordHint = new UnicodeString(passwordHint)
-            };
+                UserExtendedInformation info = new UserExtendedInformation();
 
-            try
-            {
-                this.SetInformation(UserInformationClass.UserExtendedInformation, new IntPtr(&info));
-            }
-            finally
-            {
-                info.PasswordHint.Dispose();
+                info.ExtendedWhichFields = UserExtendedWhichFields.PasswordHint;
+                info.PasswordHint = new UnicodeString(passwordHint);
+
+                try
+                {
+                    this.SetInformation(UserInformationClass.UserExtendedInformation, new IntPtr(&info));
+                }
+                finally
+                {
+                    info.PasswordHint.Dispose();
+                }
             }
         }
     }
 
     public class SamUserInformation
     {
-        private readonly DateTime _lastLogon;
-        private readonly DateTime _lastLogoff;
-        private readonly DateTime _passwordLastSet;
-        private readonly DateTime _accountExpires;
-        private readonly DateTime _passwordCanChange;
-        private readonly DateTime _passwordMustChange;
-        private readonly string _userName;
-        private readonly string _fullName;
-        private readonly string _adminComment;
-        private readonly string _userComment;
-        private readonly int _userId;
-        private readonly int _primaryGroupId;
-        private readonly UserAccountFlags _userFlags;
-        private readonly bool _passwordExpired;
+        private DateTime _lastLogon;
+        private DateTime _lastLogoff;
+        private DateTime _passwordLastSet;
+        private DateTime _accountExpires;
+        private DateTime _passwordCanChange;
+        private DateTime _passwordMustChange;
+        private string _userName;
+        private string _fullName;
+        private string _adminComment;
+        private string _userComment;
+        private int _userId;
+        private int _primaryGroupId;
+        private UserAccountFlags _userFlags;
+        private bool _passwordExpired;
 
         public SamUserInformation(
             DateTime lastLogon,

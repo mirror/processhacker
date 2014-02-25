@@ -39,14 +39,14 @@
             this.labelText.AutoSize = true;
             this.labelText.Location = new System.Drawing.Point(12, 9);
             this.labelText.Name = "labelText";
-            this.labelText.Size = new System.Drawing.Size(32, 13);
+            this.labelText.Size = new System.Drawing.Size(30, 13);
             this.labelText.TabIndex = 0;
             this.labelText.Text = "Item:";
             // 
             // comboBox
             // 
-            this.comboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox.FormattingEnabled = true;
             this.comboBox.Location = new System.Drawing.Point(12, 35);
@@ -83,7 +83,6 @@
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(342, 97);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.buttonCancel);

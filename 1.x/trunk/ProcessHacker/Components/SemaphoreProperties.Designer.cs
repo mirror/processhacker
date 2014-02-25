@@ -44,7 +44,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(84, 13);
+            this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Current Count:";
             // 
@@ -53,7 +53,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 25);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(94, 13);
+            this.label2.Size = new System.Drawing.Size(85, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "Maximum Count:";
             // 
@@ -101,7 +101,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.buttonAcquire);
             this.Controls.Add(this.buttonRelease);
             this.Controls.Add(this.label2);

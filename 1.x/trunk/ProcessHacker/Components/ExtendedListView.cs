@@ -31,7 +31,6 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
@@ -41,7 +40,7 @@ namespace ProcessHacker.Components
 
     public sealed class LinkClickedEventArgs : EventArgs
     {
-        private readonly ListViewGroup _group;
+        private ListViewGroup _group;
 
         public LinkClickedEventArgs(ListViewGroup group)
         {
@@ -54,7 +53,7 @@ namespace ProcessHacker.Components
         }
     }
 
-    public sealed class ExtendedListView : ListView
+    public class ExtendedListView : ListView
     {
         #region Control Variables
 
@@ -84,17 +83,6 @@ namespace ProcessHacker.Components
             //Enable the OnNotifyMessage event so we get a chance to filter out 
             // Windows messages before they get to the form's WndProc.
             this.SetStyle(ControlStyles.EnableNotifyMessage, true);
-        }
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-
-            if (OSVersion.IsAbove(WindowsVersion.XP))
-            {
-                Win32.SetWindowTheme(this.Handle, "Explorer", null);
-            }
-
-            this.MakeFocusInvisible();
         }
 
         public bool DoubleClickChecks
@@ -126,9 +114,7 @@ namespace ProcessHacker.Components
         {
             foreach (ListViewGroup group in this.Groups)
             {
-                int? groupId = GetGroupID(group);
-
-                if (groupId != null && groupId.Value == id)
+                if (GetGroupID(group).Value == id)
                     return group;
             }
 
@@ -139,17 +125,18 @@ namespace ProcessHacker.Components
         {
             int? grpId = null;
             Type grpType = lvGroup.GetType();
-
-            PropertyInfo pInfo = grpType.GetProperty("ID", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (pInfo != null)
+            if (grpType != null)
             {
-                object tmprtnval = pInfo.GetValue(lvGroup, null);
-                if (tmprtnval != null)
+                PropertyInfo pInfo = grpType.GetProperty("ID", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (pInfo != null)
                 {
-                    grpId = tmprtnval as int?;
+                    object tmprtnval = pInfo.GetValue(lvGroup, null);
+                    if (tmprtnval != null)
+                    {
+                        grpId = tmprtnval as int?;
+                    }
                 }
             }
-
             return grpId;
         }
 
@@ -160,13 +147,13 @@ namespace ProcessHacker.Components
             if (lvGroup == null || lvGroup.ListView == null)
                 return;
             if (lvGroup.ListView.InvokeRequired)
-                lvGroup.ListView.BeginInvoke(new CallBackSetGroupState(SetGrpState), lvGroup, grpState, task);
+                lvGroup.ListView.Invoke(new CallBackSetGroupState(SetGrpState), lvGroup, grpState, task);
             else
             {
                 int? GrpId = GetGroupID(lvGroup);
                 int gIndex = lvGroup.ListView.Groups.IndexOf(lvGroup);
                 LVGroup group = new LVGroup();
-                group.CbSize = LVGroup.SizeOf;
+                group.CbSize = Marshal.SizeOf(group);
 
                 if (!string.IsNullOrEmpty(task))
                 {
@@ -188,12 +175,12 @@ namespace ProcessHacker.Components
                 if (GrpId != null)
                 {
                     group.GroupId = GrpId.Value;
-                    SendMessage(this.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
+                    SendMessage(base.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
                 }
                 else
                 {
                     group.GroupId = gIndex;
-                    SendMessage(this.Handle, LVM_SetGroupInfo, gIndex, ref group);
+                    SendMessage(base.Handle, LVM_SetGroupInfo, gIndex, ref group);
                 }
 
                 lvGroup.ListView.Refresh();
@@ -281,15 +268,8 @@ namespace ProcessHacker.Components
         /// Used to set and retrieve groups.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        public struct LVGroup
+        private struct LVGroup
         {
-            public static readonly int SizeOf;
-
-            static LVGroup()
-            {
-                SizeOf = Marshal.SizeOf(typeof(LVGroup));
-            }
-
             /// <summary>
             /// Size of this structure, in bytes.
             /// </summary>
@@ -417,12 +397,12 @@ namespace ProcessHacker.Components
             /// </summary>
             public uint CchSubsetTitle;
         }
-
+ 
         /// <summary>
         /// WM_NOTIFY notificaiton message header.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        public struct NMHDR
+        private struct NMHDR
         {
             /// <summary>
             /// Window handle to the control sending a message.
@@ -442,7 +422,7 @@ namespace ProcessHacker.Components
         ///  Used to set and retrieve information about a link item.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        public struct LITEM
+        private struct LITEM
         {
             /// <summary>
             /// Combination of one or more of the LIF flags
@@ -477,7 +457,7 @@ namespace ProcessHacker.Components
         /// Contains information about an LVN_LINKCLICK  notification. 
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        public struct NMLVLINK
+        private struct NMLVLINK
         {
             /// <summary>
             /// NMHDR structure that contains basic

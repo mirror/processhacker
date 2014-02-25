@@ -136,7 +136,7 @@
             this.tableLayoutPanel1.Controls.Add(this.labelCPUCyclesText, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.labelCPUCycles, 1, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
@@ -144,7 +144,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(189, 87);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(189, 89);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // label6
@@ -153,7 +153,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(3, 2);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(43, 13);
+            this.label6.Size = new System.Drawing.Size(38, 13);
             this.label6.TabIndex = 1;
             this.label6.Text = "Priority";
             // 
@@ -163,7 +163,7 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(3, 36);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(65, 13);
+            this.label8.Size = new System.Drawing.Size(63, 13);
             this.label8.TabIndex = 1;
             this.label8.Text = "Kernel Time";
             // 
@@ -173,7 +173,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(3, 53);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(56, 13);
+            this.label9.Size = new System.Drawing.Size(55, 13);
             this.label9.TabIndex = 1;
             this.label9.Text = "User Time";
             // 
@@ -181,9 +181,9 @@
             // 
             this.label10.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(3, 71);
+            this.label10.Location = new System.Drawing.Point(3, 72);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(58, 13);
+            this.label10.Size = new System.Drawing.Size(57, 13);
             this.label10.TabIndex = 1;
             this.label10.Text = "Total Time";
             // 
@@ -191,9 +191,9 @@
             // 
             this.labelCPUPriority.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelCPUPriority.AutoSize = true;
-            this.labelCPUPriority.Location = new System.Drawing.Point(152, 2);
+            this.labelCPUPriority.Location = new System.Drawing.Point(153, 2);
             this.labelCPUPriority.Name = "labelCPUPriority";
-            this.labelCPUPriority.Size = new System.Drawing.Size(34, 13);
+            this.labelCPUPriority.Size = new System.Drawing.Size(33, 13);
             this.labelCPUPriority.TabIndex = 1;
             this.labelCPUPriority.Text = "value";
             // 
@@ -201,9 +201,9 @@
             // 
             this.labelCPUKernelTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelCPUKernelTime.AutoSize = true;
-            this.labelCPUKernelTime.Location = new System.Drawing.Point(152, 36);
+            this.labelCPUKernelTime.Location = new System.Drawing.Point(153, 36);
             this.labelCPUKernelTime.Name = "labelCPUKernelTime";
-            this.labelCPUKernelTime.Size = new System.Drawing.Size(34, 13);
+            this.labelCPUKernelTime.Size = new System.Drawing.Size(33, 13);
             this.labelCPUKernelTime.TabIndex = 1;
             this.labelCPUKernelTime.Text = "value";
             // 
@@ -211,9 +211,9 @@
             // 
             this.labelCPUUserTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelCPUUserTime.AutoSize = true;
-            this.labelCPUUserTime.Location = new System.Drawing.Point(152, 53);
+            this.labelCPUUserTime.Location = new System.Drawing.Point(153, 53);
             this.labelCPUUserTime.Name = "labelCPUUserTime";
-            this.labelCPUUserTime.Size = new System.Drawing.Size(34, 13);
+            this.labelCPUUserTime.Size = new System.Drawing.Size(33, 13);
             this.labelCPUUserTime.TabIndex = 1;
             this.labelCPUUserTime.Text = "value";
             // 
@@ -221,9 +221,9 @@
             // 
             this.labelCPUTotalTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelCPUTotalTime.AutoSize = true;
-            this.labelCPUTotalTime.Location = new System.Drawing.Point(152, 71);
+            this.labelCPUTotalTime.Location = new System.Drawing.Point(153, 72);
             this.labelCPUTotalTime.Name = "labelCPUTotalTime";
-            this.labelCPUTotalTime.Size = new System.Drawing.Size(34, 13);
+            this.labelCPUTotalTime.Size = new System.Drawing.Size(33, 13);
             this.labelCPUTotalTime.TabIndex = 1;
             this.labelCPUTotalTime.Text = "value";
             // 
@@ -241,9 +241,9 @@
             // 
             this.labelCPUCycles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelCPUCycles.AutoSize = true;
-            this.labelCPUCycles.Location = new System.Drawing.Point(152, 19);
+            this.labelCPUCycles.Location = new System.Drawing.Point(153, 19);
             this.labelCPUCycles.Name = "labelCPUCycles";
-            this.labelCPUCycles.Size = new System.Drawing.Size(34, 13);
+            this.labelCPUCycles.Size = new System.Drawing.Size(33, 13);
             this.labelCPUCycles.TabIndex = 1;
             this.labelCPUCycles.Text = "value";
             // 
@@ -281,7 +281,7 @@
             this.tableLayoutPanel2.Controls.Add(this.label30, 0, 8);
             this.tableLayoutPanel2.Controls.Add(this.labelMemoryPP, 1, 8);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 9;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
@@ -293,7 +293,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(189, 173);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(189, 175);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // label24
@@ -302,7 +302,7 @@
             this.label24.AutoSize = true;
             this.label24.Location = new System.Drawing.Point(3, 117);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(110, 13);
+            this.label24.Size = new System.Drawing.Size(107, 13);
             this.label24.TabIndex = 7;
             this.label24.Text = "Peak Pagefile Usage";
             // 
@@ -312,7 +312,7 @@
             this.label22.AutoSize = true;
             this.label22.Location = new System.Drawing.Point(3, 98);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(83, 13);
+            this.label22.Size = new System.Drawing.Size(79, 13);
             this.label22.TabIndex = 5;
             this.label22.Text = "Pagefile Usage";
             // 
@@ -322,7 +322,7 @@
             this.label20.AutoSize = true;
             this.label20.Location = new System.Drawing.Point(3, 79);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(91, 13);
+            this.label20.Size = new System.Drawing.Size(87, 13);
             this.label20.TabIndex = 3;
             this.label20.Text = "Peak Virtual Size";
             // 
@@ -332,7 +332,7 @@
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(3, 3);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(71, 13);
+            this.label11.Size = new System.Drawing.Size(69, 13);
             this.label11.TabIndex = 1;
             this.label11.Text = "Private Bytes";
             // 
@@ -342,7 +342,7 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(3, 22);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(71, 13);
+            this.label12.Size = new System.Drawing.Size(66, 13);
             this.label12.TabIndex = 1;
             this.label12.Text = "Working Set";
             // 
@@ -352,7 +352,7 @@
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(3, 41);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(98, 13);
+            this.label13.Size = new System.Drawing.Size(94, 13);
             this.label13.TabIndex = 1;
             this.label13.Text = "Peak Working Set";
             // 
@@ -362,7 +362,7 @@
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(3, 60);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(64, 13);
+            this.label14.Size = new System.Drawing.Size(59, 13);
             this.label14.TabIndex = 1;
             this.label14.Text = "Virtual Size";
             // 
@@ -370,9 +370,9 @@
             // 
             this.labelMemoryPB.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelMemoryPB.AutoSize = true;
-            this.labelMemoryPB.Location = new System.Drawing.Point(152, 3);
+            this.labelMemoryPB.Location = new System.Drawing.Point(153, 3);
             this.labelMemoryPB.Name = "labelMemoryPB";
-            this.labelMemoryPB.Size = new System.Drawing.Size(34, 13);
+            this.labelMemoryPB.Size = new System.Drawing.Size(33, 13);
             this.labelMemoryPB.TabIndex = 1;
             this.labelMemoryPB.Text = "value";
             // 
@@ -380,9 +380,9 @@
             // 
             this.labelMemoryWS.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelMemoryWS.AutoSize = true;
-            this.labelMemoryWS.Location = new System.Drawing.Point(152, 22);
+            this.labelMemoryWS.Location = new System.Drawing.Point(153, 22);
             this.labelMemoryWS.Name = "labelMemoryWS";
-            this.labelMemoryWS.Size = new System.Drawing.Size(34, 13);
+            this.labelMemoryWS.Size = new System.Drawing.Size(33, 13);
             this.labelMemoryWS.TabIndex = 1;
             this.labelMemoryWS.Text = "value";
             // 
@@ -390,9 +390,9 @@
             // 
             this.labelMemoryPWS.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelMemoryPWS.AutoSize = true;
-            this.labelMemoryPWS.Location = new System.Drawing.Point(152, 41);
+            this.labelMemoryPWS.Location = new System.Drawing.Point(153, 41);
             this.labelMemoryPWS.Name = "labelMemoryPWS";
-            this.labelMemoryPWS.Size = new System.Drawing.Size(34, 13);
+            this.labelMemoryPWS.Size = new System.Drawing.Size(33, 13);
             this.labelMemoryPWS.TabIndex = 1;
             this.labelMemoryPWS.Text = "value";
             // 
@@ -400,9 +400,9 @@
             // 
             this.labelMemoryVS.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelMemoryVS.AutoSize = true;
-            this.labelMemoryVS.Location = new System.Drawing.Point(152, 60);
+            this.labelMemoryVS.Location = new System.Drawing.Point(153, 60);
             this.labelMemoryVS.Name = "labelMemoryVS";
-            this.labelMemoryVS.Size = new System.Drawing.Size(34, 13);
+            this.labelMemoryVS.Size = new System.Drawing.Size(33, 13);
             this.labelMemoryVS.TabIndex = 1;
             this.labelMemoryVS.Text = "value";
             // 
@@ -410,9 +410,9 @@
             // 
             this.labelMemoryPVS.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelMemoryPVS.AutoSize = true;
-            this.labelMemoryPVS.Location = new System.Drawing.Point(152, 79);
+            this.labelMemoryPVS.Location = new System.Drawing.Point(153, 79);
             this.labelMemoryPVS.Name = "labelMemoryPVS";
-            this.labelMemoryPVS.Size = new System.Drawing.Size(34, 13);
+            this.labelMemoryPVS.Size = new System.Drawing.Size(33, 13);
             this.labelMemoryPVS.TabIndex = 1;
             this.labelMemoryPVS.Text = "value";
             // 
@@ -420,9 +420,9 @@
             // 
             this.labelMemoryPU.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelMemoryPU.AutoSize = true;
-            this.labelMemoryPU.Location = new System.Drawing.Point(152, 98);
+            this.labelMemoryPU.Location = new System.Drawing.Point(153, 98);
             this.labelMemoryPU.Name = "labelMemoryPU";
-            this.labelMemoryPU.Size = new System.Drawing.Size(34, 13);
+            this.labelMemoryPU.Size = new System.Drawing.Size(33, 13);
             this.labelMemoryPU.TabIndex = 1;
             this.labelMemoryPU.Text = "value";
             // 
@@ -430,9 +430,9 @@
             // 
             this.labelMemoryPPU.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelMemoryPPU.AutoSize = true;
-            this.labelMemoryPPU.Location = new System.Drawing.Point(152, 117);
+            this.labelMemoryPPU.Location = new System.Drawing.Point(153, 117);
             this.labelMemoryPPU.Name = "labelMemoryPPU";
-            this.labelMemoryPPU.Size = new System.Drawing.Size(34, 13);
+            this.labelMemoryPPU.Size = new System.Drawing.Size(33, 13);
             this.labelMemoryPPU.TabIndex = 1;
             this.labelMemoryPPU.Text = "value";
             // 
@@ -442,7 +442,7 @@
             this.label25.AutoSize = true;
             this.label25.Location = new System.Drawing.Point(3, 136);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(66, 13);
+            this.label25.Size = new System.Drawing.Size(63, 13);
             this.label25.TabIndex = 7;
             this.label25.Text = "Page Faults";
             // 
@@ -450,9 +450,9 @@
             // 
             this.labelMemoryPF.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelMemoryPF.AutoSize = true;
-            this.labelMemoryPF.Location = new System.Drawing.Point(152, 136);
+            this.labelMemoryPF.Location = new System.Drawing.Point(153, 136);
             this.labelMemoryPF.Name = "labelMemoryPF";
-            this.labelMemoryPF.Size = new System.Drawing.Size(34, 13);
+            this.labelMemoryPF.Size = new System.Drawing.Size(33, 13);
             this.labelMemoryPF.TabIndex = 1;
             this.labelMemoryPF.Text = "value";
             // 
@@ -460,9 +460,9 @@
             // 
             this.label30.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(3, 156);
+            this.label30.Location = new System.Drawing.Point(3, 157);
             this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(71, 13);
+            this.label30.Size = new System.Drawing.Size(66, 13);
             this.label30.TabIndex = 7;
             this.label30.Text = "Page Priority";
             // 
@@ -470,9 +470,9 @@
             // 
             this.labelMemoryPP.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelMemoryPP.AutoSize = true;
-            this.labelMemoryPP.Location = new System.Drawing.Point(152, 156);
+            this.labelMemoryPP.Location = new System.Drawing.Point(153, 157);
             this.labelMemoryPP.Name = "labelMemoryPP";
-            this.labelMemoryPP.Size = new System.Drawing.Size(34, 13);
+            this.labelMemoryPP.Size = new System.Drawing.Size(33, 13);
             this.labelMemoryPP.TabIndex = 1;
             this.labelMemoryPP.Text = "value";
             // 
@@ -506,7 +506,7 @@
             this.tableLayoutPanel3.Controls.Add(this.label31, 0, 6);
             this.tableLayoutPanel3.Controls.Add(this.labelIOPriority, 1, 6);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 7;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
@@ -516,7 +516,7 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(189, 127);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(189, 129);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // label16
@@ -525,7 +525,7 @@
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(3, 92);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(67, 13);
+            this.label16.Size = new System.Drawing.Size(62, 13);
             this.label16.TabIndex = 5;
             this.label16.Text = "Other Bytes";
             // 
@@ -535,7 +535,7 @@
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(3, 74);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(37, 13);
+            this.label17.Size = new System.Drawing.Size(33, 13);
             this.label17.TabIndex = 3;
             this.label17.Text = "Other";
             // 
@@ -555,7 +555,7 @@
             this.label19.AutoSize = true;
             this.label19.Location = new System.Drawing.Point(3, 20);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(63, 13);
+            this.label19.Size = new System.Drawing.Size(62, 13);
             this.label19.TabIndex = 1;
             this.label19.Text = "Read Bytes";
             // 
@@ -565,7 +565,7 @@
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(3, 38);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(40, 13);
+            this.label21.Size = new System.Drawing.Size(37, 13);
             this.label21.TabIndex = 1;
             this.label21.Text = "Writes";
             // 
@@ -575,7 +575,7 @@
             this.label23.AutoSize = true;
             this.label23.Location = new System.Drawing.Point(3, 56);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(65, 13);
+            this.label23.Size = new System.Drawing.Size(61, 13);
             this.label23.TabIndex = 1;
             this.label23.Text = "Write Bytes";
             // 
@@ -583,9 +583,9 @@
             // 
             this.labelIOReads.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelIOReads.AutoSize = true;
-            this.labelIOReads.Location = new System.Drawing.Point(152, 2);
+            this.labelIOReads.Location = new System.Drawing.Point(153, 2);
             this.labelIOReads.Name = "labelIOReads";
-            this.labelIOReads.Size = new System.Drawing.Size(34, 13);
+            this.labelIOReads.Size = new System.Drawing.Size(33, 13);
             this.labelIOReads.TabIndex = 1;
             this.labelIOReads.Text = "value";
             // 
@@ -593,9 +593,9 @@
             // 
             this.labelIOReadBytes.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelIOReadBytes.AutoSize = true;
-            this.labelIOReadBytes.Location = new System.Drawing.Point(152, 20);
+            this.labelIOReadBytes.Location = new System.Drawing.Point(153, 20);
             this.labelIOReadBytes.Name = "labelIOReadBytes";
-            this.labelIOReadBytes.Size = new System.Drawing.Size(34, 13);
+            this.labelIOReadBytes.Size = new System.Drawing.Size(33, 13);
             this.labelIOReadBytes.TabIndex = 1;
             this.labelIOReadBytes.Text = "value";
             // 
@@ -603,9 +603,9 @@
             // 
             this.labelIOWrites.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelIOWrites.AutoSize = true;
-            this.labelIOWrites.Location = new System.Drawing.Point(152, 38);
+            this.labelIOWrites.Location = new System.Drawing.Point(153, 38);
             this.labelIOWrites.Name = "labelIOWrites";
-            this.labelIOWrites.Size = new System.Drawing.Size(34, 13);
+            this.labelIOWrites.Size = new System.Drawing.Size(33, 13);
             this.labelIOWrites.TabIndex = 1;
             this.labelIOWrites.Text = "value";
             // 
@@ -613,9 +613,9 @@
             // 
             this.labelIOWriteBytes.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelIOWriteBytes.AutoSize = true;
-            this.labelIOWriteBytes.Location = new System.Drawing.Point(152, 56);
+            this.labelIOWriteBytes.Location = new System.Drawing.Point(153, 56);
             this.labelIOWriteBytes.Name = "labelIOWriteBytes";
-            this.labelIOWriteBytes.Size = new System.Drawing.Size(34, 13);
+            this.labelIOWriteBytes.Size = new System.Drawing.Size(33, 13);
             this.labelIOWriteBytes.TabIndex = 1;
             this.labelIOWriteBytes.Text = "value";
             // 
@@ -623,9 +623,9 @@
             // 
             this.labelIOOther.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelIOOther.AutoSize = true;
-            this.labelIOOther.Location = new System.Drawing.Point(152, 74);
+            this.labelIOOther.Location = new System.Drawing.Point(153, 74);
             this.labelIOOther.Name = "labelIOOther";
-            this.labelIOOther.Size = new System.Drawing.Size(34, 13);
+            this.labelIOOther.Size = new System.Drawing.Size(33, 13);
             this.labelIOOther.TabIndex = 1;
             this.labelIOOther.Text = "value";
             // 
@@ -633,9 +633,9 @@
             // 
             this.labelIOOtherBytes.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelIOOtherBytes.AutoSize = true;
-            this.labelIOOtherBytes.Location = new System.Drawing.Point(152, 92);
+            this.labelIOOtherBytes.Location = new System.Drawing.Point(153, 92);
             this.labelIOOtherBytes.Name = "labelIOOtherBytes";
-            this.labelIOOtherBytes.Size = new System.Drawing.Size(34, 13);
+            this.labelIOOtherBytes.Size = new System.Drawing.Size(33, 13);
             this.labelIOOtherBytes.TabIndex = 1;
             this.labelIOOtherBytes.Text = "value";
             // 
@@ -643,9 +643,9 @@
             // 
             this.label31.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(3, 111);
+            this.label31.Location = new System.Drawing.Point(3, 112);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(62, 13);
+            this.label31.Size = new System.Drawing.Size(57, 13);
             this.label31.TabIndex = 5;
             this.label31.Text = "I/O Priority";
             // 
@@ -653,9 +653,9 @@
             // 
             this.labelIOPriority.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelIOPriority.AutoSize = true;
-            this.labelIOPriority.Location = new System.Drawing.Point(152, 111);
+            this.labelIOPriority.Location = new System.Drawing.Point(153, 112);
             this.labelIOPriority.Name = "labelIOPriority";
-            this.labelIOPriority.Size = new System.Drawing.Size(34, 13);
+            this.labelIOPriority.Size = new System.Drawing.Size(33, 13);
             this.labelIOPriority.TabIndex = 1;
             this.labelIOPriority.Text = "value";
             // 
@@ -682,23 +682,23 @@
             this.tableLayoutPanel4.Controls.Add(this.labelOtherUSERHandles, 1, 2);
             this.tableLayoutPanel4.Controls.Add(this.buttonHandleDetails, 1, 3);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 4;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(189, 78);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(189, 80);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
             // label27
             // 
             this.label27.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(3, 1);
+            this.label27.Location = new System.Drawing.Point(3, 2);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(49, 13);
+            this.label27.Size = new System.Drawing.Size(46, 13);
             this.label27.TabIndex = 1;
             this.label27.Text = "Handles";
             // 
@@ -706,9 +706,9 @@
             // 
             this.labelOtherHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelOtherHandles.AutoSize = true;
-            this.labelOtherHandles.Location = new System.Drawing.Point(152, 1);
+            this.labelOtherHandles.Location = new System.Drawing.Point(153, 2);
             this.labelOtherHandles.Name = "labelOtherHandles";
-            this.labelOtherHandles.Size = new System.Drawing.Size(34, 13);
+            this.labelOtherHandles.Size = new System.Drawing.Size(33, 13);
             this.labelOtherHandles.TabIndex = 1;
             this.labelOtherHandles.Text = "value";
             // 
@@ -716,9 +716,9 @@
             // 
             this.label28.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(3, 18);
+            this.label28.Location = new System.Drawing.Point(3, 19);
             this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(71, 13);
+            this.label28.Size = new System.Drawing.Size(68, 13);
             this.label28.TabIndex = 1;
             this.label28.Text = "GDI Handles";
             // 
@@ -726,7 +726,7 @@
             // 
             this.label29.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(3, 35);
+            this.label29.Location = new System.Drawing.Point(3, 36);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(79, 13);
             this.label29.TabIndex = 1;
@@ -736,9 +736,9 @@
             // 
             this.labelOtherGDIHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelOtherGDIHandles.AutoSize = true;
-            this.labelOtherGDIHandles.Location = new System.Drawing.Point(152, 18);
+            this.labelOtherGDIHandles.Location = new System.Drawing.Point(153, 19);
             this.labelOtherGDIHandles.Name = "labelOtherGDIHandles";
-            this.labelOtherGDIHandles.Size = new System.Drawing.Size(34, 13);
+            this.labelOtherGDIHandles.Size = new System.Drawing.Size(33, 13);
             this.labelOtherGDIHandles.TabIndex = 1;
             this.labelOtherGDIHandles.Text = "value";
             // 
@@ -746,9 +746,9 @@
             // 
             this.labelOtherUSERHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelOtherUSERHandles.AutoSize = true;
-            this.labelOtherUSERHandles.Location = new System.Drawing.Point(152, 35);
+            this.labelOtherUSERHandles.Location = new System.Drawing.Point(153, 36);
             this.labelOtherUSERHandles.Name = "labelOtherUSERHandles";
-            this.labelOtherUSERHandles.Size = new System.Drawing.Size(34, 13);
+            this.labelOtherUSERHandles.Size = new System.Drawing.Size(33, 13);
             this.labelOtherUSERHandles.TabIndex = 1;
             this.labelOtherUSERHandles.Text = "value";
             // 
@@ -756,9 +756,9 @@
             // 
             this.buttonHandleDetails.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.buttonHandleDetails.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonHandleDetails.Location = new System.Drawing.Point(112, 53);
+            this.buttonHandleDetails.Location = new System.Drawing.Point(112, 54);
             this.buttonHandleDetails.Name = "buttonHandleDetails";
-            this.buttonHandleDetails.Size = new System.Drawing.Size(74, 22);
+            this.buttonHandleDetails.Size = new System.Drawing.Size(74, 23);
             this.buttonHandleDetails.TabIndex = 2;
             this.buttonHandleDetails.Text = "Details...";
             this.buttonHandleDetails.UseVisualStyleBackColor = true;
@@ -768,7 +768,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.flowStats);
             this.Name = "ProcessStatistics";
             this.Size = new System.Drawing.Size(433, 374);

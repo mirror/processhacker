@@ -73,17 +73,18 @@ namespace ProcessHacker
 
         public static void WriteListEntry(this BinaryWriter bw, string value)
         {
-            if (string.IsNullOrEmpty(value))
-                value = string.Empty;
+            if (value == null)
+                value = "";
 
             bw.Write(Encoding.Unicode.GetBytes(value.Replace("\0", "") + "\0"));
         }
 
-        public static void AppendStruct<T>(MemoryObject mo, int size, T s) where T : struct
+        public static void AppendStruct<T>(MemoryObject mo, T s)
+            where T : struct
         {
-            using (MemoryAlloc data = new MemoryAlloc(size))
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
             {
-                data.WriteStruct(s);
+                data.WriteStruct<T>(s);
                 mo.AppendData(data.ReadBytes(data.Size));
             }
         }
@@ -94,7 +95,7 @@ namespace ProcessHacker
             string str = Encoding.Unicode.GetString(mo.ReadData());
             int i = 0;
 
-            if (string.IsNullOrEmpty(str))
+            if (str == "")
                 return dict;
 
             while (true)
@@ -123,7 +124,7 @@ namespace ProcessHacker
         public static Icon GetIcon(MemoryObject mo)
         {
             byte[] data = mo.ReadData();
-            ByteStreamReader reader = new ByteStreamReader(data);
+            ProcessHacker.Common.ByteStreamReader reader = new ProcessHacker.Common.ByteStreamReader(data);
 
             using (Bitmap b = new Bitmap(reader))
             {
@@ -186,7 +187,7 @@ namespace ProcessHacker
         {
             MemoryFileSystem mfs = new MemoryFileSystem(fileName, mode);
 
-            using (MemoryObject sysinfo = mfs.RootObject.CreateChild("SystemInformation"))
+            using (var sysinfo = mfs.RootObject.CreateChild("SystemInformation"))
             {
                 BinaryWriter bw = new BinaryWriter(sysinfo.GetWriteStream());
 
@@ -208,7 +209,7 @@ namespace ProcessHacker
 
         public static void DumpProcesses(MemoryFileSystem mfs, ProcessSystemProvider provider)
         {
-            using (MemoryObject processes = mfs.RootObject.GetChild("Processes"))
+            using (var processes = mfs.RootObject.GetChild("Processes"))
             {
                 var p = Windows.GetProcesses();
 
@@ -308,8 +309,8 @@ namespace ProcessHacker
 
                     if (pid != 4)
                     {
-                        using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
-                            fileName = phandle.ImageFileName;
+                        using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                            fileName = FileUtils.GetFileName(phandle.GetImageFileName());
                     }
                     else
                     {
@@ -370,9 +371,9 @@ namespace ProcessHacker
                 {
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                     {
-                        bw.Write("CommandLine", phandle.CommandLine);
+                        bw.Write("CommandLine", phandle.GetCommandLine());
                         bw.Write("CurrentDirectory", phandle.GetPebString(PebOffset.CurrentDirectoryPath));
-                        bw.Write("IsPosix", phandle.IsPosix);
+                        bw.Write("IsPosix", phandle.IsPosix());
                     }
                 }
                 catch
@@ -383,14 +384,14 @@ namespace ProcessHacker
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                     {
                         if (OSVersion.Architecture == OSArch.Amd64)
-                            bw.Write("IsWow64", phandle.IsWow64);
+                            bw.Write("IsWow64", phandle.IsWow64());
                     }
 
                     using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
                     {
-                        bw.Write("IsBeingDebugged", phandle.IsBeingDebugged);
-                        bw.Write("IsCritical", phandle.IsCritical);
-                        bw.Write("DepStatus", (int)phandle.DepStatus);
+                        bw.Write("IsBeingDebugged", phandle.IsBeingDebugged());
+                        bw.Write("IsCritical", phandle.IsCritical());
+                        bw.Write("DepStatus", (int)phandle.GetDepStatus());
                     }
                 }
                 catch
@@ -404,11 +405,11 @@ namespace ProcessHacker
                     {
                         using (var thandle = phandle.GetToken(TokenAccess.Query))
                         {
-                            bw.Write("UserName", thandle.User.GetFullName(true));
+                            bw.Write("UserName", thandle.GetUser().GetFullName(true));
                             userNameWritten = true;
 
                             if (OSVersion.HasUac)
-                                bw.Write("ElevationType", (int)thandle.ElevationType);
+                                bw.Write("ElevationType", (int)thandle.GetElevationType());
                         }
                     }
                 }
@@ -438,9 +439,9 @@ namespace ProcessHacker
             }
 
             using (var vmCounters = processMo.CreateChild("VmCounters"))
-                AppendStruct(vmCounters, VmCountersEx64.SizeOf, new VmCountersEx64(process.Process.VirtualMemoryCounters));
+                AppendStruct(vmCounters, new VmCountersEx64(process.Process.VirtualMemoryCounters));
             using (var ioCounters = processMo.CreateChild("IoCounters"))
-                AppendStruct(ioCounters, IoCounters.SizeOf, process.Process.IoCounters);
+                AppendStruct(ioCounters, process.Process.IoCounters);
 
             try
             {
@@ -488,62 +489,62 @@ namespace ProcessHacker
             if (pid <= 0)
                 return;
 
-            using (MemoryObject modules = processMo.CreateChild("Modules"))
+            using (var modules = processMo.CreateChild("Modules"))
             {
                 if (pid != 4)
                 {
                     var baseAddressList = new Dictionary<IntPtr, object>();
                     bool isWow64 = false;
 
-                    using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                     {
                         if (OSVersion.Architecture == OSArch.Amd64)
-                            isWow64 = phandle.IsWow64;
+                            isWow64 = phandle.IsWow64();
 
-                        phandle.EnumModules(module =>
-                        {
-                            if (!baseAddressList.ContainsKey(module.BaseAddress))
+                        phandle.EnumModules((module) =>
                             {
-                                DumpProcessModule(modules, module);
-                                baseAddressList.Add(module.BaseAddress, null);
-                            }
-
-                            return true;
-                        });
-                    }
-
-                    try
-                    {
-                        using (ProcessHandle phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
-                        {
-                            phandle.EnumMemory(memory =>
-                            {
-                                if (memory.Type == MemoryType.Mapped)
+                                if (!baseAddressList.ContainsKey(module.BaseAddress))
                                 {
-                                    if (!baseAddressList.ContainsKey(memory.BaseAddress))
-                                    {
-                                        string fileName = phandle.GetMappedFileName(memory.BaseAddress);
-
-                                        if (!string.IsNullOrEmpty(fileName))
-                                        {
-                                            fileName = FileUtils.GetFileName(fileName);
-
-                                            DumpProcessModule(modules, new ProcessModule(
-                                                                           memory.BaseAddress,
-                                                                           memory.RegionSize.ToInt32(),
-                                                                           IntPtr.Zero,
-                                                                           0,
-                                                                           Path.GetFileName(fileName),
-                                                                           fileName
-                                                                           ));
-
-                                            baseAddressList.Add(memory.BaseAddress, null);
-                                        }
-                                    }
+                                    DumpProcessModule(modules, module);
+                                    baseAddressList.Add(module.BaseAddress, null);
                                 }
 
                                 return true;
                             });
+                    }
+
+                    try
+                    {
+                        using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                        {
+                            phandle.EnumMemory((memory) =>
+                                {
+                                    if (memory.Type == MemoryType.Mapped)
+                                    {
+                                        if (!baseAddressList.ContainsKey(memory.BaseAddress))
+                                        {
+                                            string fileName = phandle.GetMappedFileName(memory.BaseAddress);
+
+                                            if (fileName != null)
+                                            {
+                                                fileName = FileUtils.GetFileName(fileName);
+
+                                                DumpProcessModule(modules, new ProcessModule(
+                                                    memory.BaseAddress,
+                                                    memory.RegionSize.ToInt32(),
+                                                    IntPtr.Zero,
+                                                    0,
+                                                    Path.GetFileName(fileName),
+                                                    fileName
+                                                    ));
+
+                                                baseAddressList.Add(memory.BaseAddress, null);
+                                            }
+                                        }
+                                    }
+
+                                    return true;
+                                });
                         }
                     }
                     catch
@@ -561,16 +562,16 @@ namespace ProcessHacker
                                     RtlQueryProcessDebugFlags.NonInvasive
                                     );
 
-                                buffer.EnumModules(module =>
-                                {
-                                    if (!baseAddressList.ContainsKey(module.BaseAddress))
+                                buffer.EnumModules((module) =>
                                     {
-                                        DumpProcessModule(modules, module);
-                                        baseAddressList.Add(module.BaseAddress, null);
-                                    }
+                                        if (!baseAddressList.ContainsKey(module.BaseAddress))
+                                        {
+                                            DumpProcessModule(modules, module);
+                                            baseAddressList.Add(module.BaseAddress, null);
+                                        }
 
-                                    return true;
-                                });
+                                        return true;
+                                    });
                             }
                         }
                         catch
@@ -622,22 +623,22 @@ namespace ProcessHacker
 
                     using (var thandle = phandle.GetToken(TokenAccess.Query))
                     {
-                        Sid user = thandle.User;
+                        Sid user = thandle.GetUser();
 
                         bw.Write("UserName", user.GetFullName(true));
                         bw.Write("UserStringSid", user.StringSid);
-                        bw.Write("OwnerName", thandle.Owner.GetFullName(true));
-                        bw.Write("PrimaryGroupName", thandle.PrimaryGroup.GetFullName(true));
-                        bw.Write("SessionId", thandle.SessionId);
+                        bw.Write("OwnerName", thandle.GetOwner().GetFullName(true));
+                        bw.Write("PrimaryGroupName", thandle.GetPrimaryGroup().GetFullName(true));
+                        bw.Write("SessionId", thandle.GetSessionId());
 
                         if (OSVersion.HasUac)
                         {
-                            bw.Write("Elevated", thandle.IsElevated);
-                            bw.Write("VirtualizationAllowed", thandle.IsVirtualizationAllowed);
-                            bw.Write("VirtualizationEnabled", thandle.IsVirtualizationEnabled);
+                            bw.Write("Elevated", thandle.IsElevated());
+                            bw.Write("VirtualizationAllowed", thandle.IsVirtualizationAllowed());
+                            bw.Write("VirtualizationEnabled", thandle.IsVirtualizationEnabled());
                         }
 
-                        var statistics = thandle.Statistics;
+                        var statistics = thandle.GetStatistics();
 
                         bw.Write("Type", (int)statistics.TokenType);
                         bw.Write("ImpersonationLevel", (int)statistics.ImpersonationLevel);
@@ -646,7 +647,7 @@ namespace ProcessHacker
                         bw.Write("MemoryUsed", statistics.DynamicCharged);
                         bw.Write("MemoryAvailable", statistics.DynamicAvailable);
 
-                        var groups = thandle.Groups;
+                        var groups = thandle.GetGroups();
 
                         using (var groupsMo = tokenMo.CreateChild("Groups"))
                         {
@@ -662,18 +663,18 @@ namespace ProcessHacker
                             bw2.Close();
                         }
 
-                        var privileges = thandle.Privileges;
+                        var privileges = thandle.GetPrivileges();
 
                         using (var privilegesMo = tokenMo.CreateChild("Privileges"))
                         {
                             BinaryWriter bw2 = new BinaryWriter(privilegesMo.GetWriteStream());
 
-                            foreach (Privilege t in privileges)
+                            for (int i = 0; i < privileges.Length; i++)
                             {
                                 bw2.WriteListEntry(
-                                    t.Name + ";" +
-                                    t.DisplayName + ";" +
-                                    ((int)t.Attributes).ToString("x")
+                                    privileges[i].Name + ";" +
+                                    privileges[i].DisplayName + ";" +
+                                    ((int)privileges[i].Attributes).ToString("x")
                                     );
                             }
 
@@ -685,7 +686,7 @@ namespace ProcessHacker
                     {
                         using (var thandle = phandle.GetToken(TokenAccess.QuerySource))
                         {
-                            var source = thandle.Source;
+                            var source = thandle.GetSource();
 
                             bw.Write("SourceName", source.SourceName.TrimEnd('\0', '\r', '\n', ' '));
                             bw.Write("SourceLuid", source.SourceIdentifier.QuadPart);

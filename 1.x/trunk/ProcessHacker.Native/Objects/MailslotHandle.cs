@@ -56,13 +56,14 @@ namespace ProcessHacker.Native.Objects
             FileCreateOptions createOptions
             )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
 
             try
             {
-                Win32.NtCreateMailslotFile(
+                if ((status = Win32.NtCreateMailslotFile(
                     out handle,
                     access,
                     ref oa,
@@ -71,7 +72,8 @@ namespace ProcessHacker.Native.Objects
                     quota,
                     maxMessageSize,
                     ref readTimeout
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {

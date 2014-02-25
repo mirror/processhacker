@@ -39,12 +39,10 @@ namespace ProcessHacker.UI
 
         public static ContextMenu GetMenu(ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
         {
-            ContextMenu menu = new ContextMenu
-            {
-                Tag = lv
-            };
+            ContextMenu menu = new ContextMenu();
 
-            menu.Popup += ListViewMenu_Popup;
+            menu.Tag = lv;
+            menu.Popup += new EventHandler(ListViewMenu_Popup);
             AddMenuItems(menu.MenuItems, lv, retrieveVirtualItem);
 
             return menu;
@@ -52,29 +50,19 @@ namespace ProcessHacker.UI
 
         public static void AddMenuItems(MenuItem.MenuItemCollection items, ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
         {
-            MenuItem copyItem = new MenuItem("Copy")
-            {
-                Tag = new object[]
-                {
-                    -1, lv, retrieveVirtualItem
-                }
-            };
+            MenuItem copyItem = new MenuItem("Copy");
 
-            copyItem.Click += ListViewMenuItem_Click;
+            copyItem.Tag = new object[] { -1, lv, retrieveVirtualItem };
+            copyItem.Click += new EventHandler(ListViewMenuItem_Click);
 
             items.Add(copyItem);
 
             foreach (ColumnHeader ch in lv.Columns)
             {
-                MenuItem item = new MenuItem("Copy \"" + ch.Text + "\"")
-                {
-                    Tag = new object[]
-                    {
-                        ch.Index, lv, retrieveVirtualItem
-                    }
-                };
+                MenuItem item = new MenuItem("Copy \"" + ch.Text + "\"");
 
-                item.Click += ListViewMenuItem_Click;
+                item.Tag = new object[] { ch.Index, lv, retrieveVirtualItem };
+                item.Click += new EventHandler(ListViewMenuItem_Click);
 
                 items.Add(item);
             }
@@ -87,7 +75,7 @@ namespace ProcessHacker.UI
 
             if (lv.SelectedIndices.Count == 0)
             {
-                //Utils.DisableAllMenuItems(citem);
+                Utils.DisableAllMenuItems(citem);
             }
             else
             {
@@ -159,15 +147,10 @@ namespace ProcessHacker.UI
 
         public static void AddMenuItems(MenuItem.MenuItemCollection items, TreeViewAdv tv)
         {
-            MenuItem copyItem = new MenuItem("Copy")
-            {
-                Tag = new object[]
-                {
-                    -1, tv
-                }
-            };
+            MenuItem copyItem = new MenuItem("Copy");
 
-            copyItem.Click += TreeViewAdvMenuItem_Click;
+            copyItem.Tag = new object[] { -1, tv };
+            copyItem.Click += new EventHandler(TreeViewAdvMenuItem_Click);
 
             items.Add(copyItem);
 
@@ -190,15 +173,10 @@ namespace ProcessHacker.UI
                 if (!c.IsVisible || index == -1)
                     continue;
 
-                MenuItem item = new MenuItem("Copy \"" + c.Header + "\"")
-                {
-                    Tag = new object[]
-                    {
-                        index, tv
-                    }
-                };
+                MenuItem item = new MenuItem("Copy \"" + c.Header + "\"");
 
-                item.Click += TreeViewAdvMenuItem_Click;
+                item.Tag = new object[] { index, tv };
+                item.Click += new EventHandler(TreeViewAdvMenuItem_Click);
 
                 items.Add(item);
             }

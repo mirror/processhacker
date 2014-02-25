@@ -251,9 +251,9 @@ public class NetworkInformation
 /// </summary>
 public class NetworkMonitor
 {
-    private readonly System.Timers.Timer timer;						// The timer event executes every second to refresh the values in adapters.
-    private readonly ArrayList adapters;					// The list of adapters on the computer.
-    private readonly ArrayList monitoredAdapters;		// The list of currently monitored adapters.
+    private System.Timers.Timer timer;						// The timer event executes every second to refresh the values in adapters.
+    private ArrayList adapters;					// The list of adapters on the computer.
+    private ArrayList monitoredAdapters;		// The list of currently monitored adapters.
 
     /// <summary>
     /// NetworkMonitor
@@ -265,7 +265,7 @@ public class NetworkMonitor
         this.EnumerateNetworkAdapters();
 
         this.timer = new System.Timers.Timer(1000);
-        this.timer.Elapsed += this.timer_Elapsed;
+        this.timer.Elapsed += new ElapsedEventHandler(this.timer_Elapsed);
     }
 
     /// <summary>

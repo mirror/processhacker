@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 
@@ -6,6 +7,8 @@ namespace ProcessHacker.Native.Lpc
 {
     public class PortMessage : BaseObject
     {
+        private static readonly int _portMessageSize = Marshal.SizeOf(typeof(PortMessageStruct));
+
         public static MemoryAlloc AllocateBuffer()
         {
             return new MemoryAlloc(Win32.PortMessageMaxLength);
@@ -40,7 +43,7 @@ namespace ProcessHacker.Native.Lpc
         internal PortMessage(MemoryRegion headerAndData)
         {
             _message = headerAndData.ReadStruct<PortMessageStruct>();
-            _data = new MemoryRegion(headerAndData, PortMessageStruct.SizeOf, _message.DataLength);
+            _data = new MemoryRegion(headerAndData, _portMessageSize, _message.DataLength);
 
             _referencedData = headerAndData;
             _referencedData.Reference();
@@ -89,12 +92,11 @@ namespace ProcessHacker.Native.Lpc
             if (dataLength < 0)
                 throw new ArgumentOutOfRangeException("Data length cannot be negative.");
 
-            _message = new PortMessageStruct
-            {
-                DataLength = dataLength, 
-                TotalLength = (short)(PortMessageStruct.SizeOf + dataLength), 
-                DataInfoOffset = 0
-            };
+            _message = new PortMessageStruct();
+
+            _message.DataLength = dataLength;
+            _message.TotalLength = (short)(_portMessageSize + dataLength);
+            _message.DataInfoOffset = 0;
 
             if (existingMessage != null)
             {
@@ -115,10 +117,10 @@ namespace ProcessHacker.Native.Lpc
 
         public MemoryAlloc ToMemory()
         {
-            MemoryAlloc data = new MemoryAlloc(PortMessageStruct.SizeOf + _message.DataLength);
+            MemoryAlloc data = new MemoryAlloc(_portMessageSize + _message.DataLength);
 
-            data.WriteStruct(_message);
-            data.WriteMemory(PortMessageStruct.SizeOf, _data, _message.DataLength);
+            data.WriteStruct<PortMessageStruct>(_message);
+            data.WriteMemory(_portMessageSize, _data, _message.DataLength);
 
             return data;
         }

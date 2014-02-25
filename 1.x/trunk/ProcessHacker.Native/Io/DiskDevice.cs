@@ -1,5 +1,8 @@
-﻿using System.Runtime.InteropServices;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -8,7 +11,7 @@ namespace ProcessHacker.Native.Io
 {
     public static class DiskDevice
     {
-        public enum DiskCacheState
+        public enum DiskCacheState : int
         {
             Normal,
             WriteThroughNotSupported,
@@ -19,17 +22,10 @@ namespace ProcessHacker.Native.Io
         [StructLayout(LayoutKind.Sequential)]
         public struct DiskCacheSetting
         {
-            public static readonly int SizeOf;
-
             public int Version;
             public DiskCacheState State;
             [MarshalAs(UnmanagedType.I1)]
             public bool IsPowerProtected;
-
-            static DiskCacheSetting()
-            {
-                SizeOf = Marshal.SizeOf(typeof(DiskCacheSetting));
-            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -71,21 +67,24 @@ namespace ProcessHacker.Native.Io
                 return GetCacheSetting(fhandle, out isPowerProtected);
         }
 
-        public static unsafe DiskCacheState GetCacheSetting(FileHandle fileHandle, out bool isPowerProtected)
+        public static DiskCacheState GetCacheSetting(FileHandle fileHandle, out bool isPowerProtected)
         {
-            DiskCacheSetting diskCacheSetting;
+            unsafe
+            {
+                DiskCacheSetting diskCacheSetting;
 
-            fileHandle.IoControl(
-                IoCtlGetCacheSetting,
-                null,
-                0,
-                &diskCacheSetting,
-                DiskCacheSetting.SizeOf
-                );
+                fileHandle.IoControl(
+                    IoCtlGetCacheSetting,
+                    null,
+                    0,
+                    &diskCacheSetting,
+                    Marshal.SizeOf(typeof(DiskCacheSetting))
+                    );
 
-            isPowerProtected = diskCacheSetting.IsPowerProtected;
+                isPowerProtected = diskCacheSetting.IsPowerProtected;
 
-            return diskCacheSetting.State;
+                return diskCacheSetting.State;
+            }
         }
 
         public static void SetCacheSetting(string fileName, DiskCacheState state, bool isPowerProtected)
@@ -94,21 +93,24 @@ namespace ProcessHacker.Native.Io
                 SetCacheSetting(fhandle, state, isPowerProtected);
         }
 
-        public static unsafe void SetCacheSetting(FileHandle fileHandle, DiskCacheState state, bool isPowerProtected)
+        public static void SetCacheSetting(FileHandle fileHandle, DiskCacheState state, bool isPowerProtected)
         {
-            DiskCacheSetting diskCacheSetting;
+            unsafe
+            {
+                DiskCacheSetting diskCacheSetting;
 
-            diskCacheSetting.Version = DiskCacheSetting.SizeOf;
-            diskCacheSetting.State = state;
-            diskCacheSetting.IsPowerProtected = isPowerProtected;
+                diskCacheSetting.Version = Marshal.SizeOf(typeof(DiskCacheSetting));
+                diskCacheSetting.State = state;
+                diskCacheSetting.IsPowerProtected = isPowerProtected;
 
-            fileHandle.IoControl(
-                IoCtlSetCacheSetting,
-                &diskCacheSetting,
-                DiskCacheSetting.SizeOf,
-                null,
-                0
-                );
+                fileHandle.IoControl(
+                    IoCtlSetCacheSetting,
+                    &diskCacheSetting,
+                    Marshal.SizeOf(typeof(DiskCacheSetting)),
+                    null,
+                    0
+                    );
+            }
         }
     }
 }

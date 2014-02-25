@@ -21,6 +21,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace ProcessHacker.Common.Threading
@@ -32,8 +34,8 @@ namespace ProcessHacker.Common.Threading
     public struct ActionSync
     {
         private int _value;
-        private readonly int _target;
-        private readonly Action _action;
+        private int _target;
+        private Action _action;
 
         /// <summary>
         /// Initializes an action-sync structure.

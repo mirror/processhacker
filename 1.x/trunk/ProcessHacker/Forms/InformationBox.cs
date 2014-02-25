@@ -30,7 +30,7 @@ namespace ProcessHacker
         public InformationBox(string values)
         {
             InitializeComponent();
-
+            this.AddEscapeToClose();
             this.SetTopMost();
 
             if (!Program.BadConfig)
@@ -76,15 +76,13 @@ namespace ProcessHacker
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog sfd = new SaveFileDialog
-            {
-                FileName = this.DefaultFileName,
-                Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*"
-            })
-            {
-                if (sfd.ShowDialog() == DialogResult.OK)
-                    System.IO.File.WriteAllText(sfd.FileName, textValues.Text);
-            }
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.FileName = DefaultFileName;
+            sfd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+                System.IO.File.WriteAllText(sfd.FileName, textValues.Text);
         }
 
         private void buttonCopy_Click(object sender, EventArgs e)

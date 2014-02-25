@@ -36,8 +36,8 @@ namespace ProcessHacker.Native.Objects
 
         public struct ObjectEntry
         {
-            private readonly string _name;
-            private readonly string _typeName;
+            private string _name;
+            private string _typeName;
 
             public ObjectEntry(string name, string typeName)
             {
@@ -56,12 +56,14 @@ namespace ProcessHacker.Native.Objects
 
         public static DirectoryHandle Create(DirectoryAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtCreateDirectoryObject(out handle, access, ref oa).ThrowIf();
+                if ((status = Win32.NtCreateDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -84,12 +86,21 @@ namespace ProcessHacker.Native.Objects
 
         public DirectoryHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, DirectoryAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenDirectoryObject(out handle, access, ref oa).ThrowIf();
+                if (KProcessHacker.Instance != null)
+                {
+                    handle = KProcessHacker.Instance.KphOpenDirectoryObject(access, oa).ToIntPtr();
+                }
+                else
+                {
+                    if ((status = Win32.NtOpenDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
+                        Win32.Throw(status);
+                }
             }
             finally
             {
@@ -122,7 +133,7 @@ namespace ProcessHacker.Native.Objects
                     {
                         // Check if we have at least one entry. If not, 
                         // we need to double the buffer size and try again.
-                        if (data.ReadStruct<ObjectDirectoryInformation>(0, ObjectDirectoryInformation.SizeOf, 0).Name.Buffer != IntPtr.Zero)
+                        if (data.ReadStruct<ObjectDirectoryInformation>(0).Name.Buffer != IntPtr.Zero)
                             break;
 
                         if (data.Size > 16 * 1024 * 1024)
@@ -131,18 +142,19 @@ namespace ProcessHacker.Native.Objects
                         data.ResizeNew(data.Size * 2);
                     }
 
-                    status.ThrowIf();
+                    if (status >= NtStatus.Error)
+                        Win32.Throw(status);
 
                     int i = 0;
 
                     while (true)
                     {
-                        ObjectDirectoryInformation info = data.ReadStruct<ObjectDirectoryInformation>(0, ObjectDirectoryInformation.SizeOf, i);
+                        ObjectDirectoryInformation info = data.ReadStruct<ObjectDirectoryInformation>(i);
 
                         if (info.Name.Buffer == IntPtr.Zero)
                             break;
 
-                        if (!callback(new ObjectEntry(info.Name.Text, info.TypeName.Text)))
+                        if (!callback(new ObjectEntry(info.Name.Read(), info.TypeName.Read())))
                             return;
 
                         i++;
@@ -164,7 +176,7 @@ namespace ProcessHacker.Native.Objects
         {
             var objects = new List<ObjectEntry>();
 
-            this.EnumObjects(obj =>
+            this.EnumObjects((obj) =>
                 {
                     objects.Add(obj);
                     return true;

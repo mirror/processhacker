@@ -1,4 +1,9 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Text;
+using System.Xml;
+using ProcessHacker.Common;
 using ProcessHacker.Common.Settings;
 using System.Windows.Forms;
 
@@ -52,6 +57,7 @@ namespace ProcessHacker
             _colorWow64Processes = null;
             _deletedServices = null;
             _elevationLevel = (int)this["ElevationLevel"];
+            _floatChildWindows = null;
             _font = null;
             _hideWhenClosed = null;
             _hideWhenMinimized = null;
@@ -365,11 +371,19 @@ namespace ProcessHacker
             set { this["FirstRun"] = value; }
         }
 
+        private bool? _floatChildWindows;
+        [SettingDefault("True")]
+        public bool FloatChildWindows
+        {
+            get { return _floatChildWindows.HasValue ? _floatChildWindows.Value : (_floatChildWindows = (bool)this["FloatChildWindows"]).Value; }
+            set { this["FloatChildWindows"] = _floatChildWindows = value; }
+        }
+
         private Font _font;
         [SettingDefault("Microsoft Sans Serif, 8.25pt")]
         public Font Font
         {
-            get { return this._font ?? (this._font = (Font)this["Font"]); }
+            get { return _font != null ? _font : (_font = (Font)this["Font"]); }
             set { this["Font"] = _font = value; }
         }
 

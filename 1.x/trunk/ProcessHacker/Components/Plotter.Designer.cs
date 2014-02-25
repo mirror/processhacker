@@ -45,14 +45,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Name = "Plotter";
             this.Size = new System.Drawing.Size(150, 163);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Plotter_Paint);
-            this.MouseEnter += new System.EventHandler(this.Plotter_MouseEnter);
             this.MouseLeave += new System.EventHandler(this.Plotter_MouseLeave);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Plotter_Paint);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Plotter_MouseMove);
             this.Resize += new System.EventHandler(this.Plotter_Resize);
+            this.MouseEnter += new System.EventHandler(this.Plotter_MouseEnter);
             this.ResumeLayout(false);
 
         }

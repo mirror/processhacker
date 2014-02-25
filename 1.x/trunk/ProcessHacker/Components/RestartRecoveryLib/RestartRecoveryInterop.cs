@@ -44,7 +44,7 @@ namespace ProcessHackerRestartRecovery
 
         private static UInt32 InternalRecoveryHandler(IntPtr parameter)
         {
-            bool cancelled;
+            bool cancelled = false;
             ApplicationRecoveryInProgress(out cancelled);
 
             GCHandle handle = GCHandle.FromIntPtr(parameter);

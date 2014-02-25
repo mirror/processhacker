@@ -33,9 +33,9 @@ namespace Debugger.Interop
         public static string GetDebuggerVersion()
         {
             int size;
-            GetCORVersion(null, 0, out size);
+            NativeMethods.GetCORVersion(null, 0, out size);
             StringBuilder sb = new StringBuilder(size);
-            int hr = GetCORVersion(sb, sb.Capacity, out size);
+            int hr = NativeMethods.GetCORVersion(sb, sb.Capacity, out size);
             return sb.ToString();
         }
 	}

@@ -35,6 +35,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
@@ -441,7 +442,7 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr ImageBase
             );
 
-        [DllImport("imagehlp.dll", SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, CharSet = CharSet.Ansi)]
+        [DllImport("imagehlp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
         public static extern bool MapAndLoad(
             [In] string ImageName,
             [In] [Optional] string DllPath,
@@ -2590,8 +2591,8 @@ namespace ProcessHacker.Native.Api
         public static extern IntPtr SendMessage(
             [In] IntPtr hWnd, 
             [In] WindowMessage msg,
-            [In] IntPtr w,
-            [In] IntPtr l
+            [In] int w,
+            [In] int l
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]

@@ -1,4 +1,7 @@
-﻿using ProcessHacker.Native.Api;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.SsLogging
 {
@@ -6,7 +9,7 @@ namespace ProcessHacker.Native.SsLogging
     {
         public SsClientId(MemoryRegion data)
         {
-            this.Original = data.ReadStruct<ClientId>(0, ClientId.SizeOf, 0);
+            this.Original = data.ReadStruct<ClientId>();
         }
 
         public ClientId Original

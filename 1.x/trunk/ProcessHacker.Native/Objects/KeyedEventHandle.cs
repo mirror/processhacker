@@ -21,6 +21,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -40,12 +42,14 @@ namespace ProcessHacker.Native.Objects
 
         public static KeyedEventHandle Create(KeyedEventAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtCreateKeyedEvent(out handle, access, ref oa, 0).ThrowIf();
+                if ((status = Win32.NtCreateKeyedEvent(out handle, access, ref oa, 0)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -65,12 +69,14 @@ namespace ProcessHacker.Native.Objects
 
         public KeyedEventHandle(string name, DirectoryHandle rootDirectory, ObjectFlags objectFlags, KeyedEventAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenKeyedEvent(out handle, access, ref oa).ThrowIf();
+                if ((status = Win32.NtOpenKeyedEvent(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -102,17 +108,21 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus ReleaseKey(IntPtr key, bool alertable, long timeout, bool relative)
         {
+            NtStatus status;
             long realTimeout = relative ? -timeout : timeout;
 
             if (key.ToInt64() % 2 != 0)
                 throw new ArgumentException("Key must be divisible by 2.");
 
-            return Win32.NtReleaseKeyedEvent(
+            if ((status = Win32.NtReleaseKeyedEvent(
                 this,
                 key,
                 alertable,
                 ref realTimeout
-                );
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
 
         public NtStatus WaitKey(int key)
@@ -137,17 +147,21 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus WaitKey(IntPtr key, bool alertable, long timeout, bool relative)
         {
+            NtStatus status;
             long realTimeout = relative ? -timeout : timeout;
 
             if (key.ToInt64() % 2 != 0)
                 throw new ArgumentException("Key must be divisible by 2.");
 
-            return Win32.NtWaitForKeyedEvent(
+            if ((status = Win32.NtWaitForKeyedEvent(
                 this,
                 key,
                 alertable,
                 ref realTimeout
-                );
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
     }
 }

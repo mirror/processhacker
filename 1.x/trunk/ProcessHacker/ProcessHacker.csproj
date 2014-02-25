@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ProcessHacker</RootNamespace>
     <AssemblyName>ProcessHacker</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>ProcessHacker.ico</ApplicationIcon>
     <StartupObject>ProcessHacker.Program</StartupObject>
@@ -48,7 +48,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -62,7 +61,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -76,7 +74,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\CircularBuffer.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\ByteCollection.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\DataBlock.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\DataMap.cs" />
@@ -91,116 +88,6 @@
     <Compile Include="Components\Be.Windows.Forms.HexBox\IByteProvider.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\MemoryDataBlock.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\NativeMethods.cs" />
-    <Compile Include="Components\HandleDetails.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\HandleDetails.Designer.cs">
-      <DependentUpon>HandleDetails.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\MenuStripEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\ToolStripEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Tracker.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\BitmapHelper.cs" />
-    <Compile Include="Components\TreeViewAdv\GifDecoder.cs" />
-    <Compile Include="Components\TreeViewAdv\NodePlotter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\NumericTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\PerformanceAnalyzer.cs" />
-    <Compile Include="Components\TreeViewAdv\ResourceHelper.cs" />
-    <Compile Include="Components\TreeViewAdv\StringCollectionEditor.cs" />
-    <Compile Include="Components\TreeViewAdv\TextHelper.cs" />
-    <Compile Include="Components\TreeViewAdv\Threading\WorkItem.cs" />
-    <Compile Include="Components\TreeViewAdv\Threading\WorkItemStatus.cs" />
-    <Compile Include="Components\TreeViewAdv\TimeCounter.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\AutoRowHeightLayout.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\DrawContext.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\EditorContext.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Enums.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\FixedRowHeightLayout.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\IncrementalSearch.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Input\ClickColumnState.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Input\ColumnState.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Input\InputState.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Input\InputWithControl.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Input\InputWithShift.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Input\NormalInputState.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Input\ReorderColumnState.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Input\ResizeColumnState.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\IRowLayout.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\IToolTipProvider.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\ITreeModel.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\Node.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControlInfo.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\BaseTextControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\BindableControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\DrawEventArgs.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\EditableControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\InteractiveControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\NodeControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\NodeControlsCollection.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\NodeControlValueEventArgs.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\NodeEventArgs.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\NodeIcon.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\NodeIntegerTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\NodePlusMinus.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\NodeControls\NodeTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\SortedTreeModel.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreeColumn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\TreeColumnCollection.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreeColumnEventArgs.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreeListAdapter.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreeModel.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreeModelBase.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreeModelEventArgs.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreeNodeAdv.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreeNodeAdvMouseEventArgs.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreePath.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreePathEventArgs.cs" />
-    <Compile Include="Components\TreeViewAdv\Tree\TreeViewAdv.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\TreeViewAdv.Designer.cs">
-      <DependentUpon>TreeViewAdv.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\TreeViewAdv.Draw.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\TreeViewAdv.Input.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\TreeViewAdv.Properties.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\TreeViewAdv\Tree\TreeViewAdvEventArgs.cs" />
     <Compile Include="Forms\HelpWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -213,18 +100,6 @@
     <Compile Include="Forms\HackerWindow.Designer.cs">
       <DependentUpon>HackerWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Ui\ChooseProcessDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Ui\ChooseProcessDialog.Designer.cs">
-      <DependentUpon>ChooseProcessDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Ui\HandlePropertiesWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Ui\HandlePropertiesWindow.Designer.cs">
-      <DependentUpon>HandlePropertiesWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program\Program.cs" />
     <Compile Include="Forms\PromptBox.cs">
       <SubType>Form</SubType>
@@ -233,24 +108,9 @@
       <DependentUpon>PromptBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Components\HandleDetails.resx">
-      <DependentUpon>HandleDetails.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Components\Tracker.resx">
-      <DependentUpon>Tracker.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Components\TreeViewAdv\Tree\TreeViewAdv.resx">
-      <DependentUpon>TreeViewAdv.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\HackerWindow.resx">
       <DependentUpon>HackerWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Ui\ChooseProcessDialog.resx">
-      <DependentUpon>ChooseProcessDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Ui\HandlePropertiesWindow.resx">
-      <DependentUpon>HandlePropertiesWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -262,10 +122,14 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Forms\SysInfoWindow.resx">
-      <DependentUpon>SysInfoWindow.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="Components\Be.Windows.Forms.HexBox\HexBox.snk" />
+    <Compile Include="Components\VistaMenu\OwnerDrawnMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\VistaMenu\VistaMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.bmp" />
@@ -448,11 +312,17 @@
     <EmbeddedResource Include="Forms\ProtectProcessWindow.resx">
       <DependentUpon>ProtectProcessWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ScratchpadWindow.resx">
+      <DependentUpon>ScratchpadWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\SessionInformationWindow.resx">
       <DependentUpon>SessionInformationWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\StructWindow.resx">
       <DependentUpon>StructWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SysInfoWindow.resx">
+      <DependentUpon>SysInfoWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TerminatorWindow.resx">
       <DependentUpon>TerminatorWindow.cs</DependentUpon>
@@ -537,7 +407,6 @@
     <EmbeddedResource Include="Forms\WaitChainWindow.resx">
       <DependentUpon>WaitChainWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Components\TreeViewAdv\Resources\loading_icon" />
     <None Include="Resources\information.png" />
     <None Include="Resources\page_save.png" />
     <None Include="Resources\arrow_up.png" />
@@ -710,6 +579,12 @@
     <Compile Include="Forms\ProtectProcessWindow.Designer.cs">
       <DependentUpon>ProtectProcessWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ScratchpadWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ScratchpadWindow.Designer.cs">
+      <DependentUpon>ScratchpadWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SessionInformationWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -741,16 +616,8 @@
     <Compile Include="Providers\IProvider.cs" />
     <Compile Include="Providers\Provider.cs" />
     <Compile Include="Providers\ProviderThread.cs" />
-    <Compile Include="Forms\SysInfoWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SysInfoWindow.designer.cs">
-      <DependentUpon>SysInfoWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\Actions\ElevationLevel.cs" />
     <Compile Include="UI\Actions\SessionActions.cs" />
-    <Compile Include="UI\AeroRenderer.cs" />
-    <Compile Include="UI\ExplorerVisualStyle.cs" />
     <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />
     <Compile Include="UI\Icons\PhysMemHistoryIcon.cs" />
@@ -759,6 +626,7 @@
     <Compile Include="UI\Icons\IoHistoryIcon.cs" />
     <Compile Include="UI\Icons\CpuHistoryIcon.cs" />
     <Compile Include="UI\Icons\ProviderIcon.cs" />
+    <Compile Include="Program\ThemingScope.cs" />
     <Compile Include="UI\Actions\ServiceActions.cs" />
     <Compile Include="Components\ColorModifier.cs">
       <SubType>UserControl</SubType>
@@ -801,6 +669,9 @@
     </Compile>
     <Compile Include="Components\HandleList.Designer.cs">
       <DependentUpon>HandleList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\NodePlotter.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Components\ProcessTree\ProcessToolTipProvider.cs" />
     <Compile Include="Components\ProcessTree\ProcessNode.cs" />
@@ -944,6 +815,12 @@
     </Compile>
     <Compile Include="Forms\StructWindow.Designer.cs">
       <DependentUpon>StructWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SysInfoWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SysInfoWindow.Designer.cs">
+      <DependentUpon>SysInfoWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\TerminatorWindow.cs">
       <SubType>Form</SubType>
@@ -1153,15 +1030,6 @@
     <None Include="Resources\inactive_search.png" />
     <None Include="Resources\money.png" />
     <None Include="Resources\folder.png" />
-    <Content Include="Components\TreeViewAdv\Resources\check.bmp" />
-    <Content Include="Components\TreeViewAdv\Resources\DVSplit.cur" />
-    <Content Include="Components\TreeViewAdv\Resources\Folder.bmp" />
-    <Content Include="Components\TreeViewAdv\Resources\FolderClosed.bmp" />
-    <Content Include="Components\TreeViewAdv\Resources\Leaf.bmp" />
-    <Content Include="Components\TreeViewAdv\Resources\minus.bmp" />
-    <Content Include="Components\TreeViewAdv\Resources\plus.bmp" />
-    <Content Include="Components\TreeViewAdv\Resources\uncheck.bmp" />
-    <Content Include="Components\TreeViewAdv\Resources\unknown.bmp" />
     <Content Include="SharpDevelop\LICENSE.txt" />
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />
@@ -1192,6 +1060,10 @@
     <ProjectReference Include="..\ProcessHacker.Native\ProcessHacker.Native.csproj">
       <Project>{8A448157-E1A7-4DDF-954E-287F1117832B}</Project>
       <Name>ProcessHacker.Native</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TreeViewAdv\Aga.Controls.csproj">
+      <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
+      <Name>Aga.Controls</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

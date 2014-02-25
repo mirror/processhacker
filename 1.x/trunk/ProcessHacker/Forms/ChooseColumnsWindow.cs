@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
+using ProcessHacker.Common;
 
 namespace ProcessHacker
 {
@@ -36,7 +37,7 @@ namespace ProcessHacker
             public bool Visible;
         }
 
-        private readonly object _list;
+        private object _list;
 
         public ChooseColumnsWindow(ListView list)
             : this()
@@ -62,7 +63,7 @@ namespace ProcessHacker
 
             foreach (TreeColumn column in tree.Columns)
             {
-                columns.Add(new TvColumn
+                columns.Add(new TvColumn()
                 {
                     Header = column.Header,
                     Index = column.Index,
@@ -101,9 +102,11 @@ namespace ProcessHacker
         private ChooseColumnsWindow()
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
+
+            listColumns.SetDoubleBuffered(true);
+            listColumns.SetTheme("explorer");
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)

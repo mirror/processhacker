@@ -33,13 +33,12 @@ namespace ProcessHacker
 {
     public partial class TerminatorWindow : Form
     {
-        private readonly int _pid;
-        private readonly List<string> _tests = new List<string>();
+        private int _pid;
+        private List<string> _tests = new List<string>();
 
         public TerminatorWindow(int PID)
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -63,7 +62,7 @@ namespace ProcessHacker
             this.AddTest("TD1", "Debugs the process and closes the debug object");
             this.AddTest("TP3", "Terminates the process in kernel-mode (if possible)");
             this.AddTest("TT3", "Terminates the process' threads in kernel-mode (if possible)");
-            if (KProcessHacker2.Instance != null)
+            if (KProcessHacker.Instance != null)
                 this.AddTest("TT4", "Terminates the process' threads using a dangerous kernel-mode method");
             this.AddTest("M1", "Writes garbage to the process' memory regions");
             this.AddTest("M2", "Sets the page protection of the process' memory regions to PAGE_NOACCESS"); 
@@ -162,13 +161,15 @@ namespace ProcessHacker
             this.M1Internal();
         }
 
-        private void M1Internal()
+        private unsafe void M1Internal()
         {
             using (MemoryAlloc alloc = new MemoryAlloc(0x1000))
             {
-                using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessWriteMemoryRights))
+                using (ProcessHandle phandle = new ProcessHandle(_pid,
+                    ProcessAccess.QueryInformation |
+                    Program.MinProcessWriteMemoryRights))
                 {
-                    phandle.EnumMemory(info =>
+                    phandle.EnumMemory((info) =>
                     {
                         for (int i = 0; i < info.RegionSize.ToInt32(); i += 0x1000)
                         {
@@ -188,9 +189,10 @@ namespace ProcessHacker
 
         private void M2()
         {
-            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
+            using (ProcessHandle phandle = new ProcessHandle(_pid,
+                ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
             {
-                phandle.EnumMemory(info =>
+                phandle.EnumMemory((info) =>
                 {
                     phandle.ProtectMemory(info.BaseAddress, info.RegionSize.ToInt32(), MemoryProtection.NoAccess);
                     return true;
@@ -200,38 +202,43 @@ namespace ProcessHacker
 
         private void TD1()
         {
-            using (DebugObjectHandle dhandle = DebugObjectHandle.Create(DebugObjectAccess.ProcessAssign, DebugObjectFlags.KillOnClose))
-            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.SuspendResume))
+            using (var dhandle =
+                DebugObjectHandle.Create(DebugObjectAccess.ProcessAssign, DebugObjectFlags.KillOnClose))
             {
-                phandle.Debug(dhandle);
+                using (var phandle = new ProcessHandle(_pid, ProcessAccess.SuspendResume))
+                    phandle.Debug(dhandle);
             }
-
         }
 
         private void TJ1()
         {
-            //if (KProcessHacker.Instance != null)
-            //{
-            //    try
-            //    {
-            //        using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-            //        {
-            //            JobObjectHandle jhandle = phandle.GetJobObject(JobObjectAccess.Query | JobObjectAccess.Terminate);
-
-            //            // Make sure we're not terminating more than one process
-            //            if (jhandle.ProcessIdList.Length == 1)
-            //            {
-            //                jhandle.Terminate();
-            //            }
-            //        }
-            //    }
-            //    catch
-            //    { }
-            //}
-
-            using (JobObjectHandle jhandle = JobObjectHandle.Create(JobObjectAccess.AssignProcess | JobObjectAccess.Terminate))
+            if (KProcessHacker.Instance != null)
             {
-                using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.SetQuota | ProcessAccess.Terminate))
+                try
+                {
+                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    {
+                        var jhandle = phandle.GetJobObject(JobObjectAccess.Query | JobObjectAccess.Terminate);
+
+                        if (jhandle != null)
+                        {
+                            // Make sure we're not terminating more than one process
+                            if (jhandle.GetProcessIdList().Length == 1)
+                            {
+                                jhandle.Terminate();
+                                return;
+                            }
+                        }
+                    }
+                }
+                catch
+                { }
+            }
+
+            using (var jhandle = JobObjectHandle.Create(JobObjectAccess.AssignProcess | JobObjectAccess.Terminate))
+            {
+                using (ProcessHandle phandle =
+                    new ProcessHandle(_pid, ProcessAccess.SetQuota | ProcessAccess.Terminate))
                 {
                     phandle.AssignToJobObject(jhandle);
                 }
@@ -261,7 +268,7 @@ namespace ProcessHacker
                 {
                     phandle = phandle.GetNextProcess(Program.MinProcessQueryRights | ProcessAccess.Terminate);
 
-                    if (phandle.ProcessId == _pid)
+                    if (phandle.GetProcessId() == _pid)
                     {
                         found = true;
                         break;
@@ -277,7 +284,8 @@ namespace ProcessHacker
 
         private void TP2()
         {
-            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
+            using (ProcessHandle phandle = new ProcessHandle(_pid,
+                ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
             {
                 if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                 {
@@ -378,20 +386,20 @@ namespace ProcessHacker
 
         private void W1()
         {
-            WindowHandle.Enumerate(window =>
-            {
-                if (window.ClientId.ProcessId == _pid)
-                    window.PostMessage(WindowMessage.Destroy, 0, 0);
+            WindowHandle.Enumerate((window) =>
+                {
+                    if (window.GetClientId().ProcessId == _pid)
+                        window.PostMessage(WindowMessage.Destroy, 0, 0);
 
-                return true;
-            });
+                    return true;
+                });
         }
 
         private void W2()
         {
-            WindowHandle.Enumerate(window =>
+            WindowHandle.Enumerate((window) =>
             {
-                if (window.ClientId.ProcessId == _pid)
+                if (window.GetClientId().ProcessId == _pid)
                     window.PostMessage(WindowMessage.Quit, 0, 0);
 
                 return true;

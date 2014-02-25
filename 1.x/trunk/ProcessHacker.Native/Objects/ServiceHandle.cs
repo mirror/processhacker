@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Security.AccessControl;
@@ -95,7 +96,8 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the service.</param>
         public ServiceHandle(string serviceName, ServiceAccess access)
         {
-            using (ServiceManagerHandle manager = new ServiceManagerHandle(ScManagerAccess.Connect))
+            using (ServiceManagerHandle manager =
+                new ServiceManagerHandle(ScManagerAccess.Connect))
             {
                 this.Handle = Win32.OpenService(manager, serviceName, access);
 
@@ -113,7 +115,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="control">The message.</param>
         public void Control(ServiceControl control)
         {
-            ServiceStatus status;
+            ServiceStatus status = new ServiceStatus();
 
             if (!Win32.ControlService(this, control, out status))
                 Win32.Throw();
@@ -133,7 +135,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public QueryServiceConfig GetConfig()
         {
-            int requiredSize;
+            int requiredSize = 0;
 
             Win32.QueryServiceConfig(this, IntPtr.Zero, 0, out requiredSize);
 
@@ -179,7 +181,7 @@ namespace ProcessHacker.Native.Objects
             ServiceStatusProcess status;
             int retLen;
 
-            if (!Win32.QueryServiceStatusEx(this, 0, out status, ServiceStatusProcess.SizeOf, out retLen))
+            if (!Win32.QueryServiceStatusEx(this, 0, out status, Marshal.SizeOf(typeof(ServiceStatusProcess)), out retLen))
                 Win32.Throw();
 
             return status;

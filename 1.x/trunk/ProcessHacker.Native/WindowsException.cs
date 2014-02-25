@@ -35,10 +35,10 @@ namespace ProcessHacker.Native
     /// </remarks>
     public class WindowsException : Exception
     {
-        private readonly bool _isNtStatus;
-        private readonly Win32Error _errorCode = 0;
-        private readonly NtStatus _status;
-        private string _message;
+        private bool _isNtStatus = false;
+        private Win32Error _errorCode = 0;
+        private NtStatus _status;
+        private string _message = null;
 
         /// <summary>
         /// Creates an exception with no error.
@@ -99,7 +99,7 @@ namespace ProcessHacker.Native
             {
                 // No locking, for performance reasons. Getting the 
                 // message doesn't have any side-effects anyway.
-                if (string.IsNullOrEmpty(_message))
+                if (_message == null)
                 {
                     // We prefer native status messages because they are usually 
                     // more detailed. However, for some status values we do 
@@ -113,7 +113,7 @@ namespace ProcessHacker.Native
                     {
                         string message = _status.GetMessage();
 
-                        if (string.IsNullOrEmpty(message))
+                        if (message == null)
                             message = "Could not retrieve the error message (0x" + ((int)_status).ToString("x") + ").";
 
                         _message = message;

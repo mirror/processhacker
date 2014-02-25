@@ -27,8 +27,8 @@ namespace ProcessHacker.Structs
 {
     public class ProcessMemoryIO : IStructIOProvider
     {
-        private readonly ProcessHandle _phandleR;
-        private readonly ProcessHandle _phandleW;
+        private ProcessHandle _phandleR;
+        private ProcessHandle _phandleW;
 
         public ProcessMemoryIO(int pid)
         {

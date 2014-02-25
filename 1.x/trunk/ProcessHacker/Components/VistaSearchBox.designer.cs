@@ -1,6 +1,6 @@
 namespace ProcessHacker
 {
-    sealed partial class VistaSearchBox
+	partial class VistaSearchBox
 	{
 		/// <summary> 
 		/// Clean up any resources being used.

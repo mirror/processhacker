@@ -43,11 +43,11 @@ namespace ProcessHacker
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ResultsWindow));
-            this.listResults = new ProcessHacker.Components.ExtendedListView();
-            this.columnAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnOffset = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnLength = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnString = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listResults = new System.Windows.Forms.ListView();
+            this.columnAddress = new System.Windows.Forms.ColumnHeader();
+            this.columnOffset = new System.Windows.Forms.ColumnHeader();
+            this.columnLength = new System.Windows.Forms.ColumnHeader();
+            this.columnString = new System.Windows.Forms.ColumnHeader();
             this.labelText = new System.Windows.Forms.Label();
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
@@ -56,21 +56,22 @@ namespace ProcessHacker
             this.buttonEdit = new System.Windows.Forms.Button();
             this.buttonFind = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // listResults
             // 
             this.listResults.AllowColumnReorder = true;
-            this.listResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listResults.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnAddress,
             this.columnOffset,
             this.columnLength,
             this.columnString});
-            this.listResults.DoubleClickChecks = true;
             this.listResults.FullRowSelect = true;
             this.listResults.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listResults.HideSelection = false;
@@ -83,8 +84,8 @@ namespace ProcessHacker
             this.listResults.UseCompatibleStateImageBehavior = false;
             this.listResults.View = System.Windows.Forms.View.Details;
             this.listResults.VirtualMode = true;
-            this.listResults.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listResults_RetrieveVirtualItem);
             this.listResults.DoubleClick += new System.EventHandler(this.listResults_DoubleClick);
+            this.listResults.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listResults_RetrieveVirtualItem);
             // 
             // columnAddress
             // 
@@ -184,11 +185,15 @@ namespace ProcessHacker
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
+            // 
             // ResultsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(488, 343);
             this.Controls.Add(this.buttonFilter);
             this.Controls.Add(this.buttonIntersect);
@@ -201,8 +206,9 @@ namespace ProcessHacker
             this.Menu = this.mainMenu;
             this.Name = "ResultsWindow";
             this.Text = "Results";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ResultsWindow_FormClosing);
             this.Load += new System.EventHandler(this.ResultsWindow_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ResultsWindow_FormClosing);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -210,7 +216,7 @@ namespace ProcessHacker
 
         #endregion
 
-        private ProcessHacker.Components.ExtendedListView listResults;
+        private System.Windows.Forms.ListView listResults;
         private System.Windows.Forms.ColumnHeader columnAddress;
         private System.Windows.Forms.ColumnHeader columnOffset;
         private System.Windows.Forms.ColumnHeader columnLength;
@@ -220,6 +226,7 @@ namespace ProcessHacker
         private System.Windows.Forms.Button buttonFind;
         private System.Windows.Forms.Button buttonEdit;
         private System.Windows.Forms.Button buttonIntersect;
+        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MainMenu mainMenu;
         private System.Windows.Forms.MenuItem windowMenuItem;
         private System.Windows.Forms.Button buttonFilter;

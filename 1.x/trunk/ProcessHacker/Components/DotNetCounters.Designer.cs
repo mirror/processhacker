@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.listAppDomains = new ProcessHacker.Components.ExtendedListView();
+            this.listAppDomains = new System.Windows.Forms.ListView();
             this.label2 = new System.Windows.Forms.Label();
             this.comboCategories = new System.Windows.Forms.ComboBox();
-            this.listValues = new ProcessHacker.Components.ExtendedListView();
-            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listValues = new System.Windows.Forms.ListView();
+            this.columnName = new System.Windows.Forms.ColumnHeader();
+            this.columnValue = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // label1
@@ -48,9 +48,8 @@
             // 
             // listAppDomains
             // 
-            this.listAppDomains.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listAppDomains.DoubleClickChecks = true;
+            this.listAppDomains.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listAppDomains.FullRowSelect = true;
             this.listAppDomains.HideSelection = false;
             this.listAppDomains.Location = new System.Drawing.Point(9, 19);
@@ -73,8 +72,8 @@
             // 
             // comboCategories
             // 
-            this.comboCategories.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboCategories.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.comboCategories.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboCategories.FormattingEnabled = true;
             this.comboCategories.Location = new System.Drawing.Point(72, 105);
@@ -85,13 +84,12 @@
             // 
             // listValues
             // 
-            this.listValues.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listValues.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listValues.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnName,
             this.columnValue});
-            this.listValues.DoubleClickChecks = true;
             this.listValues.FullRowSelect = true;
             this.listValues.HideSelection = false;
             this.listValues.Location = new System.Drawing.Point(9, 132);
@@ -116,7 +114,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listValues);
             this.Controls.Add(this.comboCategories);
             this.Controls.Add(this.label2);
@@ -133,10 +130,10 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private ExtendedListView listAppDomains;
+        private System.Windows.Forms.ListView listAppDomains;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox comboCategories;
-        private ExtendedListView listValues;
+        private System.Windows.Forms.ListView listValues;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnValue;
     }

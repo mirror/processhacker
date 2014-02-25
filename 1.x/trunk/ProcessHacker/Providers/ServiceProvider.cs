@@ -96,11 +96,10 @@ namespace ProcessHacker
             {
                 if (!Dictionary.ContainsKey(s))
                 {
-                    ServiceItem item = new ServiceItem
-                    {
-                        RunId = this.RunCount, 
-                        Status = newdictionary[s]
-                    };
+                    ServiceItem item = new ServiceItem();
+
+                    item.RunId = this.RunCount;
+                    item.Status = newdictionary[s];
 
                     try
                     {

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.treeStruct = new Aga.Controls.Tree.TreeViewAdv();
             this.columnName = new Aga.Controls.Tree.TreeColumn();
             this.columnValue = new Aga.Controls.Tree.TreeColumn();
@@ -38,6 +39,8 @@
             this.decMenuItem = new System.Windows.Forms.MenuItem();
             this.hexMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // treeStruct
@@ -47,6 +50,9 @@
             this.treeStruct.Columns.Add(this.columnValue);
             this.treeStruct.DefaultToolTipProvider = null;
             this.treeStruct.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeStruct.DragDropMarkColor = System.Drawing.Color.Black;
+            this.treeStruct.FullRowSelect = true;
+            this.treeStruct.GridLineStyle = Aga.Controls.Tree.GridLineStyle.Horizontal;
             this.treeStruct.LineColor = System.Drawing.SystemColors.ControlDark;
             this.treeStruct.Location = new System.Drawing.Point(0, 0);
             this.treeStruct.Model = null;
@@ -58,6 +64,7 @@
             this.treeStruct.ShowNodeToolTips = true;
             this.treeStruct.Size = new System.Drawing.Size(362, 331);
             this.treeStruct.TabIndex = 0;
+            this.treeStruct.UseColumns = true;
             // 
             // columnName
             // 
@@ -120,17 +127,22 @@
             // 
             // copyMenuItem
             // 
+            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyMenuItem.Index = 1;
             this.copyMenuItem.Text = "&Copy";
+            // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
             // 
             // StructViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.treeStruct);
             this.Name = "StructViewer";
             this.Size = new System.Drawing.Size(362, 331);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -147,5 +159,6 @@
         private System.Windows.Forms.MenuItem decMenuItem;
         private System.Windows.Forms.MenuItem hexMenuItem;
         private System.Windows.Forms.MenuItem copyMenuItem;
+        private wyDay.Controls.VistaMenu vistaMenu;
     }
 }

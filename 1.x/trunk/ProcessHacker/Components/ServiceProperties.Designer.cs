@@ -33,10 +33,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.listServices = new ProcessHacker.Components.ExtendedListView();
-            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnStatus = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listServices = new System.Windows.Forms.ListView();
+            this.columnName = new System.Windows.Forms.ColumnHeader();
+            this.columnDescription = new System.Windows.Forms.ColumnHeader();
+            this.columnStatus = new System.Windows.Forms.ColumnHeader();
             this.panelService = new System.Windows.Forms.Panel();
             this.buttonPermissions = new System.Windows.Forms.Button();
             this.textServiceDll = new System.Windows.Forms.TextBox();
@@ -70,14 +70,13 @@
             // 
             // listServices
             // 
-            this.listServices.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listServices.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listServices.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnName,
             this.columnDescription,
             this.columnStatus});
-            this.listServices.DoubleClickChecks = true;
             this.listServices.FullRowSelect = true;
             this.listServices.HideSelection = false;
             this.listServices.Location = new System.Drawing.Point(3, 3);
@@ -108,8 +107,8 @@
             // 
             // panelService
             // 
-            this.panelService.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelService.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.panelService.Controls.Add(this.buttonPermissions);
             this.panelService.Controls.Add(this.textServiceDll);
             this.panelService.Controls.Add(this.label8);
@@ -156,12 +155,12 @@
             // 
             // textServiceDll
             // 
-            this.textServiceDll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textServiceDll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textServiceDll.Location = new System.Drawing.Point(107, 222);
             this.textServiceDll.Name = "textServiceDll";
             this.textServiceDll.ReadOnly = true;
-            this.textServiceDll.Size = new System.Drawing.Size(274, 22);
+            this.textServiceDll.Size = new System.Drawing.Size(274, 20);
             this.textServiceDll.TabIndex = 23;
             // 
             // label8
@@ -169,7 +168,7 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(6, 225);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(66, 13);
+            this.label8.Size = new System.Drawing.Size(69, 13);
             this.label8.TabIndex = 22;
             this.label8.Text = "Service DLL:";
             // 
@@ -188,11 +187,11 @@
             // 
             // textPassword
             // 
-            this.textPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textPassword.Location = new System.Drawing.Point(107, 196);
             this.textPassword.Name = "textPassword";
-            this.textPassword.Size = new System.Drawing.Size(251, 22);
+            this.textPassword.Size = new System.Drawing.Size(251, 20);
             this.textPassword.TabIndex = 20;
             this.textPassword.Text = "password";
             this.textPassword.UseSystemPasswordChar = true;
@@ -203,7 +202,7 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(6, 199);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(59, 13);
+            this.label7.Size = new System.Drawing.Size(56, 13);
             this.label7.TabIndex = 19;
             this.label7.Text = "Password:";
             // 
@@ -233,17 +232,16 @@
             // 
             // textDescription
             // 
-            this.textDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textDescription.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.textDescription.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textDescription.Location = new System.Drawing.Point(6, 21);
+            this.textDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textDescription.Location = new System.Drawing.Point(6, 47);
             this.textDescription.Multiline = true;
             this.textDescription.Name = "textDescription";
             this.textDescription.ReadOnly = true;
             this.textDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textDescription.Size = new System.Drawing.Size(375, 64);
+            this.textDescription.Size = new System.Drawing.Size(375, 38);
             this.textDescription.TabIndex = 17;
             // 
             // buttonStart
@@ -272,11 +270,11 @@
             // 
             // textLoadOrderGroup
             // 
-            this.textLoadOrderGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textLoadOrderGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textLoadOrderGroup.Location = new System.Drawing.Point(240, 118);
             this.textLoadOrderGroup.Name = "textLoadOrderGroup";
-            this.textLoadOrderGroup.Size = new System.Drawing.Size(141, 22);
+            this.textLoadOrderGroup.Size = new System.Drawing.Size(141, 20);
             this.textLoadOrderGroup.TabIndex = 15;
             // 
             // comboErrorControl
@@ -311,7 +309,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(195, 94);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(60, 13);
+            this.label6.Size = new System.Drawing.Size(59, 13);
             this.label6.TabIndex = 11;
             this.label6.Text = "Start Type:";
             // 
@@ -320,7 +318,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(6, 121);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(77, 13);
+            this.label5.Size = new System.Drawing.Size(68, 13);
             this.label5.TabIndex = 10;
             this.label5.Text = "Error Control:";
             // 
@@ -329,7 +327,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(6, 94);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(33, 13);
+            this.label4.Size = new System.Drawing.Size(34, 13);
             this.label4.TabIndex = 9;
             this.label4.Text = "Type:";
             // 
@@ -338,7 +336,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(195, 121);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(43, 13);
+            this.label3.Size = new System.Drawing.Size(39, 13);
             this.label3.TabIndex = 8;
             this.label3.Text = "Group:";
             // 
@@ -359,17 +357,17 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 147);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(68, 13);
+            this.label2.Size = new System.Drawing.Size(64, 13);
             this.label2.TabIndex = 5;
             this.label2.Text = "Binary Path:";
             // 
             // textUserAccount
             // 
-            this.textUserAccount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textUserAccount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textUserAccount.Location = new System.Drawing.Point(107, 170);
             this.textUserAccount.Name = "textUserAccount";
-            this.textUserAccount.Size = new System.Drawing.Size(274, 22);
+            this.textUserAccount.Size = new System.Drawing.Size(274, 20);
             this.textUserAccount.TabIndex = 4;
             // 
             // label1
@@ -377,34 +375,33 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 173);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(78, 13);
+            this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 3;
             this.label1.Text = "User Account:";
             // 
             // textServiceBinaryPath
             // 
-            this.textServiceBinaryPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textServiceBinaryPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textServiceBinaryPath.Location = new System.Drawing.Point(107, 144);
             this.textServiceBinaryPath.Name = "textServiceBinaryPath";
-            this.textServiceBinaryPath.Size = new System.Drawing.Size(274, 22);
+            this.textServiceBinaryPath.Size = new System.Drawing.Size(274, 20);
             this.textServiceBinaryPath.TabIndex = 2;
             // 
             // labelServiceDisplayName
             // 
-            this.labelServiceDisplayName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelServiceDisplayName.Location = new System.Drawing.Point(198, 5);
+            this.labelServiceDisplayName.AutoSize = true;
+            this.labelServiceDisplayName.Location = new System.Drawing.Point(6, 26);
             this.labelServiceDisplayName.Name = "labelServiceDisplayName";
-            this.labelServiceDisplayName.Size = new System.Drawing.Size(183, 13);
+            this.labelServiceDisplayName.Size = new System.Drawing.Size(111, 13);
             this.labelServiceDisplayName.TabIndex = 1;
             this.labelServiceDisplayName.Text = "Service Display Name";
-            this.labelServiceDisplayName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // labelServiceName
             // 
             this.labelServiceName.AutoSize = true;
             this.labelServiceName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelServiceName.Location = new System.Drawing.Point(6, 4);
+            this.labelServiceName.Location = new System.Drawing.Point(6, 5);
             this.labelServiceName.Name = "labelServiceName";
             this.labelServiceName.Size = new System.Drawing.Size(86, 13);
             this.labelServiceName.TabIndex = 0;
@@ -414,7 +411,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listServices);
             this.Controls.Add(this.panelService);
             this.Name = "ServiceProperties";
@@ -427,7 +423,7 @@
 
         #endregion
 
-        private ExtendedListView listServices;
+        private System.Windows.Forms.ListView listServices;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnDescription;
         private System.Windows.Forms.ColumnHeader columnStatus;

@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Objects
@@ -37,7 +38,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                this.Handle = IntPtr.Zero;// KProcessHacker.Instance.KphOpenDriver(oa).ToIntPtr();
+                this.Handle = KProcessHacker.Instance.KphOpenDriver(oa).ToIntPtr();
             }
             finally
             {
@@ -45,63 +46,66 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public string DriverName
+        public DriverBasicInformation GetBasicInformation()
         {
-            get { return this.GetInformationUnicodeString(DriverInformationClass.DriverNameInformation); }
-        }
-
-        public string ServiceKeyName
-        {
-            get { return this.GetInformationUnicodeString(DriverInformationClass.DriverServiceKeyNameInformation); }
-        }
-
-        public unsafe DriverBasicInformation BasicInformation
-        {
-            get
+            unsafe
             {
-                DriverBasicInformation basicInfo = new DriverBasicInformation();
+                DriverBasicInformation basicInfo;
+                int retLength;
 
-                //KProcessHacker.Instance.KphQueryInformationDriver(
-                //    this,
-                //    DriverInformationClass.DriverBasicInformation,
-                //    new IntPtr(&basicInfo),
-                //    DriverBasicInformation.SizeOf,
-                //    out retLength
-                //    );
+                KProcessHacker.Instance.KphQueryInformationDriver(
+                    this,
+                    DriverInformationClass.DriverBasicInformation,
+                    new IntPtr(&basicInfo),
+                    Marshal.SizeOf(typeof(DriverBasicInformation)),
+                    out retLength
+                    );
 
                 return basicInfo;
             }
+        }
+
+        public string GetDriverName()
+        {
+            return this.GetInformationUnicodeString(DriverInformationClass.DriverNameInformation);
         }
 
         private string GetInformationUnicodeString(DriverInformationClass infoClass)
         {
             using (MemoryAlloc data = new MemoryAlloc(0x1000))
             {
-                //try
-                //{
-                //    KProcessHacker.Instance.KphQueryInformationDriver(
-                //        this,
-                //        infoClass,
-                //        data,
-                //        data.Size,
-                //        out retLength
-                //        );
-                //}
-                //catch (WindowsException)
-                //{
-                //    data.ResizeNew(retLength);
+                int retLength = 0;
 
-                //    KProcessHacker.Instance.KphQueryInformationDriver(
-                //        this,
-                //        infoClass,
-                //        data,
-                //        data.Size,
-                //        out retLength
-                //        );
-                //}
+                try
+                {
+                    KProcessHacker.Instance.KphQueryInformationDriver(
+                        this,
+                        infoClass,
+                        data,
+                        data.Size,
+                        out retLength
+                        );
+                }
+                catch (WindowsException)
+                {
+                    data.ResizeNew(retLength);
 
-                return data.ReadStruct<UnicodeString>().Text;
+                    KProcessHacker.Instance.KphQueryInformationDriver(
+                        this,
+                        infoClass,
+                        data,
+                        data.Size,
+                        out retLength
+                        );
+                }
+
+                return data.ReadStruct<UnicodeString>().Read();
             }
+        }
+
+        public string GetServiceKeyName()
+        {
+            return this.GetInformationUnicodeString(DriverInformationClass.DriverServiceKeyNameInformation);
         }
     }
 }

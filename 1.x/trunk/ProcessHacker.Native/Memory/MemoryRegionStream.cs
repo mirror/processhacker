@@ -28,8 +28,8 @@ namespace ProcessHacker.Native
 {
     public class MemoryRegionStream : Stream
     {
-        private readonly MemoryRegion _memory;
-        private long _position;
+        private MemoryRegion _memory;
+        private long _position = 0;
 
         public MemoryRegionStream(MemoryRegion memory)
         {
@@ -86,18 +86,12 @@ namespace ProcessHacker.Native
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            switch (origin)
-            {
-                case SeekOrigin.Begin:
-                    this._position = offset;
-                    break;
-                case SeekOrigin.Current:
-                    this._position += offset;
-                    break;
-                case SeekOrigin.End:
-                    this._position = this._memory.Size + offset;
-                    break;
-            }
+            if (origin == SeekOrigin.Begin)
+                _position = offset;
+            else if (origin == SeekOrigin.Current)
+                _position += offset;
+            else if (origin == SeekOrigin.End)
+                _position = _memory.Size + offset;
 
             return _position;
         }

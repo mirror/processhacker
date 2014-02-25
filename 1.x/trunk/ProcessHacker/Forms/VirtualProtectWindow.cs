@@ -31,14 +31,14 @@ namespace ProcessHacker
 {
     public partial class VirtualProtectWindow : Form
     {
-        private readonly int _pid;
-        private readonly long _size;
-        private readonly IntPtr _address;
+        private int _pid;
+        private long _size;
+        private IntPtr _address;
 
         public VirtualProtectWindow(int pid, IntPtr address, long size)
         {
             InitializeComponent();
-
+            this.AddEscapeToClose();
             this.SetTopMost();
 
             _pid = pid;
@@ -71,7 +71,8 @@ namespace ProcessHacker
                     return;
                 }
 
-                using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.VmOperation))
+                using (ProcessHandle phandle =
+                    new ProcessHandle(_pid, ProcessAccess.VmOperation))
                 {
                     try
                     {

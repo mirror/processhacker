@@ -32,9 +32,9 @@ namespace ProcessHacker.Components
 {
     public partial class DotNetCounters : UserControl
     {
-        private readonly int _pid;
-        private bool _initialized;
-        private readonly string _name;
+        private int _pid;
+        private bool _initialized = false;
+        private string _name;
         private string _instanceName;
         private string _categoryName;
         private PerformanceCounter[] _counters;
@@ -43,6 +43,10 @@ namespace ProcessHacker.Components
         {
             InitializeComponent();
 
+            listAppDomains.SetTheme("explorer");
+
+            listValues.SetDoubleBuffered(true);
+            listValues.SetTheme("explorer");
             listValues.ContextMenu = listValues.GetCopyMenu();
             listValues.AddShortcuts();
 
@@ -121,7 +125,7 @@ namespace ProcessHacker.Components
 
             foreach (var category in categories)
             {
-                if (category.CategoryName.StartsWith(".NET CLR", StringComparison.OrdinalIgnoreCase))
+                if (category.CategoryName.StartsWith(".NET CLR"))
                     names.Add(category.CategoryName);
             }
 
@@ -157,19 +161,22 @@ namespace ProcessHacker.Components
                 return;
             }
 
-            foreach (PerformanceCounter t in this._counters)
+            for (int i = 0; i < _counters.Length; i++)
             {
+                var counter = _counters[i];
+
                 if (
-                    (t.CounterType == PerformanceCounterType.NumberOfItems32 ||
-                     t.CounterType == PerformanceCounterType.NumberOfItems64 ||
-                     t.CounterType == PerformanceCounterType.RawFraction) &&
-                    t.CounterName != "Not Displayed"
+                    (counter.CounterType == PerformanceCounterType.NumberOfItems32 ||
+                    counter.CounterType == PerformanceCounterType.NumberOfItems64 ||
+                    counter.CounterType == PerformanceCounterType.RawFraction) &&
+                    counter.CounterName != "Not Displayed"
                     )
                 {
-                    this.listValues.Items.Add(new ListViewItem(new string[]
+                    listValues.Items.Add(new ListViewItem(
+                        new string[] 
                     {
-                        t.CounterName,
-                        string.Empty
+                        _counters[i].CounterName,
+                        ""
                     }));
                 }
             }

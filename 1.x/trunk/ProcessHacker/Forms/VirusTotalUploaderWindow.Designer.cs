@@ -53,7 +53,7 @@
             this.labelFile.AutoSize = true;
             this.labelFile.Location = new System.Drawing.Point(12, 9);
             this.labelFile.Name = "labelFile";
-            this.labelFile.Size = new System.Drawing.Size(65, 13);
+            this.labelFile.Size = new System.Drawing.Size(58, 13);
             this.labelFile.TabIndex = 2;
             this.labelFile.Text = "Uploading:";
             // 
@@ -62,7 +62,7 @@
             this.uploadedLabel.AutoSize = true;
             this.uploadedLabel.Location = new System.Drawing.Point(12, 54);
             this.uploadedLabel.Name = "uploadedLabel";
-            this.uploadedLabel.Size = new System.Drawing.Size(61, 13);
+            this.uploadedLabel.Size = new System.Drawing.Size(56, 13);
             this.uploadedLabel.TabIndex = 3;
             this.uploadedLabel.Text = "Uploaded:";
             // 
@@ -83,7 +83,7 @@
             this.speedLabel.AutoSize = true;
             this.speedLabel.Location = new System.Drawing.Point(213, 54);
             this.speedLabel.Name = "speedLabel";
-            this.speedLabel.Size = new System.Drawing.Size(42, 13);
+            this.speedLabel.Size = new System.Drawing.Size(41, 13);
             this.speedLabel.TabIndex = 6;
             this.speedLabel.Text = "Speed:";
             // 
@@ -92,14 +92,14 @@
             this.totalSizeLabel.AutoSize = true;
             this.totalSizeLabel.Location = new System.Drawing.Point(12, 32);
             this.totalSizeLabel.Name = "totalSizeLabel";
-            this.totalSizeLabel.Size = new System.Drawing.Size(58, 13);
+            this.totalSizeLabel.Size = new System.Drawing.Size(57, 13);
             this.totalSizeLabel.TabIndex = 7;
             this.totalSizeLabel.Text = "Total Size:";
             // 
             // progressUpload
             // 
-            this.progressUpload.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressUpload.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.progressUpload.Location = new System.Drawing.Point(12, 75);
             this.progressUpload.Name = "progressUpload";
             this.progressUpload.Size = new System.Drawing.Size(325, 23);
@@ -109,7 +109,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(430, 110);
             this.Controls.Add(this.progressUpload);
             this.Controls.Add(this.totalSizeLabel);
@@ -125,8 +124,8 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "VirusTotal Uploader";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.VirusTotalUploaderWindow_FormClosing);
             this.Load += new System.EventHandler(this.VirusTotalUploaderWindow_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.VirusTotalUploaderWindow_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.LogoImg)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

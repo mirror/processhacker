@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ProcessHacker.Native</RootNamespace>
     <AssemblyName>ProcessHacker.Native</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -47,8 +47,7 @@
     <NoWarn>
     </NoWarn>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -62,7 +61,6 @@
     <NoWarn>1591</NoWarn>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -126,7 +124,6 @@
     <Compile Include="Memory\PinnedObject.cs" />
     <Compile Include="Memory\Section.cs" />
     <Compile Include="Memory\VirtualMemoryAlloc.cs" />
-    <Compile Include="NativeLibrary.cs" />
     <Compile Include="NativeUtils.cs" />
     <Compile Include="NProcessHacker.cs" />
     <Compile Include="Objects\LsaAuthHandle.cs" />
@@ -152,12 +149,6 @@
     <Compile Include="Objects\TmHandle.cs" />
     <Compile Include="Objects\TypeObjectHandle.cs" />
     <Compile Include="Objects\WindowHandle.cs" />
-    <Compile Include="PropertySheet\ProcessPropertySheetPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertySheet\PropertySheetPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />
     <Compile Include="Security\AccessControl\KnownAce.cs" />
@@ -280,6 +271,18 @@
     <Compile Include="Threading\Semaphore.cs" />
     <Compile Include="Threading\Timer.cs" />
     <Compile Include="Threading\Waiter.cs" />
+    <Compile Include="Ui\ChooseProcessDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ui\ChooseProcessDialog.Designer.cs">
+      <DependentUpon>ChooseProcessDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\HandlePropertiesWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ui\HandlePropertiesWindow.Designer.cs">
+      <DependentUpon>HandlePropertiesWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="NativeObject.cs" />
     <Compile Include="Windows.cs" />
     <Compile Include="OSVersion.cs" />
@@ -288,6 +291,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Ui\ChooseProcessDialog.resx">
+      <DependentUpon>ChooseProcessDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ui\HandlePropertiesWindow.resx">
+      <DependentUpon>HandlePropertiesWindow.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProcessHacker.Common\ProcessHacker.Common.csproj">

@@ -21,6 +21,7 @@
  */
 
 using System.Drawing;
+using System.Windows.Forms; // DO NOT REMOVE, needed in Debug mode
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 
@@ -28,20 +29,20 @@ namespace ProcessHacker
 {
     public abstract class PlotterIcon : UsageIcon
     {
-        private readonly CircularBuffer<float> _dataHistory1;
-        private readonly CircularBuffer<float> _dataHistory2;
-        private readonly CircularBuffer<long> _longDataHistory1;
-        private readonly CircularBuffer<long> _longDataHistory2;
-        private readonly Plotter _plotter;
+        private CircularBuffer<float> _dataHistory1;
+        private CircularBuffer<float> _dataHistory2;
+        private CircularBuffer<long> _longDataHistory1;
+        private CircularBuffer<long> _longDataHistory2;
+        private Plotter _plotter;
 
-        protected PlotterIcon()
+        public PlotterIcon()
         {
             _dataHistory1 = new CircularBuffer<float>(20);
             _dataHistory2 = new CircularBuffer<float>(20);
             _longDataHistory1 = new CircularBuffer<long>(20);
             _longDataHistory2 = new CircularBuffer<long>(20);
 
-            _plotter = new Plotter
+            _plotter = new Plotter()
             {
                 Size = this.Size,
                 ShowGrid = false,
@@ -90,7 +91,7 @@ namespace ProcessHacker
             }
 
             this.Icon = newIcon;
-            Native.Api.Win32.DestroyIcon(oldIcon.Handle);
+            ProcessHacker.Native.Api.Win32.DestroyIcon(oldIcon.Handle);
         }
 
         protected bool UseLongData

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace ProcessHacker.Common.Threading
@@ -11,11 +13,11 @@ namespace ProcessHacker.Common.Threading
         public event ThreadTaskCompletedDelegate Completed;
         public event ThreadTaskRunTaskDelegate RunTask;
 
-        private Thread _thread;
+        private Thread _thread = null;
         private object _result;
         private Exception _exception;
-        private bool _cancelled;
-        private bool _running;
+        private bool _cancelled = false;
+        private bool _running = false;
 
         public bool Cancelled
         {
@@ -55,10 +57,8 @@ namespace ProcessHacker.Common.Threading
             _cancelled = false;
             _running = true;
 
-            _thread = new Thread(this.ThreadStart)
-            {
-                IsBackground = true
-            };
+            _thread = new Thread(this.ThreadStart);
+            _thread.IsBackground = true;
             _thread.Start(param);
         }
 

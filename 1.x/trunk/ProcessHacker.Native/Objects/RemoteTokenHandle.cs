@@ -42,7 +42,7 @@ namespace ProcessHacker.Native.Objects
 
         public new IntPtr GetHandle(int rights)
         {
-            IntPtr newHandle;
+            IntPtr newHandle = IntPtr.Zero;
 
             // We can use KPH here. RemoteHandle doesn't.
             Win32.DuplicateObject(this.ProcessHandle, this.Handle, new IntPtr(-1), out newHandle, rights, 0, 0);

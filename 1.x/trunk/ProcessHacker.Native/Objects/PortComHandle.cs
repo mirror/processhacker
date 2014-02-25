@@ -31,13 +31,15 @@ namespace ProcessHacker.Native.Objects
     {
         public static PortComHandle Connect(string portName)
         {
+            NtStatus status;
             UnicodeString portNameStr = new UnicodeString(portName);
-            SecurityQualityOfService securityQos = new SecurityQualityOfService(SecurityImpersonationLevel.SecurityImpersonation, true, false);
+            SecurityQualityOfService securityQos = 
+                new SecurityQualityOfService(SecurityImpersonationLevel.SecurityImpersonation, true, false);
             IntPtr handle;
 
             try
             {
-                Win32.NtConnectPort(
+                if ((status = Win32.NtConnectPort(
                     out handle,
                     ref portNameStr,
                     ref securityQos,
@@ -46,7 +48,8 @@ namespace ProcessHacker.Native.Objects
                     IntPtr.Zero,
                     IntPtr.Zero,
                     IntPtr.Zero
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -62,9 +65,12 @@ namespace ProcessHacker.Native.Objects
 
         public void Reply(PortMessage message)
         {
-            using (MemoryAlloc messageMemory = message.ToMemory())
+            NtStatus status;
+
+            using (var messageMemory = message.ToMemory())
             {
-                Win32.NtReplyPort(this, messageMemory).ThrowIf();
+                if ((status = Win32.NtReplyPort(this, messageMemory)) >= NtStatus.Error)
+                    Win32.Throw(status);
 
                 message.SetHeader(messageMemory);
             }
@@ -77,7 +83,10 @@ namespace ProcessHacker.Native.Objects
 
         public PortMessage ReplyWaitReceive(PortMessage message)
         {
-            using (MemoryAlloc buffer = PortMessage.AllocateBuffer())
+            NtStatus status;
+            IntPtr context;
+
+            using (var buffer = PortMessage.AllocateBuffer())
             {
                 MemoryAlloc messageMemory = null;
 
@@ -86,14 +95,13 @@ namespace ProcessHacker.Native.Objects
 
                 try
                 {
-                    IntPtr context;
-
-                    Win32.NtReplyWaitReceivePort(
+                    if ((status = Win32.NtReplyWaitReceivePort(
                         this,
                         out context,
                         messageMemory ?? IntPtr.Zero,
                         buffer
-                        ).ThrowIf();
+                        )) >= NtStatus.Error)
+                        Win32.Throw(status);
 
                     if (message != null)
                         message.SetHeader(messageMemory);
@@ -110,12 +118,15 @@ namespace ProcessHacker.Native.Objects
 
         public PortMessage ReplyWaitReply(PortMessage message)
         {
-            using (MemoryAlloc messageMemory = message.ToMemory())
+            NtStatus status;
+
+            using (var messageMemory = message.ToMemory())
             {
-                Win32.NtReplyWaitReplyPort(
+                if ((status = Win32.NtReplyWaitReplyPort(
                     this,
                     messageMemory
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
 
                 return new PortMessage(messageMemory);
             }
@@ -123,9 +134,12 @@ namespace ProcessHacker.Native.Objects
 
         public void Request(PortMessage message)
         {
-            using (MemoryAlloc messageMemory = message.ToMemory())
+            NtStatus status;
+
+            using (var messageMemory = message.ToMemory())
             {
-                Win32.NtRequestPort(this, messageMemory).ThrowIf();
+                if ((status = Win32.NtRequestPort(this, messageMemory)) >= NtStatus.Error)
+                    Win32.Throw(status);
 
                 message.SetHeader(messageMemory);
             }
@@ -133,14 +147,17 @@ namespace ProcessHacker.Native.Objects
 
         public PortMessage RequestWaitReply(PortMessage message)
         {
-            using (MemoryAlloc buffer = PortMessage.AllocateBuffer())
-            using (MemoryAlloc messageMemory = message.ToMemory())
+            NtStatus status;
+
+            using (var buffer = PortMessage.AllocateBuffer())
+            using (var messageMemory = message.ToMemory())
             {
-                Win32.NtRequestWaitReplyPort(
+                if ((status = Win32.NtRequestWaitReplyPort(
                     this,
                     messageMemory,
                     buffer
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
 
                 message.SetHeader(messageMemory);
 

@@ -20,11 +20,16 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.Windows.Forms;
+
 namespace ProcessHacker
 {
     public class ProviderIcon : PlotterIcon
     {
-        private bool _enabled;
+        private bool _enabled = false;
+
+        public ProviderIcon()
+        { }
 
         public override void Dispose()
         {

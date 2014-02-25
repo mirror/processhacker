@@ -43,26 +43,29 @@ namespace ProcessHacker
         public MemoryType Type;
         public MemoryState State;
         public MemoryProtection Protection;
+
     }
 
     public class MemoryProvider : Provider<IntPtr, MemoryItem>
     {
-        private readonly ProcessHandle _processHandle;
-        private readonly int _pid;
+        private ProcessHandle _processHandle;
+        private int _pid;
 
         public MemoryProvider(int pid)
+            : base()
         {
-            this.Name = "MemoryProvider";
+            this.Name = this.GetType().Name;
             _pid = pid;
 
             try
             {
-                _processHandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
+                _processHandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation |
+                    Program.MinProcessReadMemoryRights);
             }
             catch
             { }
 
-            this.Disposed += provider => { if (_processHandle != null) _processHandle.Dispose(); };
+            this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
         protected override void Update()
@@ -83,13 +86,14 @@ namespace ProcessHacker
             var memoryInfo = new Dictionary<IntPtr, MemoryBasicInformation>();
             var newdictionary = new Dictionary<IntPtr, MemoryItem>(this.Dictionary);
 
-            _processHandle.EnumMemory(info =>
-            {
-                if ((this.IgnoreFreeRegions && info.State != MemoryState.Free) || !this.IgnoreFreeRegions)
-                    memoryInfo.Add(info.BaseAddress, info);
+            _processHandle.EnumMemory((info) =>
+                {
+                    if ((this.IgnoreFreeRegions && info.State != MemoryState.Free) ||
+                        !this.IgnoreFreeRegions)
+                        memoryInfo.Add(info.BaseAddress, info);
 
-                return true;
-            });
+                    return true;
+                });
 
             // look for freed memory regions
             foreach (IntPtr address in Dictionary.Keys)
@@ -107,19 +111,18 @@ namespace ProcessHacker
 
             foreach (IntPtr address in memoryInfo.Keys)
             {
-                MemoryBasicInformation info = memoryInfo[address];
+                var info = memoryInfo[address];
 
                 if (!this.Dictionary.ContainsKey(address))
                 {
-                    MemoryItem item = new MemoryItem
-                    {
-                        RunId = this.RunCount,
-                        Address = address,
-                        Size = info.RegionSize.ToInt64(),
-                        Type = info.Type,
-                        State = info.State,
-                        Protection = info.Protect
-                    };
+                    MemoryItem item = new MemoryItem();
+
+                    item.RunId = this.RunCount;
+                    item.Address = address;
+                    item.Size = info.RegionSize.ToInt64();
+                    item.Type = info.Type;
+                    item.State = info.State;
+                    item.Protection = info.Protect;
 
                     if (modules.ContainsKey(item.Address))
                     {

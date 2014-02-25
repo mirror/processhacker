@@ -39,15 +39,14 @@
             this.panelColor.Name = "panelColor";
             this.panelColor.Size = new System.Drawing.Size(40, 20);
             this.panelColor.TabIndex = 0;
+            this.panelColor.MouseLeave += new System.EventHandler(this.panelColor_MouseLeave);
             this.panelColor.Click += new System.EventHandler(this.panelColor_Click);
             this.panelColor.MouseEnter += new System.EventHandler(this.panelColor_MouseEnter);
-            this.panelColor.MouseLeave += new System.EventHandler(this.panelColor_MouseLeave);
             // 
             // ColorModifier
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.panelColor);
             this.Name = "ColorModifier";
             this.Size = new System.Drawing.Size(40, 20);

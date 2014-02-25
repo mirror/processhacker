@@ -21,6 +21,9 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -59,12 +62,13 @@ namespace ProcessHacker.Native.Objects
             out KeyCreationDisposition creationDisposition
             )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtCreateKey(
+                if ((status = Win32.NtCreateKey(
                     out handle,
                     access,
                     ref oa,
@@ -72,7 +76,8 @@ namespace ProcessHacker.Native.Objects
                     IntPtr.Zero,
                     createOptions,
                     out creationDisposition
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -92,16 +97,18 @@ namespace ProcessHacker.Native.Objects
 
         public KeyHandle(string name, ObjectFlags objectFlags, KeyHandle rootDirectory, KeyAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenKey(
+                if ((status = Win32.NtOpenKey(
                     out handle,
                     access,
                     ref oa
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -113,16 +120,21 @@ namespace ProcessHacker.Native.Objects
 
         public void Delete()
         {
-            Win32.NtDeleteKey(this).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.NtDeleteKey(this)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         public void DeleteValue(string name)
         {
+            NtStatus status;
             UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                Win32.NtDeleteValueKey(this, ref nameStr).ThrowIf();
+                if ((status = Win32.NtDeleteValueKey(this, ref nameStr)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
