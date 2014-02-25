@@ -56,12 +56,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle to an event pair.</returns>
         public static EventPairHandle Create(EventPairAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtCreateEventPair(out handle, access, ref oa).ThrowIf();
+                if ((status = Win32.NtCreateEventPair(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -91,12 +93,14 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the event pair.</param>
         public EventPairHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, EventPairAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenEventPair(out handle, access, ref oa).ThrowIf();
+                if ((status = Win32.NtOpenEventPair(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -115,7 +119,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void SetHigh()
         {
-            Win32.NtSetHighEventPair(this).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.NtSetHighEventPair(this)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -123,7 +130,12 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public NtStatus SetHighWaitLow()
         {
-            return Win32.NtSetHighWaitLowEventPair(this);
+            NtStatus status;
+
+            if ((status = Win32.NtSetHighWaitLowEventPair(this)) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
 
         /// <summary>
@@ -131,7 +143,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void SetLow()
         {
-            Win32.NtSetLowEventPair(this).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.NtSetLowEventPair(this)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -139,7 +154,12 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public NtStatus SetLowWaitHigh()
         {
-            return Win32.NtSetLowWaitHighEventPair(this);
+            NtStatus status;
+
+            if ((status = Win32.NtSetLowWaitHighEventPair(this)) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
 
         /// <summary>
@@ -147,7 +167,12 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public NtStatus WaitHigh()
         {
-            return Win32.NtWaitHighEventPair(this);
+            NtStatus status;
+
+            if ((status = Win32.NtWaitHighEventPair(this)) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
 
         /// <summary>
@@ -155,7 +180,12 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public NtStatus WaitLow()
         {
-            return Win32.NtWaitLowEventPair(this);
+            NtStatus status;
+
+            if ((status = Win32.NtWaitLowEventPair(this)) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
     }
 }

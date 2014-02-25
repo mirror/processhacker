@@ -1,6 +1,4 @@
-﻿using ProcessHacker.Components;
-
-namespace ProcessHacker
+﻿namespace ProcessHacker
 {
     partial class ChooseColumnsWindow
     {
@@ -30,18 +28,17 @@ namespace ProcessHacker
         /// </summary>
         private void InitializeComponent()
         {
-            this.listColumns = new ProcessHacker.Components.ExtendedListView();
+            this.listColumns = new System.Windows.Forms.ListView();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listColumns
             // 
-            this.listColumns.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listColumns.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listColumns.CheckBoxes = true;
-            this.listColumns.DoubleClickChecks = true;
             this.listColumns.FullRowSelect = true;
             this.listColumns.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listColumns.Location = new System.Drawing.Point(12, 12);
@@ -82,7 +79,6 @@ namespace ProcessHacker
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(464, 314);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.buttonCancel);
@@ -101,7 +97,7 @@ namespace ProcessHacker
 
         #endregion
 
-        private ExtendedListView listColumns;
+        private System.Windows.Forms.ListView listColumns;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonOK;
 

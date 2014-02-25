@@ -1,6 +1,4 @@
-﻿using ProcessHacker.Components;
-
-namespace ProcessHacker
+﻿namespace ProcessHacker
 {
     partial class LogWindow
     {
@@ -31,9 +29,9 @@ namespace ProcessHacker
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.listLog = new ProcessHacker.Components.ExtendedListView();
-            this.columnTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnMessage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listLog = new System.Windows.Forms.ListView();
+            this.columnTime = new System.Windows.Forms.ColumnHeader();
+            this.columnMessage = new System.Windows.Forms.ColumnHeader();
             this.buttonClose = new System.Windows.Forms.Button();
             this.timerScroll = new System.Windows.Forms.Timer(this.components);
             this.buttonCopy = new System.Windows.Forms.Button();
@@ -44,25 +42,24 @@ namespace ProcessHacker
             // 
             // listLog
             // 
-            this.listLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listLog.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnTime,
             this.columnMessage});
-            this.listLog.DoubleClickChecks = true;
             this.listLog.FullRowSelect = true;
             this.listLog.HideSelection = false;
             this.listLog.Location = new System.Drawing.Point(12, 12);
             this.listLog.Name = "listLog";
             this.listLog.ShowItemToolTips = true;
-            this.listLog.Size = new System.Drawing.Size(555, 297);
+            this.listLog.Size = new System.Drawing.Size(555, 419);
             this.listLog.TabIndex = 0;
             this.listLog.UseCompatibleStateImageBehavior = false;
             this.listLog.View = System.Windows.Forms.View.Details;
             this.listLog.VirtualMode = true;
-            this.listLog.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listLog_RetrieveVirtualItem);
             this.listLog.DoubleClick += new System.EventHandler(this.listLog_DoubleClick);
+            this.listLog.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listLog_RetrieveVirtualItem);
             // 
             // columnTime
             // 
@@ -78,7 +75,7 @@ namespace ProcessHacker
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(492, 315);
+            this.buttonClose.Location = new System.Drawing.Point(492, 437);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 5;
@@ -96,7 +93,7 @@ namespace ProcessHacker
             // 
             this.buttonCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCopy.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCopy.Location = new System.Drawing.Point(411, 315);
+            this.buttonCopy.Location = new System.Drawing.Point(411, 437);
             this.buttonCopy.Name = "buttonCopy";
             this.buttonCopy.Size = new System.Drawing.Size(75, 23);
             this.buttonCopy.TabIndex = 4;
@@ -108,7 +105,7 @@ namespace ProcessHacker
             // 
             this.buttonSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonSave.Location = new System.Drawing.Point(330, 315);
+            this.buttonSave.Location = new System.Drawing.Point(330, 437);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 3;
@@ -120,7 +117,7 @@ namespace ProcessHacker
             // 
             this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonClear.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClear.Location = new System.Drawing.Point(12, 315);
+            this.buttonClear.Location = new System.Drawing.Point(12, 437);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(75, 23);
             this.buttonClear.TabIndex = 1;
@@ -135,9 +132,9 @@ namespace ProcessHacker
             this.checkAutoscroll.Checked = true;
             this.checkAutoscroll.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkAutoscroll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkAutoscroll.Location = new System.Drawing.Point(93, 318);
+            this.checkAutoscroll.Location = new System.Drawing.Point(93, 440);
             this.checkAutoscroll.Name = "checkAutoscroll";
-            this.checkAutoscroll.Size = new System.Drawing.Size(88, 18);
+            this.checkAutoscroll.Size = new System.Drawing.Size(81, 18);
             this.checkAutoscroll.TabIndex = 2;
             this.checkAutoscroll.Text = "Auto-scroll";
             this.checkAutoscroll.UseVisualStyleBackColor = true;
@@ -146,8 +143,7 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(579, 350);
+            this.ClientSize = new System.Drawing.Size(579, 472);
             this.Controls.Add(this.checkAutoscroll);
             this.Controls.Add(this.buttonClear);
             this.Controls.Add(this.buttonSave);
@@ -155,6 +151,7 @@ namespace ProcessHacker
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listLog);
             this.Name = "LogWindow";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Log";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogWindow_FormClosing);
@@ -165,7 +162,7 @@ namespace ProcessHacker
 
         #endregion
 
-        private ExtendedListView listLog;
+        private System.Windows.Forms.ListView listLog;
         private System.Windows.Forms.ColumnHeader columnTime;
         private System.Windows.Forms.ColumnHeader columnMessage;
         private System.Windows.Forms.Button buttonClose;

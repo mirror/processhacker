@@ -249,10 +249,10 @@ namespace Be.Windows.Forms
         #region Enumerator Nested Type
         internal class Enumerator : IEnumerator, IDisposable
         {
-            readonly DataMap _map;
+            DataMap _map;
             DataBlock _current;
             int _index;
-            readonly int _version;
+            int _version;
 
             internal Enumerator(DataMap map)
             {

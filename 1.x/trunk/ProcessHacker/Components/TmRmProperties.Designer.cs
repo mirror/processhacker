@@ -42,7 +42,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(69, 13);
+            this.label1.Size = new System.Drawing.Size(63, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Description:";
             // 
@@ -57,29 +57,28 @@
             // 
             // textDescription
             // 
-            this.textDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textDescription.Location = new System.Drawing.Point(75, 6);
             this.textDescription.Name = "textDescription";
             this.textDescription.ReadOnly = true;
-            this.textDescription.Size = new System.Drawing.Size(252, 22);
+            this.textDescription.Size = new System.Drawing.Size(252, 20);
             this.textDescription.TabIndex = 1;
             // 
             // textGuid
             // 
-            this.textGuid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textGuid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textGuid.Location = new System.Drawing.Point(49, 32);
             this.textGuid.Name = "textGuid";
             this.textGuid.ReadOnly = true;
-            this.textGuid.Size = new System.Drawing.Size(278, 22);
+            this.textGuid.Size = new System.Drawing.Size(278, 20);
             this.textGuid.TabIndex = 1;
             // 
             // TmRmProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.textGuid);
             this.Controls.Add(this.textDescription);
             this.Controls.Add(this.label2);

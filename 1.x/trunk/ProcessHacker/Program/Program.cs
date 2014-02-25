@@ -60,10 +60,7 @@ namespace ProcessHacker
         /// <summary>
         /// The Results Window ID Generator
         /// </summary>
-        public static IdGenerator ResultsIds = new IdGenerator
-        { 
-            Sort = true 
-        };
+        public static IdGenerator ResultsIds = new IdGenerator() { Sort = true };
 
         public static Dictionary<string, Structs.StructDef> Structs = new Dictionary<string, ProcessHacker.Structs.StructDef>();
 
@@ -75,7 +72,7 @@ namespace ProcessHacker
         public static Dictionary<string, ResultsWindow> ResultsWindows = new Dictionary<string, ResultsWindow>();
         public static Dictionary<string, Thread> ResultsThreads = new Dictionary<string, Thread>();
 
-        public static bool PEWindowsThreaded = true;
+        public static bool PEWindowsThreaded = false;
         public static Dictionary<string, PEWindow> PEWindows = new Dictionary<string, PEWindow>();
         public static Dictionary<string, Thread> PEThreads = new Dictionary<string, Thread>();
 
@@ -94,22 +91,22 @@ namespace ProcessHacker
         public static ServiceProvider ServiceProvider;
         public static NetworkProvider NetworkProvider;
 
-        public static bool BadConfig;
+        public static bool BadConfig = false;
         public static TokenElevationType ElevationType;
         public static ProcessHacker.Native.Threading.Mutant GlobalMutex;
         public static string GlobalMutexName = @"\BaseNamedObjects\ProcessHackerMutex";
         public static System.Collections.Specialized.StringCollection ImposterNames =
             new System.Collections.Specialized.StringCollection();
         public static int InspectPid = -1;
-        public static bool NoKph;
+        public static bool NoKph = false;
         public static string SelectTab = "Processes";
-        public static bool StartHidden;
-        public static bool StartVisible;
+        public static bool StartHidden = false;
+        public static bool StartVisible = false;
         public static ProviderThread PrimaryProviderThread;
         public static ProviderThread SecondaryProviderThread;
         public static ProcessHacker.Native.Threading.Waiter SharedWaiter;
 
-        private static readonly object CollectWorkerThreadsLock = new object();
+        private static object CollectWorkerThreadsLock = new object();
 
         /// <summary>
         /// The main entry point for the application.
@@ -117,7 +114,7 @@ namespace ProcessHacker
         [STAThread]
         public static void Main(string[] args)
         {
-            Dictionary<string, string> pArgs;
+            Dictionary<string, string> pArgs = null;
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -129,7 +126,7 @@ namespace ProcessHacker
             }
 
             // Check OS support.
-            if (OSVersion.IsBelow(WindowsVersion.TwoThousand) || OSVersion.IsAbove(WindowsVersion.Eight))
+            if (OSVersion.IsBelow(WindowsVersion.TwoThousand) || OSVersion.IsAbove(WindowsVersion.Seven))
             {
                 PhUtils.ShowWarning("Your operating system is not supported by Process Hacker.");
             }
@@ -148,20 +145,6 @@ namespace ProcessHacker
                 ShowCommandLineUsage();
                 pArgs = new Dictionary<string, string>();
             }
-
-            try
-            {
-                if (
-                    // Only load KPH if it's enabled.
-                    Settings.Instance.EnableKPH && !NoKph &&
-                    // Don't load KPH if we're going to install/uninstall it.
-                    !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
-                    )
-                    KProcessHacker2.Instance = new KProcessHacker2();
-            }
-            catch
-            { }
-
 
             if (pArgs.ContainsKey("-h") || pArgs.ContainsKey("-help") || pArgs.ContainsKey("-?"))
             {
@@ -192,7 +175,9 @@ namespace ProcessHacker
             catch
             { }
 
-            WorkQueue.GlobalWorkQueue.MaxWorkerThreads = Environment.ProcessorCount;
+            ThreadPool.SetMinThreads(1, 1);
+            ThreadPool.SetMaxThreads(2, 2);
+            WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 2;
 
             // Create or open the Process Hacker mutex, used only by the installer.
             try
@@ -206,7 +191,7 @@ namespace ProcessHacker
 
             try
             {
-                using (TokenHandle thandle = ProcessHandle.Current.GetToken())
+                using (var thandle = ProcessHandle.Current.GetToken())
                 {
                     thandle.TrySetPrivilege("SeDebugPrivilege", SePrivilegeAttributes.Enabled);
                     thandle.TrySetPrivilege("SeIncreaseBasePriorityPrivilege", SePrivilegeAttributes.Enabled);
@@ -217,7 +202,7 @@ namespace ProcessHacker
 
                     if (OSVersion.HasUac)
                     {
-                        try { ElevationType = thandle.ElevationType; }
+                        try { ElevationType = thandle.GetElevationType(); }
                         catch { ElevationType = TokenElevationType.Full; }
 
                         if (ElevationType == TokenElevationType.Default &&
@@ -238,15 +223,30 @@ namespace ProcessHacker
                 Logging.Log(ex);
             }
 
+            try
+            {
+                if (
+                    // Only load KPH if we're on 32-bit and it's enabled.
+                    OSVersion.Architecture == OSArch.I386 &&
+                    Settings.Instance.EnableKPH &&
+                    !NoKph &&
+                    // Don't load KPH if we're going to install/uninstall it.
+                    !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
+                    )
+                    KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
+            }
+            catch
+            { }
+
             MinProcessQueryRights = OSVersion.MinProcessQueryInfoAccess;
             MinThreadQueryRights = OSVersion.MinThreadQueryInfoAccess;
 
-            //if (KProcessHacker2.Instance != null)
-            //{
-            //    MinProcessGetHandleInformationRights = MinProcessQueryRights;
-            //    MinProcessReadMemoryRights = MinProcessQueryRights;
-            //    MinProcessWriteMemoryRights = MinProcessQueryRights;
-            //}
+            if (KProcessHacker.Instance != null)
+            {
+                MinProcessGetHandleInformationRights = MinProcessQueryRights;
+                MinProcessReadMemoryRights = MinProcessQueryRights;
+                MinProcessWriteMemoryRights = MinProcessQueryRights;
+            }
 
             try
             {
@@ -261,7 +261,7 @@ namespace ProcessHacker
             {
                 CurrentProcessId = Win32.GetCurrentProcessId();
                 CurrentSessionId = Win32.GetProcessSessionId(Win32.GetCurrentProcessId());
-                Thread.CurrentThread.Priority = ThreadPriority.Highest;
+                System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
             }
             catch (Exception ex)
             {
@@ -273,7 +273,7 @@ namespace ProcessHacker
 
             Win32.FileIconInit(true);
             LoadProviders();
-            Windows.GetProcessName = pid => 
+            Windows.GetProcessName = (pid) => 
                 ProcessProvider.Dictionary.ContainsKey(pid) ? 
                 ProcessProvider.Dictionary[pid].Name :
                 null;
@@ -304,7 +304,7 @@ namespace ProcessHacker
                 "-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 is Network.\n" +
                 "-uninstallkph\tUninstalls the KProcessHacker service.\n" +
                 "-v\tStarts Process Hacker visible.\n" +
-                string.Empty
+                ""
                 );
         }
 
@@ -313,15 +313,13 @@ namespace ProcessHacker
             ProcessProvider = new ProcessSystemProvider();
             ServiceProvider = new ServiceProvider();
             NetworkProvider = new NetworkProvider();
-
-            Program.PrimaryProviderThread = new ProviderThread(Settings.Instance.RefreshInterval)                              
-            {                             
-                ProcessProvider, 
-                ServiceProvider, 
-                NetworkProvider
-            };
-
-            Program.SecondaryProviderThread = new ProviderThread(Settings.Instance.RefreshInterval);
+            Program.PrimaryProviderThread =
+                new ProviderThread(Settings.Instance.RefreshInterval);
+            Program.PrimaryProviderThread.Add(ProcessProvider);
+            Program.PrimaryProviderThread.Add(ServiceProvider);
+            Program.PrimaryProviderThread.Add(NetworkProvider);
+            Program.SecondaryProviderThread =
+                new ProviderThread(Settings.Instance.RefreshInterval);
         }
 
         private static void LoadSettings(bool useSettings, string settingsFileName)
@@ -354,11 +352,15 @@ namespace ProcessHacker
                 {
                     settingsFileName = appData + @"\Process Hacker\settings.xml";
                 }
+                else
+                {
+                    settingsFileName = null;
+                }
             }
 
             // Make sure we have an absolute path so we don't run into problems 
             // when saving.
-            if (!string.IsNullOrEmpty(settingsFileName))
+            if (settingsFileName != null)
             {
                 try
                 {
@@ -378,26 +380,31 @@ namespace ProcessHacker
             catch
             {
                 // Settings file is probably corrupt. Ask the user.
+
+                try { ThemingScope.Activate(); }
+                catch { }
+
                 DialogResult result;
 
                 if (OSVersion.HasTaskDialogs)
                 {
-                    TaskDialog td = new TaskDialog
+                    TaskDialog td = new TaskDialog();
+
+                    td.MainIcon = TaskDialogIcon.Warning;
+                    td.MainInstruction = "The settings file is corrupt";
+                    td.WindowTitle = "Process Hacker";
+                    td.Content = "The settings file used by Process Hacker is corrupt. You can either " +
+                        "delete the settings file or start Process Hacker with default settings.";
+                    td.UseCommandLinks = true;
+
+                    td.Buttons = new TaskDialogButton[]
                     {
-                        MainIcon = TaskDialogIcon.Warning,
-                        PositionRelativeToWindow = true,
-                        MainInstruction = "The settings file is corrupt",
-                        WindowTitle = "Process Hacker",
-                        Content = "The settings file used by Process Hacker is corrupt. You can either " +
-                        "delete the settings file or start Process Hacker with default settings.",
-                        UseCommandLinks = true,
-                        Buttons = new TaskDialogButton[]
-                        {
-                            new TaskDialogButton((int)DialogResult.Yes, "Delete the settings file\n" + settingsFileName),
-                            new TaskDialogButton((int)DialogResult.No, "Start with default settings\nAny settings you change will not be saved."),
-                        },
-                        CommonButtons = TaskDialogCommonButtons.Cancel
+                        new TaskDialogButton((int)DialogResult.Yes, "Delete the settings file\n" + settingsFileName),
+                        new TaskDialogButton((int)DialogResult.No, "Start with default settings\n" + 
+                            "Any settings you change will not be saved."),
                     };
+                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
+
                     result = (DialogResult)td.Show();
                 }
                 else
@@ -411,32 +418,24 @@ namespace ProcessHacker
                         result = DialogResult.Cancel;
                 }
 
-                switch (result)
+                if (result == DialogResult.Yes)
                 {
-                    case DialogResult.Yes:
-                        {
-                            try
-                            {
-                                System.IO.File.Delete(settingsFileName);
-                            }
-                            catch (Exception ex)
-                            {
-                                PhUtils.ShowException("Unable to delete the settings file", ex);
-                                Environment.Exit(1);
-                            }
-                            Settings.Instance = new Settings(settingsFileName);
-                            break;
-                        }
-                    case DialogResult.No:
-                        {
-                            Settings.Instance = new Settings(null);
-                            break;
-                        }
-                    case DialogResult.Cancel:
-                        {
-                            Environment.Exit(0);
-                        }
-                        break;
+                    try { System.IO.File.Delete(settingsFileName); }
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowException("Unable to delete the settings file", ex);
+                        Environment.Exit(1);
+                    }
+
+                    Settings.Instance = new Settings(settingsFileName);
+                }
+                else if (result == DialogResult.No)
+                {
+                    Settings.Instance = new Settings(null);
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    Environment.Exit(0);
                 }
             }
         }
@@ -468,11 +467,11 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (ServiceManagerHandle scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                    using (var scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
                     {
-                        using (ServiceHandle shandle = scm.CreateService(
-                            "KProcessHacker2",
-                            "KProcessHacker2",
+                        using (var shandle = scm.CreateService(
+                            "KProcessHacker",
+                            "KProcessHacker",
                             ServiceType.KernelDriver,
                             ServiceStartType.SystemStart,
                             ServiceErrorControl.Ignore,
@@ -499,7 +498,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (ServiceHandle shandle = new ServiceHandle("KProcessHacker2", ServiceAccess.Stop | (ServiceAccess)StandardRights.Delete))
+                    using (var shandle = new ServiceHandle("KProcessHacker", ServiceAccess.Stop | (ServiceAccess)StandardRights.Delete))
                     {
                         try { shandle.Control(ServiceControl.Stop); }
                         catch { }
@@ -601,8 +600,8 @@ namespace ProcessHacker
                 return true;
             }
 
-            if (pArgs.ContainsKey(string.Empty))
-                if (pArgs[string.Empty].Replace("\"", string.Empty).Trim().EndsWith("taskmgr.exe", StringComparison.OrdinalIgnoreCase))
+            if (pArgs.ContainsKey(""))
+                if (pArgs[""].Replace("\"", "").Trim().EndsWith("taskmgr.exe", StringComparison.OrdinalIgnoreCase))
                     StartVisible = true;
 
             if (pArgs.ContainsKey("-m"))
@@ -636,10 +635,11 @@ namespace ProcessHacker
             ProcessHacker.Native.Image.MappedImage file =
                 new ProcessHacker.Native.Image.MappedImage(Environment.SystemDirectory + "\\ntdll.dll");
             IntPtr ntdll = Loader.GetDllHandle("ntdll.dll");
+            MemoryProtection oldProtection;
 
-            MemoryProtection oldProtection = ProcessHandle.Current.ProtectMemory(
+            oldProtection = ProcessHandle.Current.ProtectMemory(
                 ntdll,
-                file.Size,
+                (int)file.Size,
                 MemoryProtection.ExecuteReadWrite
                 );
 
@@ -647,8 +647,10 @@ namespace ProcessHacker
             {
                 var entry = file.Exports.GetEntry(i);
 
-                if (!entry.Name.StartsWith("Nt", StringComparison.OrdinalIgnoreCase) || entry.Name.StartsWith("Ntdll", StringComparison.OrdinalIgnoreCase))
+                if (!entry.Name.StartsWith("Nt") || entry.Name.StartsWith("Ntdll"))
                     continue;
+
+                byte[] fileData = new byte[5];
 
                 unsafe
                 {
@@ -664,7 +666,7 @@ namespace ProcessHacker
 
             ProcessHandle.Current.ProtectMemory(
                 ntdll,
-                file.Size,
+                (int)file.Size,
                 oldProtection
                 );
 
@@ -718,24 +720,24 @@ namespace ProcessHacker
         {
             bool found = false;
 
-            WindowHandle.Enumerate(window =>
-            {
-                if (window.Text.StartsWith("Process Hacker [", StringComparison.OrdinalIgnoreCase))
+            WindowHandle.Enumerate((window) =>
                 {
-                    int result;
-
-                    window.SendMessageTimeout((WindowMessage) 0x9991, 0, 0, SmtoFlags.Block, 5000, out result);
-
-                    if (result == 0x1119)
+                    if (window.GetText().Contains("Process Hacker ["))
                     {
-                        window.SetForeground();
-                        found = true;
-                        return false;
-                    }
-                }
+                        int result;
 
-                return true;
-            });
+                        window.SendMessageTimeout((WindowMessage)0x9991, 0, 0, SmtoFlags.Block, 5000, out result);
+
+                        if (result == 0x1119)
+                        {
+                            window.SetForeground();
+                            found = true;
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
 
             if (found)
                 Environment.Exit(0);
@@ -743,7 +745,7 @@ namespace ProcessHacker
 
         public static void StartProcessHackerAdmin()
         {
-            StartProcessHackerAdmin(string.Empty, null, IntPtr.Zero);
+            StartProcessHackerAdmin("", null, IntPtr.Zero);
         }
 
         public static void StartProcessHackerAdmin(string args, MethodInvoker successAction)
@@ -753,7 +755,8 @@ namespace ProcessHacker
 
         public static void StartProcessHackerAdmin(string args, MethodInvoker successAction, IntPtr hWnd)
         {
-            StartProgramAdmin(ProcessHandle.Current.MainModule.FileName, args, successAction, ShowWindowType.Show, hWnd);
+            StartProgramAdmin(ProcessHandle.Current.GetMainModule().FileName,
+                args, successAction, ShowWindowType.Show, hWnd);
         }
 
         public static WaitResult StartProcessHackerAdminWait(string args, IntPtr hWnd, uint timeout)
@@ -763,44 +766,45 @@ namespace ProcessHacker
 
         public static WaitResult StartProcessHackerAdminWait(string args, MethodInvoker successAction, IntPtr hWnd, uint timeout)
         {
-            ShellExecuteInfo info = new ShellExecuteInfo
-            {
-                cbSize = ShellExecuteInfo.SizeOf,
-                lpFile = ProcessHandle.Current.MainModule.FileName, 
-                nShow = ShowWindowType.Show,
-                fMask = 0x40, // SEE_MASK_NOCLOSEPROCESS
-                lpVerb = "runas", 
-                lpParameters = args, 
-                hWnd = hWnd
-            };
+            var info = new ShellExecuteInfo();
+
+            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(info);
+            info.lpFile = ProcessHandle.Current.GetMainModule().FileName;
+            info.nShow = ShowWindowType.Show;
+            info.fMask = 0x40; // SEE_MASK_NOCLOSEPROCESS
+            info.lpVerb = "runas";
+            info.lpParameters = args;
+            info.hWnd = hWnd;
 
             if (Win32.ShellExecuteEx(ref info))
             {
                 if (successAction != null)
                     successAction();
 
-                WaitResult result = Win32.WaitForSingleObject(info.hProcess, timeout);
+                var result = Win32.WaitForSingleObject(info.hProcess, timeout);
 
-                Win32.NtClose(info.hProcess);
+                Win32.CloseHandle(info.hProcess);
 
                 return result;
             }
-
-            // An error occured - the user probably canceled the elevation dialog.
-            return WaitResult.Abandoned;
+            else
+            {
+                // An error occured - the user probably canceled the elevation dialog.
+                return WaitResult.Abandoned;
+            }
         }
 
-        public static void StartProgramAdmin(string program, string args, MethodInvoker successAction, ShowWindowType showType, IntPtr hWnd)
+        public static void StartProgramAdmin(string program, string args, 
+            MethodInvoker successAction, ShowWindowType showType, IntPtr hWnd)
         {
-            ShellExecuteInfo info = new ShellExecuteInfo
-            {
-                cbSize = ShellExecuteInfo.SizeOf,
-                lpFile = program,
-                nShow = showType,
-                lpVerb = "runas",
-                lpParameters = args,
-                hWnd = hWnd
-            };
+            var info = new ShellExecuteInfo();
+
+            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(info);
+            info.lpFile = program;
+            info.nShow = showType;
+            info.lpVerb = "runas";
+            info.lpParameters = args;
+            info.hWnd = hWnd;
 
             if (Win32.ShellExecuteEx(ref info))
             {
@@ -817,7 +821,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                if (command.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+                if (command.StartsWith("http://"))
                 {
                     if (ex is System.ComponentModel.Win32Exception)
                     {
@@ -838,12 +842,12 @@ namespace ProcessHacker
 
             foreach (string s in args)
             {
-                if (s.StartsWith("-", StringComparison.OrdinalIgnoreCase))
+                if (s.StartsWith("-"))
                 {
                     if (dict.ContainsKey(s))
                         throw new Exception("Option already specified.");
 
-                    dict.Add(s, string.Empty);
+                    dict.Add(s, "");
                     argPending = s;
                 }
                 else
@@ -863,8 +867,8 @@ namespace ProcessHacker
                         //if (dict.ContainsKey(""))
                         //    throw new Exception("Input file already specified.");
 
-                        if (!dict.ContainsKey(string.Empty))
-                            dict.Add(string.Empty, s);
+                        if (!dict.ContainsKey(""))
+                            dict.Add("", s);
                     }
                 }
             }
@@ -874,12 +878,11 @@ namespace ProcessHacker
 
         public static void ApplyFont(Font font)
         {
-            HackerWindow.BeginInvoke(new MethodInvoker(() => HackerWindow.ApplyFont(font)));
+            HackerWindow.BeginInvoke(new MethodInvoker(() => { HackerWindow.ApplyFont(font); }));
 
             foreach (var processWindow in PWindows.Values)
             {
-                ProcessWindow window = processWindow;
-                processWindow.BeginInvoke(new MethodInvoker(() => window.ApplyFont(font)));
+                processWindow.BeginInvoke(new MethodInvoker(() => { processWindow.ApplyFont(font); }));
             }
         }
 
@@ -906,13 +909,16 @@ namespace ProcessHacker
 
                 workerThreads = maxWorkerThreads - workerThreads;
                 completionPortThreads = maxCompletionPortThreads - completionPortThreads;
+
+                ThreadPool.SetMaxThreads(0, 0);
+                ThreadPool.SetMaxThreads(workerThreads, completionPortThreads);
             }
         }
 
         public static void CompactNativeHeaps()
         {
             foreach (var heap in Heap.GetHeaps())
-                heap.Compact();
+                heap.Compact(0);
         }
 
         public static string GetDiagnosticInformation()
@@ -928,20 +934,20 @@ namespace ProcessHacker
             info.AppendLine("Working set: " + Utils.FormatSize(Environment.WorkingSet));
 
             if (Settings.Instance != null)
-                info.AppendLine("Settings file: " + (!string.IsNullOrEmpty(Settings.Instance.SettingsFileName) ? Settings.Instance.SettingsFileName : "(volatile)"));
+                info.AppendLine("Settings file: " + (Settings.Instance.SettingsFileName != null ? Settings.Instance.SettingsFileName : "(volatile)"));
             else
                 info.AppendLine("Settings file: (not initialized)");
 
-            if (KProcessHacker2.Instance != null)
-                info.AppendLine("KProcessHacker: " + KProcessHacker2.Instance.Features.ToString());
+            if (KProcessHacker.Instance != null)
+                info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
             else
                 info.AppendLine("KProcessHacker: not running");
 
             info.AppendLine();
             info.AppendLine("OBJECTS");
 
-            long objectsCreatedCount = BaseObject.CreatedCount;
-            long objectsFreedCount = BaseObject.FreedCount;
+            int objectsCreatedCount = BaseObject.CreatedCount;
+            int objectsFreedCount = BaseObject.FreedCount;
 
             info.AppendLine("Live: " + (objectsCreatedCount - objectsFreedCount).ToString());
             info.AppendLine("Created: " + objectsCreatedCount.ToString());
@@ -970,23 +976,17 @@ namespace ProcessHacker
 
             info.AppendLine();
             info.AppendLine("PROCESS HACKER THREAD POOL");
-            info.AppendLine("Worker thread maximum: " + WorkQueue.GlobalWorkQueue.MaxWorkerThreads);
-            info.AppendLine("Worker thread minimum: " + WorkQueue.GlobalWorkQueue.MinWorkerThreads);
-            info.AppendLine("Busy worker threads: " + WorkQueue.GlobalWorkQueue.BusyCount);
-            info.AppendLine("Total worker threads: " + WorkQueue.GlobalWorkQueue.WorkerCount);
-            info.AppendLine("Queued work items: " + WorkQueue.GlobalWorkQueue.QueuedCount);
+            info.AppendLine("Worker thread maximum: " + WorkQueue.GlobalWorkQueue.MaxWorkerThreads.ToString());
+            info.AppendLine("Worker thread minimum: " + WorkQueue.GlobalWorkQueue.MinWorkerThreads.ToString());
+            info.AppendLine("Busy worker threads: " + WorkQueue.GlobalWorkQueue.BusyCount.ToString());
+            info.AppendLine("Total worker threads: " + WorkQueue.GlobalWorkQueue.WorkerCount.ToString());
+            info.AppendLine("Queued work items: " + WorkQueue.GlobalWorkQueue.QueuedCount.ToString());
 
             foreach (WorkQueue.WorkItem workItem in WorkQueue.GlobalWorkQueue.GetQueuedWorkItems())
-            {
                 if (workItem.Tag != null)
-                {
                     info.AppendLine("[" + workItem.Tag + "]: " + workItem.Work.Method.Name);
-                }
                 else
-                {
                     info.AppendLine(workItem.Work.Method.Name);
-                }
-            }
 
             info.AppendLine();
             info.AppendLine("CLR THREAD POOL");
@@ -1042,6 +1042,31 @@ namespace ProcessHacker
             info.AppendLine("PWindows: " + PWindows.Count.ToString() + ", " + PThreads.Count.ToString());
             info.AppendLine("ResultsWindows: " + ResultsWindows.Count.ToString() + ", " + ResultsThreads.Count.ToString());
 
+            //info.AppendLine();
+            //info.AppendLine("LOADED MODULES");
+            //info.AppendLine();
+
+            //foreach (ProcessModule module in ProcessHandle.Current.GetModules())
+            //{
+            //    info.AppendLine("Module: " + module.BaseName);
+            //    info.AppendLine("Location: " + module.FileName);
+
+            //    DateTime fileCreatedInfo = System.IO.File.GetCreationTime(module.FileName);
+            //    info.AppendLine(
+            //        "Created: " + fileCreatedInfo.ToLongDateString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo) + " " +
+            //        fileCreatedInfo.ToLongTimeString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo)
+            //        );
+
+            //    DateTime fileModifiedInfo = System.IO.File.GetLastWriteTime(module.FileName);
+            //    info.AppendLine(
+            //        "Modified: " + fileModifiedInfo.ToLongDateString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo) + " " +
+            //        fileModifiedInfo.ToLongTimeString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo)
+            //        );
+
+            //    info.AppendLine("Version: " + System.Diagnostics.FileVersionInfo.GetVersionInfo(module.FileName).FileVersion);
+            //    info.AppendLine();
+            //}
+
             return info.ToString();
         }
 
@@ -1059,10 +1084,9 @@ namespace ProcessHacker
         {
             Logging.Log(Logging.Importance.Critical, ex.ToString());
 
-            using (ErrorDialog ed = new ErrorDialog(ex, terminating))
-            {
-                ed.ShowDialog();
-            }
+            ErrorDialog ed = new ErrorDialog(ex, terminating);
+
+            ed.ShowDialog();
         }
 
         /// <summary>
@@ -1073,7 +1097,7 @@ namespace ProcessHacker
         /// <param name="length">The length to edit</param>
         public static MemoryEditor GetMemoryEditor(int PID, IntPtr address, long length)
         {
-            return GetMemoryEditor(PID, address, length, delegate {});
+            return GetMemoryEditor(PID, address, length, new MemoryEditorInvokeAction(delegate {}));
         }
 
         /// <summary>
@@ -1093,14 +1117,14 @@ namespace ProcessHacker
             {
                 ed = MemoryEditors[id];
 
-                ed.BeginInvoke(action, ed);
+                ed.Invoke(action, ed);
 
                 return ed;
             }
 
             if (MemoryEditorsThreaded)
             {
-                Thread t = new Thread(() =>
+                Thread t = new Thread(new ThreadStart(delegate
                 {
                     ed = new MemoryEditor(PID, address, length);
 
@@ -1110,7 +1134,7 @@ namespace ProcessHacker
                         Application.Run(ed);
 
                     Program.MemoryEditorsThreads.Remove(id);
-                }, Utils.SixteenthStackSize);
+                }), Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
@@ -1134,7 +1158,7 @@ namespace ProcessHacker
         /// </summary>
         public static ResultsWindow GetResultsWindow(int PID)
         {
-            return GetResultsWindow(PID, delegate { });
+            return GetResultsWindow(PID, new ResultsWindowInvokeAction(delegate { }));
         }
 
         /// <summary>
@@ -1144,30 +1168,28 @@ namespace ProcessHacker
         public static ResultsWindow GetResultsWindow(int PID, ResultsWindowInvokeAction action)
         {
             ResultsWindow rw = null;
-            string id = string.Empty;
+            string id = "";
 
             if (ResultsWindowsThreaded)
             {
-                Thread t = new Thread(() =>
+                Thread t = new Thread(new ThreadStart(delegate
                 {
                     rw = new ResultsWindow(PID);
 
                     id = rw.Id;
 
                     if (!rw.IsDisposed)
-                        action(rw);
+                        action(rw); 
                     if (!rw.IsDisposed)
                         Application.Run(rw);
 
                     Program.ResultsThreads.Remove(id);
-                }, Utils.SixteenthStackSize);
+                }), Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
 
-                while (string.IsNullOrEmpty(id)) 
-                    Thread.Sleep(1);
-
+                while (id == "") Thread.Sleep(1);
                 Program.ResultsThreads.Add(id, t);
             }
             else
@@ -1187,7 +1209,7 @@ namespace ProcessHacker
         /// </summary>
         public static PEWindow GetPEWindow(string path)
         {
-            return GetPEWindow(path, delegate { });
+            return GetPEWindow(path, new PEWindowInvokeAction(delegate { }));
         }
 
         /// <summary>
@@ -1202,14 +1224,14 @@ namespace ProcessHacker
             {
                 pw = PEWindows[path];
 
-                pw.BeginInvoke(action, pw);
+                pw.Invoke(action, pw);
 
                 return pw;
             }
 
             if (PEWindowsThreaded)
             {
-                Thread t = new Thread(() =>
+                Thread t = new Thread(new ThreadStart(delegate
                 {
                     pw = new PEWindow(path);
 
@@ -1219,7 +1241,7 @@ namespace ProcessHacker
                         Application.Run(pw);
 
                     Program.PEThreads.Remove(path);
-                }, Utils.SixteenthStackSize);
+                }), Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
@@ -1243,7 +1265,7 @@ namespace ProcessHacker
         /// </summary>
         public static ProcessWindow GetProcessWindow(ProcessItem process)
         {
-            return GetProcessWindow(process, delegate { });
+            return GetProcessWindow(process, new PWindowInvokeAction(delegate { }));
         }
 
         /// <summary>
@@ -1258,14 +1280,14 @@ namespace ProcessHacker
             {
                 pw = PWindows[process.Pid];
 
-                pw.BeginInvoke(action, pw);
+                pw.Invoke(action, pw);
 
                 return pw;
             }
 
             if (PWindowsThreaded)
             {
-                Thread t = new Thread(() =>
+                Thread t = new Thread(new ThreadStart(delegate
                 {
                     pw = new ProcessWindow(process);
 
@@ -1275,7 +1297,7 @@ namespace ProcessHacker
                         Application.Run(pw);
 
                     Program.PThreads.Remove(process.Pid);
-                }, Utils.SixteenthStackSize);
+                }), Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
@@ -1294,11 +1316,25 @@ namespace ProcessHacker
             return pw;
         }
 
+        /// <summary>
+        /// Does nothing.
+        /// </summary>
+        [System.Diagnostics.Conditional("NOT_DEFINED")]
+        public static void Void()
+        {
+            // Do nothing
+            int a = 0;
+            int b = a * (a + 0);
+
+            for (a = 0; a < b; a++)
+                a += a * (a + b);
+        }
+
         public static void FocusWindow(Form f)
         {
             if (f.InvokeRequired)
             {
-                f.BeginInvoke(new MethodInvoker(() => FocusWindow(f)));
+                f.BeginInvoke(new MethodInvoker(delegate { Program.FocusWindow(f); }));
 
                 return;
             }
@@ -1311,39 +1347,24 @@ namespace ProcessHacker
             f.Activate();
         }
 
-        public static void UpdateWindowMenu(ToolStripMenuItem windowMenuItem, Form f)
+        public static void UpdateWindowMenu(Menu windowMenuItem, Form f)
         {
             WeakReference<Form> fRef = new WeakReference<Form>(f);
-            windowMenuItem.DropDownItems.Clear();
-            HackerWindow.AddMenuItemDelegate addMenuItem = (text, onClick) => windowMenuItem.DropDownItems.Add(text, null, onClick);
 
-            addMenuItem("&Always On Top", (sender, e) =>
-            {
-                Form targetForm = null;
+            windowMenuItem.MenuItems.DisposeAndClear();
 
-                if (fRef.TryGetTarget(out targetForm))
-                {
-                    targetForm.BeginInvoke(new Action<Form, ToolStripMenuItem>((bgTargetForm, ts) =>
-                    {
-                        bgTargetForm.TopMost = !bgTargetForm.TopMost;
+            MenuItem item;
 
-                        if (bgTargetForm == HackerWindow)
-                            HackerWindowTopMost = bgTargetForm.TopMost;
+            item = new MenuItem("&Always On Top");
+            item.Tag = fRef;
+            item.Click += new EventHandler(windowAlwaysOnTopItemClicked);
+            item.Checked = f.TopMost;
+            windowMenuItem.MenuItems.Add(item);
 
-                        ts.Checked = HackerWindowTopMost;
-                    }), targetForm, sender);
-                }
-            });
-
-            addMenuItem("&Close", (sender, e) =>
-            {
-                Form targetForm = null;
-
-                if (fRef.TryGetTarget(out targetForm))
-                {
-                    targetForm.BeginInvoke(new Action<Form>(bgTargetForm => bgTargetForm.Close()), targetForm);
-                }
-            });
+            item = new MenuItem("&Close");
+            item.Tag = fRef;
+            item.Click += new EventHandler(windowCloseItemClicked);
+            windowMenuItem.MenuItems.Add(item);
         }
 
         public static void AddEscapeToClose(this Form f)
@@ -1363,6 +1384,60 @@ namespace ProcessHacker
         {
             if (HackerWindowTopMost)
                 f.TopMost = true;
+        }
+
+        /// <summary>
+        /// Floats the window on top of the main Process Hacker window.
+        /// </summary>
+        /// <param name="f">The form to float.</param>
+        /// <remarks>
+        /// Always call this method before calling InitializeComponent in order for the 
+        /// parent to be restored properly.
+        /// </remarks>
+        public static void SetPhParent(this Form f)
+        {
+            f.SetPhParent(true);
+        }
+
+        public static void SetPhParent(this Form f, bool hideInTaskbar)
+        {
+            if (Settings.Instance.FloatChildWindows)
+            {
+                if (hideInTaskbar)
+                    f.ShowInTaskbar = false;
+
+                IntPtr oldParent = Win32.SetWindowLongPtr(f.Handle, GetWindowLongOffset.HwndParent, Program.HackerWindowHandle);
+
+                //f.FormClosing += (sender, e) => Win32.SetWindowLongPtr(f.Handle, GetWindowLongOffset.HwndParent, oldParent);
+            }
+        }
+
+        private static void windowAlwaysOnTopItemClicked(object sender, EventArgs e)
+        {
+            Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;
+
+            if (f == null)
+                return;
+
+            f.Invoke(new MethodInvoker(delegate
+                {
+                    f.TopMost = !f.TopMost;
+
+                    if (f == HackerWindow)
+                        HackerWindowTopMost = f.TopMost;
+                }));
+
+            UpdateWindowMenu(((MenuItem)sender).Parent, f);
+        }
+
+        private static void windowCloseItemClicked(object sender, EventArgs e)
+        {
+            Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;
+
+            if (f == null)
+                return;
+
+            f.Invoke(new MethodInvoker(delegate { f.Close(); }));
         }
     }
 }

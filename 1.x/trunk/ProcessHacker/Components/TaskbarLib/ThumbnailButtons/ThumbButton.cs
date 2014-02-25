@@ -32,7 +32,7 @@ namespace TaskbarLib
     /// </summary>
     public sealed class ThumbButton
     {
-        private readonly ThumbButtonManager _manager;
+        private ThumbButtonManager _manager;
 
         internal ThumbButton(ThumbButtonManager manager, int id, Icon icon, string tooltip)
         {
@@ -70,15 +70,13 @@ namespace TaskbarLib
         {
             get
             {
-                THUMBBUTTON win32ThumbButton = new THUMBBUTTON
-                {
-                    iId = this.Id, 
-                    szTip = this.Tooltip, 
-                    hIcon = this.Icon.Handle, 
-                    dwFlags = this.Flags | ThumbnailButtonFlags.DISMISSONCLICK, 
-                    dwMask = ThumbnailButtonMask.Flags
-                };
+                THUMBBUTTON win32ThumbButton = new THUMBBUTTON();
+                win32ThumbButton.iId = Id;
+                win32ThumbButton.szTip = Tooltip;
+                win32ThumbButton.hIcon = Icon.Handle;
+                win32ThumbButton.dwFlags = Flags | ThumbnailButtonFlags.DISMISSONCLICK;
 
+                win32ThumbButton.dwMask = ThumbnailButtonMask.Flags;
                 if (Tooltip != null)
                     win32ThumbButton.dwMask |= ThumbnailButtonMask.Tooltip;
                 if (Icon != null)

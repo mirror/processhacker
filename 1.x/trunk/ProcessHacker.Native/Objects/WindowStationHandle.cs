@@ -21,6 +21,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -48,7 +50,7 @@ namespace ProcessHacker.Native.Objects
         {
             this.Handle = Win32.OpenWindowStation(name, false, access);
 
-            if (this.Handle == IntPtr.Zero)
+            if (this.Handle == System.IntPtr.Zero)
                 Win32.Throw();
         }
 

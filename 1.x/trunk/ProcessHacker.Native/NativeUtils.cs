@@ -1,6 +1,7 @@
 ﻿using System;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
@@ -41,23 +42,34 @@ namespace ProcessHacker.Native
             ref StartupInfo startupInfo
             )
         {
+            UnicodeString imagePathNameStr;
+            UnicodeString dllPathStr;
+            UnicodeString currentDirectoryStr;
+            UnicodeString commandLineStr;
+            UnicodeString windowTitleStr;
+            UnicodeString desktopInfoStr;
+            UnicodeString shellInfoStr;
+            UnicodeString runtimeInfoStr;
+
             // Create the unicode strings.
 
-            UnicodeString imagePathNameStr = new UnicodeString(imagePathName);
-            UnicodeString dllPathStr = new UnicodeString(dllPath);
-            UnicodeString currentDirectoryStr = new UnicodeString(currentDirectory);
-            UnicodeString commandLineStr = new UnicodeString(commandLine);
-            UnicodeString windowTitleStr = new UnicodeString(windowTitle);
-            UnicodeString desktopInfoStr = new UnicodeString(desktopInfo);
-            UnicodeString shellInfoStr = new UnicodeString(shellInfo);
-            UnicodeString runtimeInfoStr = new UnicodeString(runtimeInfo);
+            imagePathNameStr = new UnicodeString(imagePathName);
+            dllPathStr = new UnicodeString(dllPath);
+            currentDirectoryStr = new UnicodeString(currentDirectory);
+            commandLineStr = new UnicodeString(commandLine);
+            windowTitleStr = new UnicodeString(windowTitle);
+            desktopInfoStr = new UnicodeString(desktopInfo);
+            shellInfoStr = new UnicodeString(shellInfo);
+            runtimeInfoStr = new UnicodeString(runtimeInfo);
 
             try
             {
+                NtStatus status;
                 IntPtr processParameters;
 
                 // Create the process parameter block.
-                Win32.RtlCreateProcessParameters(
+
+                status = Win32.RtlCreateProcessParameters(
                     out processParameters,
                     ref imagePathNameStr,
                     ref dllPathStr,
@@ -68,15 +80,21 @@ namespace ProcessHacker.Native
                     ref desktopInfoStr,
                     ref shellInfoStr,
                     ref runtimeInfoStr
-                    ).ThrowIf();
+                    );
+
+                if (status >= NtStatus.Error)
+                    Win32.Throw(status);
 
                 try
                 {
                     // Allocate a new memory region in the remote process for 
                     // the environment block and copy it over.
 
-                    int environmentLength = environment.Length;
-                    IntPtr newEnvironment = processHandle.AllocateMemory(
+                    int environmentLength;
+                    IntPtr newEnvironment;
+
+                    environmentLength = environment.GetLength();
+                    newEnvironment = processHandle.AllocateMemory(
                         environmentLength,
                         MemoryProtection.ReadWrite
                         );
@@ -113,9 +131,10 @@ namespace ProcessHacker.Native
                     // Allocate a new memory region in the remote process for 
                     // the process parameters.
 
+                    IntPtr newProcessParameters;
                     IntPtr regionSize = paramsStruct->Length.ToIntPtr();
 
-                    IntPtr newProcessParameters = processHandle.AllocateMemory(
+                    newProcessParameters = processHandle.AllocateMemory(
                         IntPtr.Zero,
                         ref regionSize,
                         MemoryFlags.Commit,
@@ -161,23 +180,25 @@ namespace ProcessHacker.Native
 
             if (nativeKeyName.StartsWith(hkcrString, StringComparison.OrdinalIgnoreCase))
                 return "HKCR" + nativeKeyName.Substring(hkcrString.Length);
-            if (nativeKeyName.StartsWith(hklmString, StringComparison.OrdinalIgnoreCase))
+            else if (nativeKeyName.StartsWith(hklmString, StringComparison.OrdinalIgnoreCase))
                 return "HKLM" + nativeKeyName.Substring(hklmString.Length);
-            if (nativeKeyName.StartsWith(hkcucrString, StringComparison.OrdinalIgnoreCase))
+            else if (nativeKeyName.StartsWith(hkcucrString, StringComparison.OrdinalIgnoreCase))
                 return @"HKCU\Software\Classes" + nativeKeyName.Substring(hkcucrString.Length);
-            if (nativeKeyName.StartsWith(hkcuString, StringComparison.OrdinalIgnoreCase))
+            else if (nativeKeyName.StartsWith(hkcuString, StringComparison.OrdinalIgnoreCase))
                 return "HKCU" + nativeKeyName.Substring(hkcuString.Length);
-            if (nativeKeyName.StartsWith(hkuString, StringComparison.OrdinalIgnoreCase))
+            else if (nativeKeyName.StartsWith(hkuString, StringComparison.OrdinalIgnoreCase))
                 return "HKU" + nativeKeyName.Substring(hkuString.Length);
-            return nativeKeyName;
+            else
+                return nativeKeyName;
         }
 
         public static string GetMessage(IntPtr dllHandle, int messageTableId, int messageLanguageId, int messageId)
         {
+            NtStatus status;
             IntPtr messageEntry;
             string message;
 
-            NtStatus status = Win32.RtlFindMessage(
+            status = Win32.RtlFindMessage(
                 dllHandle,
                 messageTableId,
                 messageLanguageId,
@@ -188,8 +209,8 @@ namespace ProcessHacker.Native
             if (status.IsError())
                 return null;
 
-            MemoryRegion region = new MemoryRegion(messageEntry);
-            MessageResourceEntry entry = region.ReadStruct<MessageResourceEntry>();
+            var region = new MemoryRegion(messageEntry);
+            var entry = region.ReadStruct<MessageResourceEntry>();
 
             // Read the message, depending on format.
             if ((entry.Flags & MessageResourceFlags.Unicode) == MessageResourceFlags.Unicode)
@@ -217,7 +238,7 @@ namespace ProcessHacker.Native
 
             try
             {
-                using (var dhandle = new DirectoryHandle(dirPart, DirectoryAccess.Query))
+                using (var dhandle = new DirectoryHandle(dirPart, ProcessHacker.Native.Security.DirectoryAccess.Query))
                 {
                     var objects = dhandle.GetObjects();
 
@@ -242,7 +263,7 @@ namespace ProcessHacker.Native
 
             try
             {
-                return null;// new NativeHandle(KProcessHacker.Instance.KphOpenNamedObject(access, oa).ToIntPtr(), true);
+                return new NativeHandle(KProcessHacker.Instance.KphOpenNamedObject(access, oa).ToIntPtr(), true);
             }
             finally
             {

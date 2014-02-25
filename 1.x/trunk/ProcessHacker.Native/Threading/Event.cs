@@ -20,6 +20,9 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
+using System.Collections.Generic;
+using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -93,7 +96,11 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public bool AutoReset
         {
-            get { return this.Handle.BasicInformation.EventType == EventType.SynchronizationEvent; }
+            get
+            {
+                return this.Handle.GetBasicInformation().EventType == 
+                    EventType.SynchronizationEvent;
+            }
         }
 
         /// <summary>
@@ -101,7 +108,7 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public bool Signaled
         {
-            get { return this.Handle.BasicInformation.EventState != 0; }
+            get { return this.Handle.GetBasicInformation().EventState != 0; }
         }
 
         /// <summary>

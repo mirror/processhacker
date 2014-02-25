@@ -34,13 +34,13 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ServiceList));
-            this.listServices = new ProcessHacker.Components.ExtendedListView();
-            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnStatus = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnStartType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnPID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listServices = new System.Windows.Forms.ListView();
+            this.columnName = new System.Windows.Forms.ColumnHeader();
+            this.columnDescription = new System.Windows.Forms.ColumnHeader();
+            this.columnType = new System.Windows.Forms.ColumnHeader();
+            this.columnStatus = new System.Windows.Forms.ColumnHeader();
+            this.columnStartType = new System.Windows.Forms.ColumnHeader();
+            this.columnPID = new System.Windows.Forms.ColumnHeader();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.SuspendLayout();
             // 
@@ -55,7 +55,6 @@
             this.columnStartType,
             this.columnPID});
             this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listServices.DoubleClickChecks = true;
             this.listServices.FullRowSelect = true;
             this.listServices.HideSelection = false;
             this.listServices.Location = new System.Drawing.Point(0, 0);
@@ -110,8 +109,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listServices);
+            this.DoubleBuffered = true;
             this.Name = "ServiceList";
             this.Size = new System.Drawing.Size(685, 472);
             this.ResumeLayout(false);
@@ -120,7 +119,7 @@
 
         #endregion
 
-        private ExtendedListView listServices;
+        private System.Windows.Forms.ListView listServices;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.ColumnHeader columnDescription;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace ProcessHacker.Common.Messaging
 {
@@ -6,8 +8,8 @@ namespace ProcessHacker.Common.Messaging
 
     public class MessageQueueListener
     {
-        private readonly MessageReceivedDelegate _callback;
-        private readonly Type _type;
+        private MessageReceivedDelegate _callback;
+        private Type _type;
 
         public MessageQueueListener(MessageReceivedDelegate callback, Type type)
         {
@@ -26,12 +28,13 @@ namespace ProcessHacker.Common.Messaging
         }
     }
 
-    public class MessageQueueListener<T> : MessageQueueListener where T : Message
+    public class MessageQueueListener<T> : MessageQueueListener
+        where T : Message
     {
         public delegate void MessageReceivedDelegate(T message);
 
         public MessageQueueListener(MessageReceivedDelegate callback)
-            : base(message => callback((T)message), typeof(T))
+            : base((message) => callback((T)message), typeof(T))
         { }
     }
 }

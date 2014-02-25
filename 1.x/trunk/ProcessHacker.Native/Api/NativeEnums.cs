@@ -210,7 +210,6 @@ namespace ProcessHacker.Native.Api
         MaxDebugObjectInfoClass
     }
 
-    [Flags]
     public enum DeviceControlAccess : int
     {
         Any = 0,
@@ -425,7 +424,7 @@ namespace ProcessHacker.Native.Api
         OverwriteIf = 0x5
     }
 
-    public enum FileInformationClass
+    public enum FileInformationClass : int
     {
         FileDirectoryInformation = 1, // dir
         FileFullDirectoryInformation, // dir

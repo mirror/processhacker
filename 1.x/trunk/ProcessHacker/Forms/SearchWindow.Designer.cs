@@ -64,9 +64,9 @@
             // 
             // tabControl
             // 
-            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabLiteral);
             this.tabControl.Controls.Add(this.tabRegex);
             this.tabControl.Controls.Add(this.tabString);
@@ -98,7 +98,7 @@
             this.checkNoOverlap.AutoSize = true;
             this.checkNoOverlap.Location = new System.Drawing.Point(6, 262);
             this.checkNoOverlap.Name = "checkNoOverlap";
-            this.checkNoOverlap.Size = new System.Drawing.Size(166, 17);
+            this.checkNoOverlap.Size = new System.Drawing.Size(154, 17);
             this.checkNoOverlap.TabIndex = 1;
             this.checkNoOverlap.Text = "Prevent overlapping results";
             this.checkNoOverlap.UseVisualStyleBackColor = true;
@@ -114,9 +114,9 @@
             // 
             // hexBoxSearch
             // 
-            this.hexBoxSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.hexBoxSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.hexBoxSearch.BytesPerLine = 8;
             this.hexBoxSearch.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.hexBoxSearch.HexCasing = Be.Windows.Forms.HexCasing.Lower;
@@ -149,16 +149,16 @@
             this.checkIgnoreCase.AutoSize = true;
             this.checkIgnoreCase.Location = new System.Drawing.Point(6, 262);
             this.checkIgnoreCase.Name = "checkIgnoreCase";
-            this.checkIgnoreCase.Size = new System.Drawing.Size(87, 17);
+            this.checkIgnoreCase.Size = new System.Drawing.Size(83, 17);
             this.checkIgnoreCase.TabIndex = 1;
             this.checkIgnoreCase.Text = "Ignore Case";
             this.checkIgnoreCase.UseVisualStyleBackColor = true;
             // 
             // textRegex
             // 
-            this.textRegex.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textRegex.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textRegex.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textRegex.Location = new System.Drawing.Point(6, 6);
             this.textRegex.Multiline = true;
@@ -184,7 +184,7 @@
             this.checkUnicode.AutoSize = true;
             this.checkUnicode.Location = new System.Drawing.Point(8, 34);
             this.checkUnicode.Name = "checkUnicode";
-            this.checkUnicode.Size = new System.Drawing.Size(133, 17);
+            this.checkUnicode.Size = new System.Drawing.Size(122, 17);
             this.checkUnicode.TabIndex = 1;
             this.checkUnicode.Text = "Find Unicode strings";
             this.checkUnicode.UseVisualStyleBackColor = true;
@@ -193,7 +193,7 @@
             // 
             this.textStringMS.Location = new System.Drawing.Point(88, 8);
             this.textStringMS.Name = "textStringMS";
-            this.textStringMS.Size = new System.Drawing.Size(100, 22);
+            this.textStringMS.Size = new System.Drawing.Size(100, 20);
             this.textStringMS.TabIndex = 0;
             // 
             // label2
@@ -201,7 +201,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(8, 11);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(81, 13);
+            this.label2.Size = new System.Drawing.Size(74, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "Minimum Size:";
             // 
@@ -221,7 +221,7 @@
             // 
             this.textHeapMS.Location = new System.Drawing.Point(88, 8);
             this.textHeapMS.Name = "textHeapMS";
-            this.textHeapMS.Size = new System.Drawing.Size(100, 22);
+            this.textHeapMS.Size = new System.Drawing.Size(100, 20);
             this.textHeapMS.TabIndex = 0;
             // 
             // label4
@@ -229,7 +229,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(8, 11);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(81, 13);
+            this.label4.Size = new System.Drawing.Size(74, 13);
             this.label4.TabIndex = 1;
             this.label4.Text = "Minimum Size:";
             // 
@@ -251,7 +251,7 @@
             // 
             this.textStructAlign.Location = new System.Drawing.Point(68, 259);
             this.textStructAlign.Name = "textStructAlign";
-            this.textStructAlign.Size = new System.Drawing.Size(100, 22);
+            this.textStructAlign.Size = new System.Drawing.Size(100, 20);
             this.textStructAlign.TabIndex = 1;
             // 
             // label5
@@ -259,7 +259,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(6, 262);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(63, 13);
+            this.label5.Size = new System.Drawing.Size(56, 13);
             this.label5.TabIndex = 3;
             this.label5.Text = "Alignment:";
             // 
@@ -268,15 +268,15 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 6);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(40, 13);
+            this.label3.Size = new System.Drawing.Size(38, 13);
             this.label3.TabIndex = 2;
             this.label3.Text = "Struct:";
             // 
             // listStructName
             // 
-            this.listStructName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listStructName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listStructName.FormattingEnabled = true;
             this.listStructName.IntegralHeight = false;
             this.listStructName.Location = new System.Drawing.Point(50, 6);
@@ -293,7 +293,7 @@
             this.checkPrivate.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkPrivate.Location = new System.Drawing.Point(73, 328);
             this.checkPrivate.Name = "checkPrivate";
-            this.checkPrivate.Size = new System.Drawing.Size(66, 18);
+            this.checkPrivate.Size = new System.Drawing.Size(65, 18);
             this.checkPrivate.TabIndex = 2;
             this.checkPrivate.Text = "Private";
             this.checkPrivate.UseVisualStyleBackColor = true;
@@ -305,7 +305,7 @@
             this.checkImage.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkImage.Location = new System.Drawing.Point(138, 328);
             this.checkImage.Name = "checkImage";
-            this.checkImage.Size = new System.Drawing.Size(63, 18);
+            this.checkImage.Size = new System.Drawing.Size(61, 18);
             this.checkImage.TabIndex = 3;
             this.checkImage.Text = "Image";
             this.checkImage.UseVisualStyleBackColor = true;
@@ -317,7 +317,7 @@
             this.checkMapped.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkMapped.Location = new System.Drawing.Point(199, 328);
             this.checkMapped.Name = "checkMapped";
-            this.checkMapped.Size = new System.Drawing.Size(75, 18);
+            this.checkMapped.Size = new System.Drawing.Size(71, 18);
             this.checkMapped.TabIndex = 4;
             this.checkMapped.Text = "Mapped";
             this.checkMapped.UseVisualStyleBackColor = true;
@@ -328,7 +328,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 330);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(57, 13);
+            this.label1.Size = new System.Drawing.Size(55, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Search in:";
             // 
@@ -360,7 +360,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(517, 377);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);

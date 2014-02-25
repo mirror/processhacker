@@ -31,11 +31,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listMemory = new ProcessHacker.Components.ExtendedListView();
-            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnProtection = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.components = new System.ComponentModel.Container();
+            this.listMemory = new System.Windows.Forms.ListView();
+            this.columnName = new System.Windows.Forms.ColumnHeader();
+            this.columnAddress = new System.Windows.Forms.ColumnHeader();
+            this.columnSize = new System.Windows.Forms.ColumnHeader();
+            this.columnProtection = new System.Windows.Forms.ColumnHeader();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.changeMemoryProtectionMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.readWriteMemoryMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.readWriteAddressMemoryMenuItem = new System.Windows.Forms.MenuItem();
@@ -46,6 +48,7 @@
             this.menuMemory = new System.Windows.Forms.ContextMenu();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.selectAllMemoryMenuItem = new System.Windows.Forms.MenuItem();
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // listMemory
@@ -57,7 +60,6 @@
             this.columnSize,
             this.columnProtection});
             this.listMemory.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listMemory.DoubleClickChecks = true;
             this.listMemory.FullRowSelect = true;
             this.listMemory.HideSelection = false;
             this.listMemory.Location = new System.Drawing.Point(0, 0);
@@ -87,8 +89,14 @@
             // 
             this.columnProtection.Text = "Protection";
             // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
+            // 
             // changeMemoryProtectionMemoryMenuItem
             // 
+            this.vistaMenu.SetImage(this.changeMemoryProtectionMemoryMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
             this.changeMemoryProtectionMemoryMenuItem.Index = 2;
             this.changeMemoryProtectionMemoryMenuItem.Text = "Change &Memory Protection...";
             this.changeMemoryProtectionMemoryMenuItem.Click += new System.EventHandler(this.changeMemoryProtectionMemoryMenuItem_Click);
@@ -96,35 +104,41 @@
             // readWriteMemoryMemoryMenuItem
             // 
             this.readWriteMemoryMemoryMenuItem.DefaultItem = true;
+            this.vistaMenu.SetImage(this.readWriteMemoryMemoryMenuItem, global::ProcessHacker.Properties.Resources.page_edit);
             this.readWriteMemoryMemoryMenuItem.Index = 0;
             this.readWriteMemoryMemoryMenuItem.Text = "Read/Write Memory";
             this.readWriteMemoryMemoryMenuItem.Click += new System.EventHandler(this.readWriteMemoryMemoryMenuItem_Click);
             // 
             // readWriteAddressMemoryMenuItem
             // 
+            this.vistaMenu.SetImage(this.readWriteAddressMemoryMenuItem, global::ProcessHacker.Properties.Resources.pencil_go);
             this.readWriteAddressMemoryMenuItem.Index = 6;
             this.readWriteAddressMemoryMenuItem.Text = "Read/Write Address...";
             this.readWriteAddressMemoryMenuItem.Click += new System.EventHandler(this.readWriteAddressMemoryMenuItem_Click);
             // 
             // copyMemoryMenuItem
             // 
+            this.vistaMenu.SetImage(this.copyMemoryMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyMemoryMenuItem.Index = 7;
             this.copyMemoryMenuItem.Text = "C&opy";
             // 
             // freeMenuItem
             // 
+            this.vistaMenu.SetImage(this.freeMenuItem, global::ProcessHacker.Properties.Resources.cross);
             this.freeMenuItem.Index = 3;
             this.freeMenuItem.Text = "&Free";
             this.freeMenuItem.Click += new System.EventHandler(this.freeMenuItem_Click);
             // 
             // decommitMenuItem
             // 
+            this.vistaMenu.SetImage(this.decommitMenuItem, global::ProcessHacker.Properties.Resources.delete);
             this.decommitMenuItem.Index = 4;
             this.decommitMenuItem.Text = "&Decommit";
             this.decommitMenuItem.Click += new System.EventHandler(this.decommitMenuItem_Click);
             // 
             // dumpMemoryMenuItem
             // 
+            this.vistaMenu.SetImage(this.dumpMemoryMenuItem, global::ProcessHacker.Properties.Resources.disk);
             this.dumpMemoryMenuItem.Index = 1;
             this.dumpMemoryMenuItem.Text = "Dump...";
             this.dumpMemoryMenuItem.Click += new System.EventHandler(this.dumpMemoryMenuItem_Click);
@@ -158,18 +172,20 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listMemory);
+            this.DoubleBuffered = true;
             this.Name = "MemoryList";
             this.Size = new System.Drawing.Size(450, 472);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private ExtendedListView listMemory;
+        private System.Windows.Forms.ListView listMemory;
         private System.Windows.Forms.ColumnHeader columnName;
+        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.ColumnHeader columnSize;
         private System.Windows.Forms.ColumnHeader columnAddress;
         private System.Windows.Forms.ColumnHeader columnProtection;

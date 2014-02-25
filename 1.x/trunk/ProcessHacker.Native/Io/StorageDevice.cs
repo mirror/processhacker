@@ -23,8 +23,6 @@ namespace ProcessHacker.Native.Io
         [StructLayout(LayoutKind.Sequential)]
         public struct StorageHotplugInfo
         {
-            public static readonly int SizeOf;
-
             public int Size;
             [MarshalAs(UnmanagedType.I1)]
             public bool MediaRemovable;
@@ -34,11 +32,6 @@ namespace ProcessHacker.Native.Io
             public bool DeviceHotplug;
             [MarshalAs(UnmanagedType.I1)]
             public bool WriteCacheEnableOverride;
-
-            static StorageHotplugInfo()
-            {
-                SizeOf = Marshal.SizeOf(typeof(StorageHotplugInfo));
-            }
         }
 
         public static readonly int IoCtlMediaRemoval = Win32.CtlCode(DeviceType.MassStorage, 0x0201, DeviceControlMethod.Buffered, DeviceControlAccess.Read);
@@ -68,13 +61,16 @@ namespace ProcessHacker.Native.Io
                 return GetHotplugInfo(fhandle);
         }
 
-        public static unsafe StorageHotplugInfo GetHotplugInfo(FileHandle fileHandle)
+        public static StorageHotplugInfo GetHotplugInfo(FileHandle fileHandle)
         {
-            StorageHotplugInfo hotplugInfo;
+            unsafe
+            {
+                StorageHotplugInfo hotplugInfo;
 
-            fileHandle.IoControl(IoCtlGetHotplugInfo, null, 0, &hotplugInfo, StorageHotplugInfo.SizeOf);
+                fileHandle.IoControl(IoCtlGetHotplugInfo, null, 0, &hotplugInfo, Marshal.SizeOf(typeof(StorageHotplugInfo)));
 
-            return hotplugInfo;
+                return hotplugInfo;
+            }
         }
 
         public static FileHandle OpenStorageDevice(string fileName, FileAccess access)

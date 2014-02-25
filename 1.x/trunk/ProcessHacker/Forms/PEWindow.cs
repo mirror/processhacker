@@ -32,10 +32,10 @@ using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
-    public sealed partial class PEWindow : Form
+    public partial class PEWindow : Form
     {
-        private readonly string _path;
-        private readonly MappedImage _mappedImage;
+        private string _path;
+        private MappedImage _mappedImage;
 
         public PEWindow(string path)
         {
@@ -44,7 +44,6 @@ namespace ProcessHacker
             this.SetTopMost();
 
             _path = path;
-
             this.Text = "PE File - " + path;
             Program.PEWindows.Add(Id, this);
 
@@ -66,6 +65,8 @@ namespace ProcessHacker
         private void PEWindow_Load(object sender, EventArgs e)
         {
             this.Size = Settings.Instance.PEWindowSize;
+
+            this.SetPhParent();
         }
 
         private void PEWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -86,26 +87,38 @@ namespace ProcessHacker
 
         private void InitializeLists()
         {
+            listCOFFHeader.SetDoubleBuffered(true);
+            listCOFFHeader.SetTheme("explorer");
             listCOFFHeader.ContextMenu = listCOFFHeader.GetCopyMenu();
             listCOFFHeader.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PECOFFHColumns, listCOFFHeader);
 
+            listCOFFOptionalHeader.SetDoubleBuffered(true);
+            listCOFFOptionalHeader.SetTheme("explorer");
             listCOFFOptionalHeader.ContextMenu = listCOFFOptionalHeader.GetCopyMenu();
             listCOFFOptionalHeader.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PECOFFOHColumns, listCOFFOptionalHeader);
 
+            listImageData.SetDoubleBuffered(true);
+            listImageData.SetTheme("explorer");
             listImageData.ContextMenu = listImageData.GetCopyMenu();
             listImageData.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PEImageDataColumns, listImageData);
 
+            listSections.SetDoubleBuffered(true);
+            listSections.SetTheme("explorer");
             listSections.ContextMenu = listSections.GetCopyMenu();
             listSections.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PESectionsColumns, listSections);
 
+            listExports.SetDoubleBuffered(true);
+            listExports.SetTheme("explorer");
             listExports.ContextMenu = listExports.GetCopyMenu(listExports_RetrieveVirtualItem);
             listExports.AddShortcuts(this.listExports_RetrieveVirtualItem);
             ColumnSettings.LoadSettings(Settings.Instance.PEExportsColumns, listExports);
 
+            listImports.SetDoubleBuffered(true);
+            listImports.SetTheme("explorer");
             listImports.ContextMenu = listImports.GetCopyMenu();
             listImports.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PEImportsColumns, listImports);
@@ -212,11 +225,9 @@ namespace ProcessHacker
 
                 if (dataEntry != null && dataEntry->VirtualAddress != 0)
                 {
-                    ListViewItem item = new ListViewItem
-                    {
-                        Text = ((ImageDataEntry)i).ToString()
-                    };
+                    ListViewItem item = new ListViewItem();
 
+                    item.Text = ((ImageDataEntry)i).ToString();
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + dataEntry->VirtualAddress.ToString("x")));
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + dataEntry->Size.ToString("x")));
 
@@ -233,11 +244,9 @@ namespace ProcessHacker
             for (int i = 0; i < _mappedImage.NumberOfSections; i++)
             {
                 ImageSectionHeader* section = &_mappedImage.Sections[i];
-                ListViewItem item = new ListViewItem
-                {
-                    Text = this._mappedImage.GetSectionName(section)
-                };
+                ListViewItem item = new ListViewItem();
 
+                item.Text = _mappedImage.GetSectionName(section);
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + section->VirtualAddress.ToString("x")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + section->SizeOfRawData.ToString("x")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + section->PointerToRawData.ToString("x")));
@@ -299,17 +308,22 @@ namespace ProcessHacker
             #endregion
         }
 
-        private unsafe void listExports_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        private void listExports_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            ImageExportEntry entry = this._mappedImage.Exports.GetEntry(e.ItemIndex);
-            ImageExportFunction function = this._mappedImage.Exports.GetFunction(entry.Ordinal);
-
-            e.Item = new ListViewItem(new string[]
+            unsafe
             {
-                entry.Ordinal.ToString(),
-                !string.IsNullOrEmpty(function.ForwardedName) ? entry.Name + " > " + function.ForwardedName : entry.Name, 
-                string.IsNullOrEmpty(function.ForwardedName) ? "0x" + function.Function.Decrement(new IntPtr(this._mappedImage.Memory)).ToString("x") : string.Empty
-            });
+                var entry = _mappedImage.Exports.GetEntry(e.ItemIndex);
+                var function = _mappedImage.Exports.GetFunction(entry.Ordinal);
+
+                e.Item = new ListViewItem(new string[]
+                    {
+                        entry.Ordinal.ToString(),
+                        function.ForwardedName != null ? entry.Name + " > " + function.ForwardedName : entry.Name,
+                        function.ForwardedName == null ? 
+                        "0x" + function.Function.Decrement(new IntPtr(_mappedImage.Memory)).ToString("x") :
+                        ""
+                    });
+            }
         }
 
         private void listExports_DoubleClick(object sender, EventArgs e)
@@ -330,9 +344,9 @@ namespace ProcessHacker
             {
                 fileName = FileUtils.FindFile(System.IO.Path.GetDirectoryName(_path), e.Group.Header);
 
-                if (!string.IsNullOrEmpty(fileName))
+                if (fileName != null)
                 {
-                    Program.GetPEWindow(fileName, Program.FocusWindow);
+                    Program.GetPEWindow(fileName, (f) => Program.FocusWindow(f));
                 }
                 else
                 {

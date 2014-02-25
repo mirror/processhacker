@@ -42,14 +42,16 @@ namespace ProcessHacker.FormHelper
         public delegate void MatchProgressEvent(int currentValue, int count);
         public event MatchListViewEvent MatchListView;
         public event MatchProgressEvent MatchProgress;
-        private readonly string strFilterLower;
-        private readonly IntPtr intPtrFilter;
+        private string strFilter;
+        private string strFilterLower;
+        private IntPtr intPtrFilter;
         private List<ListViewItem> listViewItemContainer = new List<ListViewItem>(BufferSize);
-        private readonly Dictionary<int, bool> isCurrentSessionIdCache = new Dictionary<int, bool>();
+        private Dictionary<int, bool> isCurrentSessionIdCache = new Dictionary<int, bool>();
 
         public HandleFilter(ISynchronizeInvoke isi, string strFilter)
             : base(isi)
         {
+            this.strFilter = strFilter;
             strFilterLower = strFilter.ToLowerInvariant();
 
             try
@@ -100,34 +102,36 @@ namespace ProcessHacker.FormHelper
                     phandle.Dispose();
 
                 // Find DLLs and mapped files
-                Dictionary<int, SystemProcess> processes = Windows.GetProcesses();
+                var processes = Windows.GetProcesses();
 
-                foreach (KeyValuePair<int, SystemProcess> process in processes)
+                foreach (var process in processes)
                 {
                     try
                     {
                         // Modules
-                        using (ProcessHandle phandle = new ProcessHandle(process.Key, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                        using (var phandle = new ProcessHandle(process.Key,
+                            Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                         {
-                            phandle.EnumModules(module =>
+                            phandle.EnumModules((module) =>
                             {
-                                if (module.FileName.Contains(strFilterLower, StringComparison.OrdinalIgnoreCase))
+                                if (module.FileName.ToLowerInvariant().Contains(strFilterLower))
                                     this.CallDllMatchListView(process.Key, module);
                                 return true;
                             });
                         }
 
                         // Memory
-                        using (ProcessHandle phandle = new ProcessHandle(process.Key, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
+                        using (var phandle = new ProcessHandle(process.Key,
+                            ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
                         {
-                            phandle.EnumMemory(region =>
+                            phandle.EnumMemory((region) =>
                             {
                                 if (region.Type != MemoryType.Mapped)
                                     return true;
 
                                 string name = phandle.GetMappedFileName(region.BaseAddress);
 
-                                if (!string.IsNullOrEmpty(name) && name.Contains(strFilterLower, StringComparison.OrdinalIgnoreCase))
+                                if (name != null && name.ToLowerInvariant().Contains(strFilterLower))
                                     this.CallMappedFileMatchListView(process.Key, region.BaseAddress, name);
 
                                 return true;
@@ -145,12 +149,12 @@ namespace ProcessHacker.FormHelper
                                     RtlQueryProcessDebugFlags.NonInvasive
                                     );
 
-                                buffer.EnumModules(module =>
-                                {
-                                    if (module.FileName.Contains(strFilterLower, StringComparison.OrdinalIgnoreCase))
-                                        this.CallDllMatchListView(process.Key, module);
-                                    return true;
-                                });
+                                buffer.EnumModules((module) =>
+                                    {
+                                        if (module.FileName.ToLowerInvariant().Contains(strFilterLower))
+                                            this.CallDllMatchListView(process.Key, module);
+                                        return true;
+                                    });
                             }
                         }
                     }
@@ -164,38 +168,42 @@ namespace ProcessHacker.FormHelper
             }
         }
 
-        private void CompareHandleBestNameWithFilter(Dictionary<int, ProcessHandle> processHandles, SystemHandleEntry currhandle)
+        private void CompareHandleBestNameWithFilter(
+            Dictionary<int, ProcessHandle> processHandles,
+            SystemHandleEntry currhandle)
         {
             try
             {
                 // Don't get handles from processes in other session 
                 // if we don't have KPH to reduce freezes.
-
-                try
+                if (KProcessHacker.Instance == null)
                 {
-                    if (isCurrentSessionIdCache.ContainsKey(currhandle.ProcessId))
+                    try
                     {
-                        if (!isCurrentSessionIdCache[currhandle.ProcessId])
-                            return;
+                        if (isCurrentSessionIdCache.ContainsKey(currhandle.ProcessId))
+                        {
+                            if (!isCurrentSessionIdCache[currhandle.ProcessId])
+                                return;
+                        }
+                        else
+                        {
+                            bool isCurrentSessionId = Win32.GetProcessSessionId(currhandle.ProcessId) == Program.CurrentSessionId;
+
+                            isCurrentSessionIdCache.Add(currhandle.ProcessId, isCurrentSessionId);
+
+                            if (!isCurrentSessionId)
+                                return;
+                        }
                     }
-                    else
+                    catch
                     {
-                        bool isCurrentSessionId = Win32.GetProcessSessionId(currhandle.ProcessId) == Program.CurrentSessionId;
-
-                        isCurrentSessionIdCache.Add(currhandle.ProcessId, isCurrentSessionId);
-
-                        if (!isCurrentSessionId)
-                            return;
+                        return;
                     }
                 }
-                catch
-                {
-                    return;
-                }
-
 
                 if (!processHandles.ContainsKey(currhandle.ProcessId))
-                    processHandles.Add(currhandle.ProcessId, new ProcessHandle(currhandle.ProcessId, Program.MinProcessGetHandleInformationRights));
+                    processHandles.Add(currhandle.ProcessId,
+                        new ProcessHandle(currhandle.ProcessId, Program.MinProcessGetHandleInformationRights));
 
                 var info = currhandle.GetHandleInfo(processHandles[currhandle.ProcessId]);
 
@@ -203,7 +211,7 @@ namespace ProcessHacker.FormHelper
                     return;
 
                 if (
-                    (!string.IsNullOrEmpty(info.BestName) && info.BestName.Contains(strFilterLower, StringComparison.OrdinalIgnoreCase)) ||
+                    (info.BestName != null && info.BestName.ToLowerInvariant().Contains(strFilterLower)) ||
                     (intPtrFilter != IntPtr.Zero && currhandle.Object == intPtrFilter)
                     )
                 {
@@ -218,13 +226,11 @@ namespace ProcessHacker.FormHelper
 
         private void CallHandleMatchListView(SystemHandleEntry handle, ObjectInformation info)
         {
-            ListViewItem item = new ListViewItem
-            {
-                Name = handle.ProcessId.ToString() + " " + handle.Handle.ToString(), 
-                Text = Program.ProcessProvider.Dictionary[handle.ProcessId].Name + " (" + handle.ProcessId.ToString() + ")", 
-                Tag = handle
-            };
-
+            ListViewItem item = new ListViewItem();
+            item.Name = handle.ProcessId.ToString() + " " + handle.Handle.ToString();
+            item.Text = Program.ProcessProvider.Dictionary[handle.ProcessId].Name +
+                " (" + handle.ProcessId.ToString() + ")";
+            item.Tag = handle;
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.TypeName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.BestName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + handle.Handle.ToString("x")));
@@ -233,13 +239,11 @@ namespace ProcessHacker.FormHelper
 
         private void CallDllMatchListView(int pid, ILoadedModule module)
         {
-            ListViewItem item = new ListViewItem
-            {
-                Name = pid.ToString() + " " + module.BaseAddress.ToString(), 
-                Text = Program.ProcessProvider.Dictionary[pid].Name + " (" + pid.ToString() + ")", 
-                Tag = pid
-            };
-
+            ListViewItem item = new ListViewItem();
+            item.Name = pid.ToString() + " " + module.BaseAddress.ToString();
+            item.Text = Program.ProcessProvider.Dictionary[pid].Name +
+                " (" + pid.ToString() + ")";
+            item.Tag = pid;
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "DLL"));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, module.FileName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Utils.FormatAddress(module.BaseAddress)));
@@ -248,12 +252,11 @@ namespace ProcessHacker.FormHelper
 
         private void CallMappedFileMatchListView(int pid, IntPtr address, string fileName)
         {
-            ListViewItem item = new ListViewItem
-            {
-                Name = pid.ToString() + " " + address.ToString(),
-                Text = Program.ProcessProvider.Dictionary[pid].Name + " (" + pid.ToString() + ")",
-                Tag = pid
-            };
+            ListViewItem item = new ListViewItem();
+            item.Name = pid.ToString() + " " + address.ToString();
+            item.Text = Program.ProcessProvider.Dictionary[pid].Name +
+                " (" + pid.ToString() + ")";
+            item.Tag = pid;
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "Mapped File"));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, fileName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Utils.FormatAddress(address)));
@@ -265,11 +268,7 @@ namespace ProcessHacker.FormHelper
             if (item == null)
             {
                 if (listViewItemContainer.Count > 0)
-                {
-                    if (MatchListView != null)
-                        MatchListView(listViewItemContainer);
-                }
-
+                    FireAsync(MatchListView, listViewItemContainer);
                 return;
             }
 
@@ -279,17 +278,14 @@ namespace ProcessHacker.FormHelper
             {
                 List<ListViewItem> items = listViewItemContainer;
 
-                if (MatchListView != null)
-                    MatchListView(items);
-
+                FireAsync(MatchListView, items);
                 listViewItemContainer = new List<ListViewItem>(BufferSize);
             }
         }
 
         private void OnMatchProgress(int currentValue, int allValue)
         {
-            if (MatchProgress != null)
-                MatchProgress(currentValue, allValue);
+            FireAsync(MatchProgress, currentValue, allValue);
         }
     }
 }

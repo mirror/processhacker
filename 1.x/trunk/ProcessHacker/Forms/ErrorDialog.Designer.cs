@@ -39,15 +39,15 @@
             // 
             // labelIntro
             // 
-            this.labelIntro.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelIntro.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.labelIntro.Location = new System.Drawing.Point(12, 26);
             this.labelIntro.Name = "labelIntro";
             this.labelIntro.Size = new System.Drawing.Size(484, 32);
             this.labelIntro.TabIndex = 0;
             this.labelIntro.Text = "Please report this error to the Process Hacker team via our bug tracker hosted at" +
-    " SourceForge by clicking Send Report. You will recieve a tracker item for keeing" +
-    " track of its resolution status.";
+                " SourceForge by clicking Send Report. You will recieve a tracker item for keeing" +
+                " track of its resolution status.";
             // 
             // buttonContinue
             // 
@@ -75,9 +75,9 @@
             // 
             // textException
             // 
-            this.textException.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textException.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textException.BackColor = System.Drawing.SystemColors.Control;
             this.textException.Location = new System.Drawing.Point(12, 61);
             this.textException.Multiline = true;
@@ -106,7 +106,7 @@
             this.statusLinkLabel.Enabled = false;
             this.statusLinkLabel.Location = new System.Drawing.Point(12, 336);
             this.statusLinkLabel.Name = "statusLinkLabel";
-            this.statusLinkLabel.Size = new System.Drawing.Size(210, 13);
+            this.statusLinkLabel.Size = new System.Drawing.Size(199, 13);
             this.statusLinkLabel.TabIndex = 6;
             this.statusLinkLabel.TabStop = true;
             this.statusLinkLabel.Text = "Please Wait, Reporting to Bug Tracker...";
@@ -128,7 +128,7 @@
             this.AcceptButton = this.buttonQuit;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(508, 366);
             this.Controls.Add(this.labelIntro);
             this.Controls.Add(this.label1);

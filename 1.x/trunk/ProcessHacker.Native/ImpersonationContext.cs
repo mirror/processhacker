@@ -6,7 +6,7 @@ namespace ProcessHacker.Native
 {
     public class ImpersonationContext : IDisposable
     {
-        private bool _disposed;
+        private bool _disposed = false;
 
         public ImpersonationContext(TokenHandle token)
         {
@@ -16,11 +16,11 @@ namespace ProcessHacker.Native
 
         public void Dispose()
         {
-            if (_disposed) 
-                return;
-
-            Win32.RevertToSelf();
-            this._disposed = true;
+            if (!_disposed)
+            {
+                Win32.RevertToSelf();
+                _disposed = true;
+            }
         }
     }
 }

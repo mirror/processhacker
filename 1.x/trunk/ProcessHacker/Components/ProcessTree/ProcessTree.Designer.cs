@@ -112,6 +112,7 @@
             // 
             // treeProcesses
             // 
+            this.treeProcesses.AllowColumnReorder = true;
             this.treeProcesses.BackColor = System.Drawing.SystemColors.Window;
             this.treeProcesses.Columns.Add(this.columnName);
             this.treeProcesses.Columns.Add(this.columnPID);
@@ -153,7 +154,10 @@
             this.treeProcesses.Columns.Add(this.columnVerificationStatus);
             this.treeProcesses.Columns.Add(this.columnVerifiedSigner);
             this.treeProcesses.DefaultToolTipProvider = null;
+            this.treeProcesses.DisplayDraggingNodes = true;
             this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeProcesses.DragDropMarkColor = System.Drawing.Color.Black;
+            this.treeProcesses.FullRowSelect = true;
             this.treeProcesses.LineColor = System.Drawing.SystemColors.ControlDark;
             this.treeProcesses.Location = new System.Drawing.Point(0, 0);
             this.treeProcesses.Model = null;
@@ -203,6 +207,7 @@
             this.treeProcesses.ShowNodeToolTips = true;
             this.treeProcesses.Size = new System.Drawing.Size(808, 472);
             this.treeProcesses.TabIndex = 2;
+            this.treeProcesses.UseColumns = true;
             this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
             this.treeProcesses.ColumnClicked += new System.EventHandler<Aga.Controls.Tree.TreeColumnEventArgs>(this.treeProcesses_ColumnClicked);
@@ -961,6 +966,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeProcesses);
+            this.DoubleBuffered = true;
             this.Name = "ProcessTree";
             this.Size = new System.Drawing.Size(808, 472);
             this.ResumeLayout(false);

@@ -1,4 +1,8 @@
-﻿using ProcessHacker.Native.Api;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
@@ -15,7 +19,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                //this.Handle = KProcessHacker.Instance.KphOpenType(oa).ToIntPtr();
+                this.Handle = KProcessHacker.Instance.KphOpenType(oa).ToIntPtr();
             }
             finally
             {

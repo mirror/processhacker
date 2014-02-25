@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
@@ -33,11 +34,11 @@ namespace ProcessHacker.Components
     public partial class NetworkList : UserControl
     {
         private NetworkProvider _provider;
-        private int _runCount;
-        private readonly List<ListViewItem> _needsAdd = new List<ListViewItem>();
-        private readonly HighlightingContext _highlightingContext;
-        private bool _needsSort;
-        private bool _needsImageKeyReset;
+        private int _runCount = 0;
+        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
+        private HighlightingContext _highlightingContext;
+        private bool _needsSort = false;
+        private bool _needsImageKeyReset = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseMove;
@@ -50,14 +51,14 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _highlightingContext = new HighlightingContext(listNetwork);
-
+            listNetwork.SetTheme("explorer");
             listNetwork.ListViewItemSorter = new SortedListViewComparer(listNetwork);
-            listNetwork.KeyDown += this.NetworkList_KeyDown;
-            listNetwork.MouseDown += this.listNetwork_MouseDown;
-            listNetwork.MouseMove += this.listNetwork_MouseMove;
-            listNetwork.MouseUp += this.listNetwork_MouseUp;
-            listNetwork.DoubleClick += this.listNetwork_DoubleClick;
-            listNetwork.SelectedIndexChanged += this.listNetwork_SelectedIndexChanged;
+            listNetwork.KeyDown += new KeyEventHandler(NetworkList_KeyDown);
+            listNetwork.MouseDown += new MouseEventHandler(listNetwork_MouseDown);
+            listNetwork.MouseMove += new MouseEventHandler(listNetwork_MouseMove);
+            listNetwork.MouseUp += new MouseEventHandler(listNetwork_MouseUp);
+            listNetwork.DoubleClick += new EventHandler(listNetwork_DoubleClick);
+            listNetwork.SelectedIndexChanged += new System.EventHandler(listNetwork_SelectedIndexChanged);
         }
 
         private void listNetwork_DoubleClick(object sender, EventArgs e)
@@ -95,7 +96,7 @@ namespace ProcessHacker.Components
             }
         }
 
-        private void listNetwork_SelectedIndexChanged(object sender, EventArgs e)
+        private void listNetwork_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             if (this.SelectedIndexChanged != null)
                 this.SelectedIndexChanged(sender, e);
@@ -108,6 +109,20 @@ namespace ProcessHacker.Components
         }
 
         #region Properties
+
+        public new bool DoubleBuffered
+        {
+            get
+            {
+                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listNetwork, null);
+            }
+            set
+            {
+                typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listNetwork, value, null);
+            }
+        }
 
         public override bool Focused
         {
@@ -161,10 +176,10 @@ namespace ProcessHacker.Components
                         provider_DictionaryAdded(item);
                     }
 
-                    _provider.DictionaryAdded += this.provider_DictionaryAdded;
-                    _provider.DictionaryModified += this.provider_DictionaryModified;
-                    _provider.DictionaryRemoved += this.provider_DictionaryRemoved;
-                    _provider.Updated += this.provider_Updated;
+                    _provider.DictionaryAdded += new NetworkProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified += new NetworkProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved += new NetworkProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated += new NetworkProvider.ProviderUpdateOnce(provider_Updated);
                 }
             }
         }
@@ -222,7 +237,7 @@ namespace ProcessHacker.Components
                 {
                     string t = lvItem.ImageKey;
 
-                    lvItem.ImageKey = string.Empty;
+                    lvItem.ImageKey = "";
                     lvItem.ImageKey = t;
                 }
             }
@@ -342,11 +357,10 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(NetworkItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, item.Tag > 0 && _runCount > 0)
-            {
-                Name = item.Id, 
-                Tag = item
-            };
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, (int)item.Tag > 0 && _runCount > 0);
+
+            litem.Name = item.Id;
+            litem.Tag = item;
 
             Icon icon = null;
 
@@ -394,8 +408,8 @@ namespace ProcessHacker.Components
             }
             else
             {
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
             }
 
             if (item.Connection.Remote != null && !item.Connection.Remote.IsEmpty())
@@ -405,14 +419,14 @@ namespace ProcessHacker.Components
             }
             else
             {
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
             }
 
             this.FillNetworkItemAddresses(litem, item);
 
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Protocol.ToString().ToUpper()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.State != 0 ? item.Connection.State.ToString() : string.Empty));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.State != 0 ? item.Connection.State.ToString() : ""));
 
             lock (_needsAdd)
                 _needsAdd.Add(litem);
@@ -432,7 +446,7 @@ namespace ProcessHacker.Components
 
                         this.FillNetworkItemAddresses(litem, newItem);
 
-                        litem.SubItems[6].Text = newItem.Connection.State != 0 ? newItem.Connection.State.ToString() : string.Empty;
+                        litem.SubItems[6].Text = newItem.Connection.State != 0 ? newItem.Connection.State.ToString() : "";
                         _needsSort = true;
                     }
                 }));

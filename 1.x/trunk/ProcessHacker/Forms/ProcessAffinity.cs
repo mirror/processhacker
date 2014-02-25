@@ -30,12 +30,11 @@ namespace ProcessHacker
 {
     public partial class ProcessAffinity : Form
     {
-        private readonly int _pid;
+        private int _pid;
 
         public ProcessAffinity(int pid)
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -46,20 +45,21 @@ namespace ProcessHacker
                 using (ProcessHandle phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
                 {
                     long systemMask;
+                    long processMask;
 
-                    long processMask = phandle.GetAffinityMask(out systemMask);
+                    processMask = phandle.GetAffinityMask(out systemMask);
 
                     for (int i = 0; (systemMask & (1 << i)) != 0; i++)
                     {
-                        CheckBox c = new CheckBox
-                        {
-                            Name = "cpu" + i, 
-                            Text = "CPU " + i, 
-                            Tag = i, 
-                            FlatStyle = FlatStyle.System, 
-                            Checked = (processMask & (1 << i)) != 0, 
-                            Margin = new Padding(3, 3, 3, 0)
-                        };
+                        CheckBox c = new CheckBox();
+
+                        c.Name = "cpu" + i.ToString();
+                        c.Text = "CPU " + i.ToString();
+                        c.Tag = i;
+
+                        c.FlatStyle = FlatStyle.System;
+                        c.Checked = (processMask & (1 << i)) != 0;
+                        c.Margin = new Padding(3, 3, 3, 0);
 
                         flowPanel.Controls.Add(c);
                     }
@@ -93,7 +93,7 @@ namespace ProcessHacker
             try
             {
                 using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.SetInformation))
-                    phandle.AffinityMask = newMask;
+                    phandle.SetAffinityMask(newMask);
 
                 this.Close();
             }

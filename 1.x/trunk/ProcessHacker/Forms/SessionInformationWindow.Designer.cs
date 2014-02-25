@@ -51,7 +51,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(3, 4);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(64, 13);
+            this.label1.Size = new System.Drawing.Size(61, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "User name:";
             // 
@@ -59,9 +59,9 @@
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 25);
+            this.label2.Location = new System.Drawing.Point(3, 26);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(63, 13);
+            this.label2.Size = new System.Drawing.Size(61, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "Session ID:";
             // 
@@ -69,9 +69,9 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 46);
+            this.label3.Location = new System.Drawing.Point(3, 48);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(36, 13);
+            this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "State:";
             // 
@@ -79,9 +79,9 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 67);
+            this.label4.Location = new System.Drawing.Point(3, 70);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(71, 13);
+            this.label4.Size = new System.Drawing.Size(65, 13);
             this.label4.TabIndex = 0;
             this.label4.Text = "Client name:";
             // 
@@ -89,9 +89,9 @@
             // 
             this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 88);
+            this.label5.Location = new System.Drawing.Point(3, 92);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(83, 13);
+            this.label5.Size = new System.Drawing.Size(76, 13);
             this.label5.TabIndex = 0;
             this.label5.Text = "Client address:";
             // 
@@ -99,9 +99,9 @@
             // 
             this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 112);
+            this.label6.Location = new System.Drawing.Point(3, 114);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(135, 13);
+            this.label6.Size = new System.Drawing.Size(119, 13);
             this.label6.TabIndex = 0;
             this.label6.Text = "Client display resolution:";
             // 
@@ -109,7 +109,7 @@
             // 
             this.labelUsername.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelUsername.AutoSize = true;
-            this.labelUsername.Location = new System.Drawing.Point(144, 4);
+            this.labelUsername.Location = new System.Drawing.Point(128, 4);
             this.labelUsername.Name = "labelUsername";
             this.labelUsername.Size = new System.Drawing.Size(24, 13);
             this.labelUsername.TabIndex = 1;
@@ -119,7 +119,7 @@
             // 
             this.labelSessionId.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelSessionId.AutoSize = true;
-            this.labelSessionId.Location = new System.Drawing.Point(144, 25);
+            this.labelSessionId.Location = new System.Drawing.Point(128, 26);
             this.labelSessionId.Name = "labelSessionId";
             this.labelSessionId.Size = new System.Drawing.Size(24, 13);
             this.labelSessionId.TabIndex = 1;
@@ -127,9 +127,9 @@
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -161,7 +161,7 @@
             // 
             this.labelState.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelState.AutoSize = true;
-            this.labelState.Location = new System.Drawing.Point(144, 46);
+            this.labelState.Location = new System.Drawing.Point(128, 48);
             this.labelState.Name = "labelState";
             this.labelState.Size = new System.Drawing.Size(24, 13);
             this.labelState.TabIndex = 1;
@@ -171,7 +171,7 @@
             // 
             this.labelClientName.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelClientName.AutoSize = true;
-            this.labelClientName.Location = new System.Drawing.Point(144, 67);
+            this.labelClientName.Location = new System.Drawing.Point(128, 70);
             this.labelClientName.Name = "labelClientName";
             this.labelClientName.Size = new System.Drawing.Size(24, 13);
             this.labelClientName.TabIndex = 1;
@@ -181,7 +181,7 @@
             // 
             this.labelClientAddress.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelClientAddress.AutoSize = true;
-            this.labelClientAddress.Location = new System.Drawing.Point(144, 88);
+            this.labelClientAddress.Location = new System.Drawing.Point(128, 92);
             this.labelClientAddress.Name = "labelClientAddress";
             this.labelClientAddress.Size = new System.Drawing.Size(24, 13);
             this.labelClientAddress.TabIndex = 1;
@@ -191,7 +191,7 @@
             // 
             this.labelClientDisplayResolution.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labelClientDisplayResolution.AutoSize = true;
-            this.labelClientDisplayResolution.Location = new System.Drawing.Point(144, 112);
+            this.labelClientDisplayResolution.Location = new System.Drawing.Point(128, 114);
             this.labelClientDisplayResolution.Name = "labelClientDisplayResolution";
             this.labelClientDisplayResolution.Size = new System.Drawing.Size(24, 13);
             this.labelClientDisplayResolution.TabIndex = 1;
@@ -214,7 +214,6 @@
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(333, 187);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.tableLayoutPanel1);

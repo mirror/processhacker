@@ -40,14 +40,14 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(68, 13);
+            this.label1.Size = new System.Drawing.Size(65, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "New Status:";
             // 
             // comboStatus
             // 
-            this.comboStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.comboStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboStatus.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.comboStatus.FormattingEnabled = true;
@@ -90,7 +90,7 @@
             this.checkPermanent.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkPermanent.Location = new System.Drawing.Point(12, 39);
             this.checkPermanent.Name = "checkPermanent";
-            this.checkPermanent.Size = new System.Drawing.Size(87, 18);
+            this.checkPermanent.Size = new System.Drawing.Size(83, 18);
             this.checkPermanent.TabIndex = 2;
             this.checkPermanent.Text = "Permanent";
             this.checkPermanent.UseVisualStyleBackColor = true;
@@ -101,7 +101,6 @@
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(315, 104);
             this.Controls.Add(this.checkPermanent);
             this.Controls.Add(this.buttonCancel);

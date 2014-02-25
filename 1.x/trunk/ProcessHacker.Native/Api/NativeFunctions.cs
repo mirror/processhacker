@@ -1508,15 +1508,6 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static unsafe extern NtStatus NtQueryInformationToken(
-            [In] IntPtr TokenHandle,
-            [In] TokenInformationClass TokenInformationClass,
-            void* TokenInformation,
-            [In] int TokenInformationLength,
-            [Optional] void* ReturnLength
-            );
-
-        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQueryInformationToken(
             [In] IntPtr TokenHandle,
             [In] TokenInformationClass TokenInformationClass,
@@ -1674,14 +1665,6 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr LinkHandle,
             ref UnicodeString LinkName,
             [Out] [Optional] out int ReturnLength
-            );
-
-        [DllImport("ntdll.dll")]
-        public static unsafe extern NtStatus NtQuerySystemInformation(
-            [In] SystemInformationClass SystemInformationClass,
-            void* SystemInformation,
-            [In] int SystemInformationLength,
-            int* ReturnLength
             );
 
         [DllImport("ntdll.dll")]
@@ -2520,7 +2503,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll", CharSet = CharSet.Unicode)]
         public static extern NtStatus LdrGetDllHandle(
             [In] [Optional] string DllPath,
-            [In] [Optional] int DllCharacteristics,
+            [In] [Optional] ref int DllCharacteristics,
             [In] ref UnicodeString DllName,
             [Out] out IntPtr DllHandle
             );
@@ -2528,7 +2511,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus LdrGetProcedureAddress(
             [In] IntPtr DllHandle,
-            [In] [Optional] IntPtr ProcedureName,
+            [In] [Optional] ref AnsiString ProcedureName,
             [In] [Optional] int ProcedureNumber,
             [Out] out IntPtr ProcedureAddress
             );
@@ -2536,7 +2519,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll", CharSet = CharSet.Unicode)]
         public static extern NtStatus LdrLoadDll(
             [In] [Optional] string DllPath,
-            [In] [Optional] int DllCharacteristics,
+            [In] [Optional] ref int DllCharacteristics,
             [In] ref UnicodeString DllName,
             [Out] out IntPtr DllHandle
             );
@@ -3308,14 +3291,6 @@ namespace ProcessHacker.Native.Api
         public static extern void RtlMoveMemory(
             [In] IntPtr Destination,
             [In] IntPtr Source,
-            [In] IntPtr Length
-            );
-
-
-        [DllImport("ntdll.dll")]
-        public static extern unsafe void RtlMoveMemory(
-            void* Destination,
-            void* Source,
             [In] IntPtr Length
             );
 

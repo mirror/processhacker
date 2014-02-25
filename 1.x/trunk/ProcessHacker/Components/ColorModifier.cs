@@ -21,7 +21,10 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ProcessHacker.Components
@@ -39,20 +42,18 @@ namespace ProcessHacker.Components
 
         private void panelColor_Click(object sender, EventArgs e)
         {
-            using (ColorDialog cd = new ColorDialog
-            {
-                Color = this.panelColor.BackColor,
-                FullOpen = true
-            })
-            {
-                if (cd.ShowDialog() == DialogResult.OK)
-                {
-                    _color = cd.Color;
-                    panelColor.BackColor = cd.Color;
+            ColorDialog cd = new ColorDialog();
 
-                    if (this.ColorChanged != null)
-                        this.ColorChanged(this, new EventArgs());
-                }
+            cd.Color = panelColor.BackColor;
+            cd.FullOpen = true;
+
+            if (cd.ShowDialog() == DialogResult.OK)
+            {
+                _color = cd.Color;
+                panelColor.BackColor = cd.Color;
+
+                if (this.ColorChanged != null)
+                    this.ColorChanged(this, new EventArgs());
             }
         }
 

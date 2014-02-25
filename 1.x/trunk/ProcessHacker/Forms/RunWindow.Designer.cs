@@ -50,19 +50,19 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 49);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 13);
+            this.label1.Size = new System.Drawing.Size(49, 13);
             this.label1.TabIndex = 10;
             this.label1.Text = "Program:";
             // 
             // textCmdLine
             // 
-            this.textCmdLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textCmdLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textCmdLine.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.textCmdLine.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.AllSystemSources;
             this.textCmdLine.Location = new System.Drawing.Point(79, 46);
             this.textCmdLine.Name = "textCmdLine";
-            this.textCmdLine.Size = new System.Drawing.Size(230, 22);
+            this.textCmdLine.Size = new System.Drawing.Size(230, 20);
             this.textCmdLine.TabIndex = 0;
             // 
             // label2
@@ -70,7 +70,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 75);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(61, 13);
+            this.label2.Size = new System.Drawing.Size(58, 13);
             this.label2.TabIndex = 11;
             this.label2.Text = "Username:";
             // 
@@ -89,7 +89,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(12, 128);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(63, 13);
+            this.label3.Size = new System.Drawing.Size(61, 13);
             this.label3.TabIndex = 14;
             this.label3.Text = "Session ID:";
             // 
@@ -97,7 +97,7 @@
             // 
             this.textSessionID.Location = new System.Drawing.Point(79, 125);
             this.textSessionID.Name = "textSessionID";
-            this.textSessionID.Size = new System.Drawing.Size(100, 22);
+            this.textSessionID.Size = new System.Drawing.Size(100, 20);
             this.textSessionID.TabIndex = 5;
             // 
             // label4
@@ -105,7 +105,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(12, 102);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(59, 13);
+            this.label4.Size = new System.Drawing.Size(56, 13);
             this.label4.TabIndex = 13;
             this.label4.Text = "Password:";
             // 
@@ -113,7 +113,7 @@
             // 
             this.textPassword.Location = new System.Drawing.Point(79, 99);
             this.textPassword.Name = "textPassword";
-            this.textPassword.Size = new System.Drawing.Size(154, 22);
+            this.textPassword.Size = new System.Drawing.Size(154, 20);
             this.textPassword.TabIndex = 4;
             this.textPassword.UseSystemPasswordChar = true;
             // 
@@ -155,14 +155,14 @@
             // 
             // label5
             // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.Location = new System.Drawing.Point(12, 9);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(378, 30);
             this.label5.TabIndex = 9;
             this.label5.Text = "Enter the command to start as the specified user. Note that the program may take " +
-    "a while to start as Windows loads the user\'s profile.";
+                "a while to start as Windows loads the user\'s profile.";
             // 
             // buttonSessions
             // 
@@ -180,7 +180,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(239, 75);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(33, 13);
+            this.label6.Size = new System.Drawing.Size(34, 13);
             this.label6.TabIndex = 12;
             this.label6.Text = "Type:";
             // 
@@ -207,8 +207,6 @@
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(402, 190);
             this.Controls.Add(this.comboType);
             this.Controls.Add(this.label6);
@@ -231,8 +229,8 @@
             this.Name = "RunWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Run As...";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RunWindow_FormClosing);
             this.Load += new System.EventHandler(this.RunWindow_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RunWindow_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

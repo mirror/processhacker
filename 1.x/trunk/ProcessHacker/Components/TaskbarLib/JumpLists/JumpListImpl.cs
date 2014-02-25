@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaskbarLib.Interop;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 
 namespace TaskbarLib
@@ -36,7 +37,7 @@ namespace TaskbarLib
     {
         //TODO: This is highly inefficient, but we want to maintain insertion order when adding the categories 
         //because the bottom categories are first to be truncated if screen estate is low.
-        private readonly SortedDictionary<int, List<IJumpListDestination>> _categorizedDestinations =
+        private SortedDictionary<int, List<IJumpListDestination>> _categorizedDestinations =
             new SortedDictionary<int, List<IJumpListDestination>>();
 
         public void AddDestination(IJumpListDestination destination)
@@ -96,7 +97,8 @@ namespace TaskbarLib
                      select _categorizedDestinations[d].First().Category);
             }
         }
-        public IEnumerable<IJumpListDestination> GetDestinationsByCategory(string category)
+        public IEnumerable<IJumpListDestination> GetDestinationsByCategory(
+            string category)
         {
             return
                 (from k in _categorizedDestinations.Keys
@@ -116,7 +118,7 @@ namespace TaskbarLib
     /// </summary>
     internal sealed class JumpListTasks
     {
-        private readonly List<IJumpListTask> _tasks = new List<IJumpListTask>();
+        private List<IJumpListTask> _tasks = new List<IJumpListTask>();
 
         public void AddTask(IJumpListTask task)
         {

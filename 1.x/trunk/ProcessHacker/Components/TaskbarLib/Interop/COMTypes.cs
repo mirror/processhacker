@@ -24,38 +24,39 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Runtime.CompilerServices;
 using ProcessHacker.Native.Api;
 
 namespace TaskbarLib.Interop
 {
     #region "Interface Classes"
 
-    [ComImportAttribute]
+    [ComImportAttribute()]
     [GuidAttribute("86C14003-4D6B-4EF3-A7B4-0506663B2E68")]
     [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CApplicationDestinations { }
 
-    [ComImportAttribute]
+    [ComImportAttribute()]
     [GuidAttribute("86BEC222-30F2-47E0-9F25-60D11CD75C28")]
     [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CApplicationDocumentLists { }
 
-    [ComImportAttribute]
+    [ComImportAttribute()]
     [GuidAttribute("56FDF344-FD6D-11d0-958A-006097C9A090")]
     [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CTaskbarList { }
 
-    [ComImportAttribute]
+    [ComImportAttribute()]
     [GuidAttribute("00021401-0000-0000-C000-000000000046")]
     [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CShellLink { }
 
-    [ComImportAttribute]
+    [ComImportAttribute()]
     [GuidAttribute("77F10CF0-3DB5-4966-B520-B7C54FD35ED6")]
     [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CDestinationList { }
 
-    [ComImportAttribute]
+    [ComImportAttribute()]
     [GuidAttribute("2D3468C1-36A7-43B6-AC24-D3F02FD9607A")]
     [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CEnumerableObjectCollection { }
@@ -64,7 +65,7 @@ namespace TaskbarLib.Interop
 
     #region "Interfaces"
  
-    [ComImportAttribute]
+    [ComImportAttribute()]
     [GuidAttribute("92CA9DCD-5622-4BBA-A805-5E9F541BD8C9")]
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IObjectArray

@@ -44,10 +44,11 @@ namespace ProcessHacker
         public HandleFilterWindow()
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
 
+            listHandles.SetDoubleBuffered(true);
+            listHandles.SetTheme("explorer");
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHandles, null);
             listHandles.ContextMenu = menuHandle;
 
@@ -94,6 +95,7 @@ namespace ProcessHacker
         {
             if (this.Visible)
             {
+                this.SetPhParent();
                 textFilter.SelectAll();
             }
         }
@@ -102,7 +104,7 @@ namespace ProcessHacker
         {
             if (listHandles.SelectedItems.Count == 0)
             {
-               // menuHandle.DisableAll();
+                menuHandle.DisableAll();
             }
             else if (listHandles.SelectedItems.Count == 1)
             {
@@ -322,7 +324,7 @@ namespace ProcessHacker
 
         private void textFilter_TextChanged(object sender, EventArgs e)
         {
-            if (textFilter.Text == string.Empty)
+            if (textFilter.Text == "")
                 buttonFind.Enabled = false;
             else
                 buttonFind.Enabled = true;

@@ -13,7 +13,6 @@ namespace ProcessHacker.Components
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
-    using ProcessHacker.Native;
 
     /// <summary>
     /// The signature of the callback that recieves notificaitons from the Task Dialog.
@@ -267,8 +266,6 @@ namespace ProcessHacker.Components
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
     public struct TaskDialogButton
     {
-        public static readonly int SizeOf;
-
         /// <summary>
         /// The ID of the button. This value is returned by TaskDialog.Show when the button is clicked.
         /// </summary>
@@ -308,11 +305,6 @@ namespace ProcessHacker.Components
         {
             get { return this.buttonText; }
             set { this.buttonText = value; }
-        }
-
-        static TaskDialogButton()
-        {
-            SizeOf = Marshal.SizeOf(typeof(TaskDialogButton));
         }
     }
 
@@ -1008,12 +1000,12 @@ namespace ProcessHacker.Components
         {
             verificationFlagChecked = false;
             radioButtonResult = 0;
-            int result;
+            int result = 0;
             UnsafeNativeMethods.TASKDIALOGCONFIG config = new UnsafeNativeMethods.TASKDIALOGCONFIG();
 
             try
             {
-                config.cbSize = (uint)UnsafeNativeMethods.TASKDIALOGCONFIG.SizeOf;
+                config.cbSize = (uint)Marshal.SizeOf(typeof(UnsafeNativeMethods.TASKDIALOGCONFIG));
                 config.hwndParent = hwndOwner;
                 config.dwFlags = this.flags;
                 config.dwCommonButtons = this.commonButtons;
@@ -1044,8 +1036,8 @@ namespace ProcessHacker.Components
                 if (customButtons.Length > 0)
                 {
                     // Hand marshal the buttons array.
-                    int elementSize = TaskDialogButton.SizeOf;
-                    config.pButtons = MemoryAlloc.PrivateHeap.Allocate(elementSize * customButtons.Length);
+                    int elementSize = Marshal.SizeOf(typeof(TaskDialogButton));
+                    config.pButtons = Marshal.AllocHGlobal(elementSize * (int)customButtons.Length);
                     for (int i = 0; i < customButtons.Length; i++)
                     {
                         unsafe // Unsafe because of pointer arithmatic.
@@ -1062,8 +1054,8 @@ namespace ProcessHacker.Components
                 if (customRadioButtons.Length > 0)
                 {
                     // Hand marshal the buttons array.
-                    int elementSize = TaskDialogButton.SizeOf;
-                    config.pRadioButtons = MemoryAlloc.PrivateHeap.Allocate(elementSize * customRadioButtons.Length);
+                    int elementSize = Marshal.SizeOf(typeof(TaskDialogButton));
+                    config.pRadioButtons = Marshal.AllocHGlobal(elementSize * (int)customRadioButtons.Length);
                     for (int i = 0; i < customRadioButtons.Length; i++)
                     {
                         unsafe // Unsafe because of pointer arithmatic.
@@ -1115,7 +1107,7 @@ namespace ProcessHacker.Components
                 // translate to the friendly version.
                 if (this.callback != null)
                 {
-                    config.pfCallback = this.PrivateCallback;
+                    config.pfCallback = new UnsafeNativeMethods.TaskDialogCallback(this.PrivateCallback);
                 }
 
                 ////config.lpCallbackData = this.callbackData; // How do you do this? Need to pin the ref?
@@ -1132,7 +1124,7 @@ namespace ProcessHacker.Components
                 // that are not required for the users of this class.
                 if (config.pButtons != IntPtr.Zero)
                 {
-                    int elementSize = TaskDialogButton.SizeOf;
+                    int elementSize = Marshal.SizeOf(typeof(TaskDialogButton));
                     for (int i = 0; i < config.cButtons; i++)
                     {
                         unsafe
@@ -1142,12 +1134,12 @@ namespace ProcessHacker.Components
                         }
                     }
 
-                    MemoryAlloc.PrivateHeap.Free(config.pButtons);
+                    Marshal.FreeHGlobal(config.pButtons);
                 }
 
                 if (config.pRadioButtons != IntPtr.Zero)
                 {
-                    int elementSize = TaskDialogButton.SizeOf;
+                    int elementSize = Marshal.SizeOf(typeof(TaskDialogButton));
                     for (int i = 0; i < config.cRadioButtons; i++)
                     {
                         unsafe
@@ -1157,7 +1149,7 @@ namespace ProcessHacker.Components
                         }
                     }
 
-                    MemoryAlloc.PrivateHeap.Free(config.pRadioButtons);
+                    Marshal.FreeHGlobal(config.pRadioButtons);
                 }
             }
 
@@ -1173,20 +1165,17 @@ namespace ProcessHacker.Components
         /// <param name="lparam">Specifies additional noitification information.  The contents of this parameter depends on the value of the msg parameter.</param>
         /// <param name="refData">Specifies the application-defined value given in the call to TaskDialogIndirect.</param>
         /// <returns>A HRESULT. It's not clear in the spec what a failed result will do.</returns>
-        private int PrivateCallback([In] IntPtr hwnd, [In] TaskDialogNotification msg, [In] UIntPtr wparam, [In] IntPtr lparam, [In] IntPtr refData)
+        private int PrivateCallback([In] IntPtr hwnd, [In] uint msg, [In] UIntPtr wparam, [In] IntPtr lparam, [In] IntPtr refData)
         {
-            TaskDialogCallback cb = this.callback;
-            if (cb != null)
+            TaskDialogCallback callback = this.callback;
+            if (callback != null)
             {
                 // Prepare arguments for the callback to the user we are insulating from Interop casting sillyness.
 
                 // Future: Consider reusing a single ActiveTaskDialog object and mark it as destroyed on the destry notification.
                 ActiveTaskDialog activeDialog = new ActiveTaskDialog(hwnd);
-                TaskDialogNotificationArgs args = new TaskDialogNotificationArgs
-                {
-                    Notification = msg
-                };
-
+                TaskDialogNotificationArgs args = new TaskDialogNotificationArgs();
+                args.Notification = (TaskDialogNotification)msg;
                 switch (args.Notification)
                 {
                     case TaskDialogNotification.ButtonClicked:
@@ -1207,7 +1196,7 @@ namespace ProcessHacker.Components
                         break;
                 }
 
-                return (cb(activeDialog, args, this.callbackData) ? 1 : 0);
+                return (callback(activeDialog, args, this.callbackData) ? 1 : 0);
             }
 
             return 0; // false;

@@ -51,24 +51,27 @@ namespace ProcessHacker
 
     public class ModuleProvider : Provider<IntPtr, ModuleItem>
     {
-        private readonly ProcessHandle _processHandle;
-        private readonly int _pid;
-        private readonly bool _isWow64;
+        private ProcessHandle _processHandle;
+        private int _pid;
+        private bool _isWow64 = false;
 
         public ModuleProvider(int pid)
+            : base()
         {
             this.Name = this.GetType().Name;
             _pid = pid;
 
             try
             {
-                _processHandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
+                _processHandle = new ProcessHandle(_pid,
+                    ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
             }
             catch
             {
                 try
                 {
-                    _processHandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
+                    _processHandle = new ProcessHandle(_pid,
+                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
                 }
                 catch
                 { }
@@ -78,13 +81,13 @@ namespace ProcessHacker
             {
                 try
                 {
-                    _isWow64 = _processHandle.IsWow64;
+                    _isWow64 = _processHandle.IsWow64();
                 }
                 catch
                 { }
             }
 
-            this.Disposed += provider => { if (_processHandle != null) _processHandle.Dispose(); };
+            this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
         protected override void Update()
@@ -103,13 +106,13 @@ namespace ProcessHacker
                 // Is this a WOW64 process? If it is, get the 32-bit modules.
                 if (!_isWow64)
                 {
-                    _processHandle.EnumModules(module =>
-                    {
-                        if (!modules.ContainsKey(module.BaseAddress))
-                            modules.Add(module.BaseAddress, module);
+                    _processHandle.EnumModules((module) =>
+                        {
+                            if (!modules.ContainsKey(module.BaseAddress))
+                                modules.Add(module.BaseAddress, module);
 
-                        return true;
-                    });
+                            return true;
+                        });
                 }
                 else
                 {
@@ -146,7 +149,7 @@ namespace ProcessHacker
                 }
 
                 // add mapped files
-                _processHandle.EnumMemory(info =>
+                _processHandle.EnumMemory((info) =>
                 {
                     if (info.Type == MemoryType.Mapped)
                     {
@@ -177,7 +180,7 @@ namespace ProcessHacker
             else
             {
                 // Add loaded kernel modules.
-                Windows.EnumKernelModules(module =>
+                Windows.EnumKernelModules((module) =>
                 {
                     if (!modules.ContainsKey(module.BaseAddress))
                         modules.Add(module.BaseAddress, module);
@@ -202,13 +205,10 @@ namespace ProcessHacker
                 if (!Dictionary.ContainsKey(b))
                 {
                     var m = modules[b];
+                    ModuleItem item = new ModuleItem();
 
-                    ModuleItem item = new ModuleItem
-                    {
-                        RunId = this.RunCount,
-                        Name = m.BaseName
-                    };
-
+                    item.RunId = this.RunCount;
+                    item.Name = m.BaseName;
 
                     try
                     {

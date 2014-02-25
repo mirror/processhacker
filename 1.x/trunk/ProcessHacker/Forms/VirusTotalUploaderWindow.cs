@@ -42,8 +42,8 @@ namespace ProcessHacker
 {
     public partial class VirusTotalUploaderWindow : Form
     {
-        readonly string fileName;
-        readonly string processName;
+        string fileName;
+        string processName;
 
         long totalFileSize;
         long bytesPerSecond;
@@ -54,6 +54,7 @@ namespace ProcessHacker
 
         public VirusTotalUploaderWindow(string procName, string procPath)
         {
+            this.SetPhParent();
             InitializeComponent();
             this.AddEscapeToClose();
             this.SetTopMost();
@@ -73,16 +74,13 @@ namespace ProcessHacker
             {
                 if (OSVersion.HasTaskDialogs)
                 {
-                    TaskDialog td = new TaskDialog
-                    {
-                        PositionRelativeToWindow = true,
-                        Content = "The selected file doesn't exist or couldnt be found!", 
-                        MainInstruction = "File Location not Available!", 
-                        WindowTitle = "System Error", 
-                        MainIcon = TaskDialogIcon.CircleX, 
-                        CommonButtons = TaskDialogCommonButtons.Ok
-                    };
-
+                    TaskDialog td = new TaskDialog();
+                    td.PositionRelativeToWindow = true;
+                    td.Content = "The selected file doesn't exist or couldnt be found!";
+                    td.MainInstruction = "File Location not Available!";
+                    td.WindowTitle = "System Error";
+                    td.MainIcon = TaskDialogIcon.CircleX;
+                    td.CommonButtons = TaskDialogCommonButtons.Ok;
                     td.Show(Program.HackerWindow.Handle);
                 }
                 else
@@ -99,15 +97,13 @@ namespace ProcessHacker
             {
                 if (OSVersion.HasTaskDialogs)
                 {
-                    TaskDialog td = new TaskDialog
-                    {
-                        PositionRelativeToWindow = true,
-                        Content = "This file is larger than 20MB, above the VirusTotal limit!", 
-                        MainInstruction = "File is too large", 
-                        WindowTitle = "VirusTotal Error", 
-                        MainIcon = TaskDialogIcon.CircleX, 
-                        CommonButtons = TaskDialogCommonButtons.Ok
-                    };
+                    TaskDialog td = new TaskDialog();
+                    td.PositionRelativeToWindow = true;
+                    td.Content = "This file is larger than 20MB, above the VirusTotal limit!";
+                    td.MainInstruction = "File is too large";
+                    td.WindowTitle = "VirusTotal Error";
+                    td.MainIcon = TaskDialogIcon.CircleX;
+                    td.CommonButtons = TaskDialogCommonButtons.Ok;
                     td.Show(Program.HackerWindow.Handle);
                 }
                 else
@@ -130,8 +126,8 @@ namespace ProcessHacker
 
             ThreadTask getSessionTokenTask = new ThreadTask();
 
-            getSessionTokenTask.RunTask += this.getSessionTokenTask_RunTask;
-            getSessionTokenTask.Completed += this.getSessionTokenTask_Completed;
+            getSessionTokenTask.RunTask += new ThreadTaskRunTaskDelegate(getSessionTokenTask_RunTask);
+            getSessionTokenTask.Completed += new ThreadTaskCompletedDelegate(getSessionTokenTask_Completed);
             getSessionTokenTask.Start();
         }
 
@@ -153,7 +149,7 @@ namespace ProcessHacker
         {
             try
             {
-                HttpWebRequest sessionRequest = (HttpWebRequest)WebRequest.Create("http://www.virustotal.com/vt/en/identificador");
+                HttpWebRequest sessionRequest = (HttpWebRequest)HttpWebRequest.Create("http://www.virustotal.com/vt/en/identificador");
                 sessionRequest.ServicePoint.ConnectionLimit = 20;
                 sessionRequest.UserAgent = "Process Hacker " + Application.ProductVersion;
                 sessionRequest.Timeout = System.Threading.Timeout.Infinite;
@@ -279,13 +275,16 @@ namespace ProcessHacker
             {
                 // RequestCanceled will occour when we cancel the WebRequest.
                 // Filter out that exception but log all others.
-                if (ex.Status != WebExceptionStatus.RequestCanceled)
+                if (ex != null)
                 {
-                    PhUtils.ShowException("Unable to upload the file", ex);
-                    Logging.Log(ex);
+                    if (ex.Status != WebExceptionStatus.RequestCanceled)
+                    {
+                        PhUtils.ShowException("Unable to upload the file", ex);
+                        Logging.Log(ex);
 
-                    if (this.IsHandleCreated)
-                        this.BeginInvoke(new MethodInvoker(this.Close));
+                        if (this.IsHandleCreated)
+                            this.BeginInvoke(new MethodInvoker(this.Close));
+                    }
                 }
             }
 
@@ -314,7 +313,7 @@ namespace ProcessHacker
             progressUpload.Value = progress;
 
             if (OSVersion.HasExtendedTaskbar)
-                Program.HackerWindow.SetTaskbarProgress(this.progressUpload);
+                Windows7Taskbar.SetTaskbarProgress(Program.HackerWindow, this.progressUpload);
         }
 
         private void uploadTask_Completed(object result)

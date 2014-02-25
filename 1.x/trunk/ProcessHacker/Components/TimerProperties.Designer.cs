@@ -50,7 +50,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 13);
+            this.label1.Size = new System.Drawing.Size(51, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Signaled:";
             // 
@@ -69,7 +69,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 25);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(91, 13);
+            this.label3.Size = new System.Drawing.Size(86, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "Time Remaining:";
             this.label3.Visible = false;
@@ -79,7 +79,7 @@
             this.labelSignaled.AutoSize = true;
             this.labelSignaled.Location = new System.Drawing.Point(98, 3);
             this.labelSignaled.Name = "labelSignaled";
-            this.labelSignaled.Size = new System.Drawing.Size(33, 13);
+            this.labelSignaled.Size = new System.Drawing.Size(32, 13);
             this.labelSignaled.TabIndex = 1;
             this.labelSignaled.Text = "False";
             // 
@@ -98,7 +98,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.labelSignaled);
             this.Controls.Add(this.labelTimeRemaining);

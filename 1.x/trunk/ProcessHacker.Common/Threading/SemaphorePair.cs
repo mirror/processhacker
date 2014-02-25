@@ -5,9 +5,9 @@ namespace ProcessHacker.Common.Threading
 {
     public class SemaphorePair : IDisposable
     {
-        private readonly int _count;
-        private readonly Semaphore _readSemaphore;
-        private readonly Semaphore _writeSemaphore;
+        private int _count;
+        private Semaphore _readSemaphore;
+        private Semaphore _writeSemaphore;
 
         public SemaphorePair(int count)
         {

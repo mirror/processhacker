@@ -23,22 +23,20 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
+using System.Reflection;
 using System.Windows.Forms;
-using ProcessHacker.Api;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using ProcessHacker.Native.Security.AccessControl;
 using ProcessHacker.Native.Ui;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
 {
-    public partial class HandleList : ProcessPropertySheetPage
+    public partial class HandleList : UserControl
     {
         public static bool ConfirmHandleClose()
         {
@@ -51,37 +49,22 @@ namespace ProcessHacker.Components
                     false
                     );
             }
-            return true;
+            else
+            {
+                return true;
+            }
         }
 
         public static void ShowHandleProperties(SystemHandleEntry handleInfo)
         {
             try
             {
+                HandlePropertiesWindow window = new HandlePropertiesWindow(handleInfo);
                 IntPtr handle = new IntPtr(handleInfo.Handle);
                 ProcessHandle phandle = new ProcessHandle(handleInfo.ProcessId, ProcessAccess.DupHandle);
-                GenericHandle dupHandle = null;
+                GenericHandle dupHandle = null; 
 
-                // Try to get a handle, since we need one for security editing.
-                try
-                {
-                    dupHandle = new GenericHandle(phandle, handle, 0);
-                }
-                catch
-                { }
-
-                PropSheetHeader64 header = new PropSheetHeader64
-                {
-                    dwSize = (uint)PropSheetHeader64.SizeOf, 
-                    nPages = 2, 
-                    dwFlags = (uint)PropSheetFlags.PSH_DEFAULT, 
-                    pszCaption = "Handle Properties"
-                };
-
-                using (HandleDetails hw = new HandleDetails())
-                {
-                    hw.ObjectHandle = handleInfo;
-                    hw.HandlePropertiesCallback += (control, name, typeName) =>
+                window.HandlePropertiesCallback += (control, name, typeName) =>
                     {
                         switch (typeName.ToLowerInvariant())
                         {
@@ -92,65 +75,76 @@ namespace ProcessHacker.Components
                             case "token":
                             case "process":
                                 {
-                                    Button b = new Button
-                                    {
-                                        FlatStyle = FlatStyle.System,
-                                        Text = "Properties"
-                                    };
+                                    Button b = new Button();
 
+                                    b.FlatStyle = FlatStyle.System;
+                                    b.Text = "Properties";
                                     b.Click += (sender, e) =>
-                                    {
-                                        try
                                         {
-                                            switch (typeName.ToLowerInvariant())
+                                            try
                                             {
-                                                case "file":
-                                                    {
-                                                        FileUtils.ShowProperties(name);
-                                                    }
-                                                    break;
-                                                case "job":
-                                                    {
-                                                        dupHandle = new GenericHandle(phandle, handle, (int)JobObjectAccess.Query);
+                                                switch (typeName.ToLowerInvariant())
+                                                {
+                                                    case "file":
+                                                        {
+                                                            FileUtils.ShowProperties(name);
+                                                        }
+                                                        break;
+                                                    case "job":
+                                                        {
+                                                            dupHandle =
+                                                                new GenericHandle(
+                                                                    phandle, handle, 
+                                                                    (int)JobObjectAccess.Query);
+                                                            (new JobWindow(JobObjectHandle.FromHandle(dupHandle))).ShowDialog();
+                                                        }
+                                                        break;
+                                                    case "key":
+                                                        {
+                                                            try
+                                                            {
+                                                                PhUtils.OpenKeyInRegedit(PhUtils.GetForegroundWindow(), name);
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                PhUtils.ShowException("Unable to open the Registry Editor", ex);
+                                                            }
+                                                        }
+                                                        break;
+                                                    case "token":
+                                                        {
+                                                            (new TokenWindow(new RemoteTokenHandle(phandle, 
+                                                                handle))).ShowDialog();
+                                                        }
+                                                        break;
+                                                    case "process":
+                                                        {
+                                                            int pid;
 
-                                                        (new JobWindow(JobObjectHandle.FromHandle(dupHandle))).ShowDialog();
-                                                    }
-                                                    break;
-                                                case "key":
-                                                    {
-                                                        try
-                                                        {
-                                                            PhUtils.OpenKeyInRegedit(PhUtils.GetForegroundWindow(), name);
-                                                        }
-                                                        catch (Exception ex)
-                                                        {
-                                                            PhUtils.ShowException("Unable to open the Registry Editor", ex);
-                                                        }
-                                                    }
-                                                    break;
-                                                case "token":
-                                                    {
-                                                        using (TokenWindow twindow = new TokenWindow(new RemoteTokenHandle(phandle, handle)))
-                                                        {
-                                                            twindow.ShowDialog();
-                                                        }
-                                                    }
-                                                    break;
-                                                case "process":
-                                                    {
-                                                        dupHandle = new GenericHandle(phandle, handle, (int)OSVersion.MinProcessQueryInfoAccess);
-                                                        int pid = ProcessHandle.FromHandle(dupHandle).ProcessId;
+                                                            if (KProcessHacker.Instance != null)
+                                                            {
+                                                                pid = KProcessHacker.Instance.KphGetProcessId(phandle, handle);
+                                                            }
+                                                            else
+                                                            {
+                                                                dupHandle =
+                                                                    new GenericHandle(
+                                                                        phandle, handle,
+                                                                        (int)OSVersion.MinProcessQueryInfoAccess);
+                                                                pid = ProcessHandle.FromHandle(dupHandle).GetProcessId();
+                                                            }
 
-                                                        Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], Program.FocusWindow);
-                                                    }
-                                                    break;
+                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
+                                                                (f) => Program.FocusWindow(f));
+                                                        }
+                                                        break;
+                                                }
                                             }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            PhUtils.ShowException("Unable to show object properties", ex);
-                                        }
-                                    };
+                                            catch (Exception ex)
+                                            {
+                                                PhUtils.ShowException("Unable to show object properties", ex);
+                                            }
+                                        };
 
                                     control.Controls.Add(b);
                                 }
@@ -214,25 +208,19 @@ namespace ProcessHacker.Components
                         }
                     };
 
-                    hw.Init();
-
-                    IntPtr[] pages = new IntPtr[2];
-                    pages[0] = hw.CreatePageHandle();
-                    pages[1] = CreateSecurityPage(SecurityEditor.EditSecurity2(
-                        null,
-                        SecurityEditor.GetSecurableWrapper(dupHandle),
-                        hw._name,
-                        NativeTypeFactory.GetAccessEntries(NativeTypeFactory.GetObjectType(hw._typeName))
-                        ));
-
-                    GCHandle gch = GCHandle.Alloc(pages, GCHandleType.Pinned);
-                    header.phpage = gch.AddrOfPinnedObject();
-
-                    PropertySheetW(ref header);
-
-                    if (dupHandle != null)
-                        dupHandle.Dispose();
+                if (dupHandle == null)
+                {
+                    // Try to get a handle, since we need one for security editing.
+                    try { dupHandle = new GenericHandle(phandle, handle, 0); }
+                    catch { }
                 }
+
+                window.ObjectHandle = dupHandle;
+
+                window.ShowDialog();
+
+                if (dupHandle != null)
+                    dupHandle.Dispose();
             }
             catch (Exception ex)
             {
@@ -240,84 +228,11 @@ namespace ProcessHacker.Components
             }
         }
 
-        [DllImport("Comctl32.dll")]
-        public static extern IntPtr PropertySheetW([In, MarshalAs(UnmanagedType.Struct)]ref PropSheetHeader64 lppsph);
-
-        [DllImport("Aclui.dll")]
-        public static extern IntPtr CreateSecurityPage(ISecurityInformation lppsph);
-
-        [StructLayout(LayoutKind.Explicit, Pack = 8, CharSet = CharSet.Unicode)]
-        public struct PropSheetHeader64
-        {
-            public static readonly int SizeOf;
-
-            static PropSheetHeader64()
-            {
-                SizeOf = Marshal.SizeOf(typeof(PropSheetHeader64));
-            }
-
-            [FieldOffset(0)]
-            public UInt32 dwSize;
-            [FieldOffset(4)]
-            public UInt32 dwFlags;
-            [FieldOffset(8)]
-            public IntPtr hwndParent;
-            [FieldOffset(16)]
-            public IntPtr hInstance;
-            [FieldOffset(24)]
-            public IntPtr hIcon;
-            [FieldOffset(32)]
-            public String pszCaption;
-            [FieldOffset(40)]
-            public UInt32 nPages;
-            [FieldOffset(48)]
-            public string pStartPage;
-            [FieldOffset(56)]
-            public IntPtr phpage;
-
-            // following fields all for PROPSHEETHEADER_V2
-            [FieldOffset(64)]
-            public IntPtr pfnCallback;
-            [FieldOffset(72)]
-            public IntPtr hbmWatermark;
-            [FieldOffset(80)]
-            public IntPtr hplWatermark;
-            [FieldOffset(88)]
-            public IntPtr hbmHeader;
-        }
-
-        [Flags]
-        internal enum PropSheetFlags : uint
-        {
-            PSH_DEFAULT = 0x00000000,
-            PSH_PROPTITLE = 0x00000001,
-            PSH_USEHICON = 0x00000002,
-            PSH_USEICONID = 0x00000004,
-            PSH_PROPSHEETPAGE = 0x00000008,
-            PSH_WIZARDHASFINISH = 0x00000010,
-            PSH_WIZARD = 0x00000020,
-            PSH_USEPSTARTPAGE = 0x00000040,
-            PSH_NOAPPLYNOW = 0x00000080,
-            PSH_USECALLBACK = 0x00000100,
-            PSH_HASHELP = 0x00000200,
-            PSH_MODELESS = 0x00000400,
-            PSH_RTLREADING = 0x00000800,
-            PSH_WIZARDCONTEXTHELP = 0x00001000,
-            PSH_WIZARD97 = 0x01000000,
-            PSH_WATERMARK = 0x00008000,
-            PSH_USEHBMWATERMARK = 0x00010000,  // user pass in a hbmWatermark instead of pszbmWatermark
-            PSH_USEHPLWATERMARK = 0x00020000,  //
-            PSH_STRETCHWATERMARK = 0x00040000,  // stretchwatermark also applies for the header
-            PSH_HEADER = 0x00080000,
-            PSH_USEHBMHEADER = 0x00100000,
-            PSH_USEPAGELANG = 0x00200000  // use frame dialog template matched to page
-        }
-
-        private readonly object _listLock = new object();
+        private object _listLock = new object();
         private HandleProvider _provider;
-        private int _runCount;
-        private readonly List<ListViewItem> _needsAdd = new List<ListViewItem>();
-        private readonly HighlightingContext _highlightingContext;
+        private int _runCount = 0;
+        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
+        private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -328,11 +243,11 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _highlightingContext = new HighlightingContext(listHandles);
-            listHandles.KeyDown += this.listHandles_KeyDown;
-            listHandles.MouseDown += this.listHandles_MouseDown;
-            listHandles.MouseUp += this.listHandles_MouseUp;
-            listHandles.DoubleClick += this.listHandles_DoubleClick;
-            listHandles.SelectedIndexChanged += this.listHandles_SelectedIndexChanged;
+            listHandles.KeyDown += new KeyEventHandler(listHandles_KeyDown);
+            listHandles.MouseDown += new MouseEventHandler(listHandles_MouseDown);
+            listHandles.MouseUp += new MouseEventHandler(listHandles_MouseUp);
+            listHandles.DoubleClick += new EventHandler(listHandles_DoubleClick);
+            listHandles.SelectedIndexChanged += new System.EventHandler(listHandles_SelectedIndexChanged);
 
             var comparer = (SortedListViewComparer)
                 (listHandles.ListViewItemSorter = new SortedListViewComparer(listHandles));
@@ -345,7 +260,7 @@ namespace ProcessHacker.Components
             GenericViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles, null);
             ColumnSettings.LoadSettings(Settings.Instance.HandleListViewColumns, listHandles);
 
-            //if (KProcessHacker.Instance == null)
+            if (KProcessHacker.Instance == null)
             {
                 protectedMenuItem.Visible = false;
                 inheritMenuItem.Visible = false;
@@ -369,7 +284,7 @@ namespace ProcessHacker.Components
                 this.MouseDown(sender, e);
         }
 
-        private void listHandles_SelectedIndexChanged(object sender, EventArgs e)
+        private void listHandles_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             if (this.SelectedIndexChanged != null)
                 this.SelectedIndexChanged(sender, e);
@@ -382,22 +297,35 @@ namespace ProcessHacker.Components
 
             if (!e.Handled)
             {
-                switch (e.KeyCode)
+                if (e.KeyCode == Keys.Enter)
                 {
-                    case Keys.Enter:
-                        this.propertiesHandleMenuItem_Click(null, null);
-                        break;
-                    case Keys.Delete:
-                        if (ConfirmHandleClose())
-                        {
-                            this.closeHandleMenuItem_Click(null, null);
-                        }
-                        break;
+                    propertiesHandleMenuItem_Click(null, null);
+                }
+                else if (e.KeyCode == Keys.Delete)
+                {
+                    if (ConfirmHandleClose())
+                    {
+                        closeHandleMenuItem_Click(null, null);
+                    }
                 }
             }
         }
 
         #region Properties
+
+        public new bool DoubleBuffered
+        {
+            get
+            {
+                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listHandles, null);
+            }
+            set
+            {
+                typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listHandles, value, null);
+            }
+        }
 
         public override bool Focused
         {
@@ -407,13 +335,19 @@ namespace ProcessHacker.Components
             }
         }
 
+        public override ContextMenu ContextMenu
+        {
+            get { return listHandles.ContextMenu; }
+            set { listHandles.ContextMenu = value; }
+        }
+
         public override ContextMenuStrip ContextMenuStrip
         {
             get { return listHandles.ContextMenuStrip; }
             set { listHandles.ContextMenuStrip = value; }
         }
 
-        public ExtendedListView List
+        public ListView List
         {
             get { return listHandles; }
         }
@@ -506,13 +440,12 @@ namespace ProcessHacker.Components
                 (item.Handle.Flags & HandleFlags.ProtectFromClose) != 0
                 )
                 return Settings.Instance.ColorProtectedHandles;
-            
-            if (Settings.Instance.UseColorInheritHandles &&
+            else if (Settings.Instance.UseColorInheritHandles &&
                 (item.Handle.Flags & HandleFlags.Inherit) != 0
                 )
                 return Settings.Instance.ColorInheritHandles;
-            
-            return SystemColors.Window;
+            else
+                return SystemColors.Window;
         }
 
         public void AddItem(HandleItem item)
@@ -533,12 +466,11 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(HandleItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, item.RunId > 0 && _runCount > 0)
-            {
-                Name = item.Handle.Handle.ToString(), 
-                Text = item.ObjectInfo.TypeName
-            };
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
+                item.RunId > 0 && _runCount > 0);
 
+            litem.Name = item.Handle.Handle.ToString();
+            litem.Text = item.ObjectInfo.TypeName;
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ObjectInfo.BestName));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Handle.Handle.ToString("x")));
             litem.Tag = item;
@@ -552,21 +484,22 @@ namespace ProcessHacker.Components
         private void provider_DictionaryModified(HandleItem oldItem, HandleItem newItem)
         {
             this.BeginInvoke(new MethodInvoker(() =>
-            {
-                lock (_listLock)
                 {
-                    ((HighlightedListViewItem)this.listHandles.Items[newItem.Handle.Handle.ToString()]).NormalColor = this.GetHandleColor(newItem);
-                }
-            }));
+                    lock (_listLock)
+                    {
+                        (listHandles.Items[newItem.Handle.Handle.ToString()] as
+                            HighlightedListViewItem).NormalColor = this.GetHandleColor(newItem);
+                    }
+                }));
         }
 
         private void provider_DictionaryRemoved(HandleItem item)
         {
             this.BeginInvoke(new MethodInvoker(() =>
-            {
-                lock (_listLock)
-                    listHandles.Items[item.Handle.Handle.ToString()].Remove();
-            }));
+                {
+                    lock (_listLock)
+                        listHandles.Items[item.Handle.Handle.ToString()].Remove();
+                }));
         }
 
         private int _pid;
@@ -583,7 +516,7 @@ namespace ProcessHacker.Components
 
             if (listHandles.SelectedItems.Count == 0)
             {
-                //menuHandle.DisableAll();
+                menuHandle.DisableAll();
             }
             else if (listHandles.SelectedItems.Count == 1)
             {
@@ -653,8 +586,8 @@ namespace ProcessHacker.Components
 
             try
             {
-                //using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    //KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
+                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
             }
             catch (Exception ex)
             {
@@ -674,8 +607,8 @@ namespace ProcessHacker.Components
 
             try
             {
-                //using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    //KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
+                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
             }
             catch (Exception ex)
             {

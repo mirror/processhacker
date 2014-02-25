@@ -1,4 +1,6 @@
-﻿namespace ProcessHacker.Common
+﻿using System;
+
+namespace ProcessHacker.Common
 {
     public class LinkedListEntry<T>
     {

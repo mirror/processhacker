@@ -37,10 +37,10 @@ namespace ProcessHacker.Common
         /// </summary>
         public sealed class WorkItem
         {
-            private readonly WorkQueue _owner;
-            private readonly string _tag;
-            private readonly Delegate _work;
-            private readonly object[] _args;
+            private WorkQueue _owner;
+            private string _tag;
+            private Delegate _work;
+            private object[] _args;
             private bool _enabled = true;
             private FastEvent _completedEvent = new FastEvent(false);
             private object _result;
@@ -175,7 +175,7 @@ namespace ProcessHacker.Common
             }
         }
 
-        private static readonly WorkQueue _globalWorkQueue = new WorkQueue();
+        private static WorkQueue _globalWorkQueue = new WorkQueue();
 
         /// <summary>
         /// Gets the global work queue instance.
@@ -228,7 +228,7 @@ namespace ProcessHacker.Common
         /// <summary>
         /// The work queue. This object is used as a lock.
         /// </summary>
-        private readonly Queue<WorkItem> _workQueue = new Queue<WorkItem>();
+        private Queue<WorkItem> _workQueue = new Queue<WorkItem>();
         /// <summary>
         /// The maximum number of worker threads. If there are less worker threads 
         /// than this limit, they will be created as necessary. If there are more 
@@ -241,15 +241,15 @@ namespace ProcessHacker.Common
         /// as necessary and the number of worker threads will never drop below 
         /// this number.
         /// </summary>
-        private int _minWorkerThreads;
+        private int _minWorkerThreads = 0;
         /// <summary>
         /// The pool of worker threads. This object is used as a lock.
         /// </summary>
-        private readonly Dictionary<int, Thread> _workerThreads = new Dictionary<int, Thread>();
+        private Dictionary<int, Thread> _workerThreads = new Dictionary<int, Thread>();
         /// <summary>
         /// The number of worker threads which are currently running work.
         /// </summary>
-        private int _busyCount;
+        private int _busyCount = 0;
         /// <summary>
         /// A worker will block on the work-arrived event for this amount of time 
         /// before terminating.
@@ -258,7 +258,13 @@ namespace ProcessHacker.Common
         /// <summary>
         /// If true, prevents new work items from being queued.
         /// </summary>
-        private volatile bool _isJoining;
+        private volatile bool _isJoining = false;
+
+        /// <summary>
+        /// Creates a new work queue.
+        /// </summary>
+        public WorkQueue()
+        { }
 
         /// <summary>
         /// Gets the number of worker threads that are currently busy.
@@ -336,11 +342,9 @@ namespace ProcessHacker.Common
         /// </summary>
         private void CreateWorkerThread()
         {
-            Thread workThread = new Thread(this.WorkerThreadStart, Utils.SixteenthStackSize)
-            {
-                IsBackground = true, 
-                Priority = ThreadPriority.Lowest
-            };
+            Thread workThread = new Thread(this.WorkerThreadStart, Utils.SixteenthStackSize);
+            workThread.IsBackground = true;
+            workThread.Priority = ThreadPriority.Lowest;
             workThread.SetApartmentState(ApartmentState.STA);
             _workerThreads.Add(workThread.ManagedThreadId, workThread);
             workThread.Start();
@@ -374,7 +378,7 @@ namespace ProcessHacker.Common
             // Check for work items.
             while (_workQueue.Count > 0)
             {
-                WorkItem workItem;
+                WorkItem workItem = null;
 
                 // Lock and re-check.
                 lock (_workQueue)
@@ -407,8 +411,11 @@ namespace ProcessHacker.Common
                     workItem.Enabled = false;
                     return true;
                 }
-                // The work item is no longer in the queue.
-                return false;
+                else
+                {
+                    // The work item is no longer in the queue.
+                    return false;
+                }
             }
         }
 
@@ -528,7 +535,7 @@ namespace ProcessHacker.Common
                 // Check for work.
                 if (_workQueue.Count > 0)
                 {
-                    WorkItem workItem;
+                    WorkItem workItem = null;
 
                     // There is work, but we must lock and re-check.
                     lock (_workQueue)
@@ -546,7 +553,7 @@ namespace ProcessHacker.Common
                 else
                 {
                     // No work available. Wait for work.
-                    bool workArrived;
+                    bool workArrived = false;
 
                     lock (_workQueue)
                         workArrived = Monitor.Wait(_workQueue, _noWorkTimeout);
@@ -556,14 +563,17 @@ namespace ProcessHacker.Common
                         // Work arrived. Go back so we can perform it.
                         continue;
                     }
-                    // No work arrived during the timeout period. Delete the thread.
-                    lock (this._workerThreads)
+                    else
                     {
-                        // Check the minimum.
-                        if (this._workerThreads.Count > this._minWorkerThreads)
+                        // No work arrived during the timeout period. Delete the thread.
+                        lock (_workerThreads)
                         {
-                            this.DestroyWorkerThread();
-                            return;
+                            // Check the minimum.
+                            if (_workerThreads.Count > _minWorkerThreads)
+                            {
+                                this.DestroyWorkerThread();
+                                return;
+                            }
                         }
                     }
                 }

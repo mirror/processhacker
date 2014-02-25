@@ -68,48 +68,44 @@ namespace ProcessHacker
                 return;
             }
 
-            phandle.EnumMemory(info =>
-            {
-                // skip unreadable areas
-                if (info.Protect == MemoryProtection.AccessDenied)
-                    return true;
-                if (info.State != MemoryState.Commit)
-                    return true;
-
-                if ((!opt_priv) && (info.Type == MemoryType.Private))
-                    return true;
-
-                if ((!opt_img) && (info.Type == MemoryType.Image))
-                    return true;
-
-                if ((!opt_map) && (info.Type == MemoryType.Mapped))
-                    return true;
-
-                CallSearchProgressChanged(
-                    String.Format("Searching 0x{0} ({1} found)...", info.BaseAddress.ToString("x"), count));
-
-                for (int i = 0; i < info.RegionSize.ToInt32(); i += align)
+            phandle.EnumMemory((info) =>
                 {
-                    try
-                    {
-                        structDef.Offset = info.BaseAddress.Increment(i);
-                        structDef.Read();
+                    // skip unreadable areas
+                    if (info.Protect == MemoryProtection.AccessDenied)
+                        return true;
+                    if (info.State != MemoryState.Commit)
+                        return true;
 
-                        // read succeeded, add it to the results
-                        Results.Add(new string[]
+                    if ((!opt_priv) && (info.Type == MemoryType.Private))
+                        return true;
+
+                    if ((!opt_img) && (info.Type == MemoryType.Image))
+                        return true;
+
+                    if ((!opt_map) && (info.Type == MemoryType.Mapped))
+                        return true;
+
+                    CallSearchProgressChanged(
+                        String.Format("Searching 0x{0} ({1} found)...", info.BaseAddress.ToString("x"), count));
+
+                    for (int i = 0; i < info.RegionSize.ToInt32(); i += align)
+                    {
+                        try
                         {
-                            Utils.FormatAddress(info.BaseAddress),
-                            String.Format("0x{0:x}", i), structLen, string.Empty
-                        });
-                        count++;
-                    }
-                    catch
-                    {
-                    }
-                }
+                            structDef.Offset = info.BaseAddress.Increment(i);
+                            structDef.Read();
 
-                return true;
-            });
+                            // read succeeded, add it to the results
+                            Results.Add(new string[] { Utils.FormatAddress(info.BaseAddress),
+                                String.Format("0x{0:x}", i), structLen, "" });
+                            count++;
+                        }
+                        catch
+                        { }
+                    }
+
+                    return true;
+                });
 
             phandle.Dispose();
 

@@ -6,7 +6,7 @@ namespace ProcessHacker.Components
 {
     public partial class SectionProperties : UserControl
     {
-        private readonly SectionHandle _sectionHandle;
+        private SectionHandle _sectionHandle;
 
         public SectionProperties(SectionHandle sectionHandle)
         {

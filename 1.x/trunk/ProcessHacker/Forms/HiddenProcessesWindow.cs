@@ -39,17 +39,19 @@ namespace ProcessHacker
     {
         public HiddenProcessesWindow()
         {
+            this.SetPhParent();
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
 
             listProcesses.ListViewItemSorter = new SortedListViewComparer(listProcesses);
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
             listProcesses.AddShortcuts();
+            listProcesses.SetDoubleBuffered(true);
+            listProcesses.SetTheme("explorer");
 
             comboMethod.SelectedItem = "CSR Handles";
-            labelCount.Text = string.Empty;
+            labelCount.Text = "";
         }
 
         private void HiddenProcessesWindow_Load(object sender, EventArgs e)
@@ -80,19 +82,19 @@ namespace ProcessHacker
             Func<int, bool> exists
             )
         {
-            string fileName = phandle.ImageFileName;
+            string fileName = phandle.GetImageFileName();
 
-            if (!string.IsNullOrEmpty(fileName))
+            if (fileName != null)
                 fileName = FileUtils.GetFileName(fileName);
 
             if (pid == 0)
                 pid = phandle.GetBasicInformation().UniqueProcessId.ToInt32();
 
-            ListViewItem item = listProcesses.Items.Add(new ListViewItem(new string[]
-            {
-                fileName, 
-                pid.ToString()
-            }));
+            var item = listProcesses.Items.Add(new ListViewItem(new string[]
+                    {
+                        fileName,
+                        pid.ToString()
+                    }));
 
             // Check if the process has terminated. This is possible because 
             // a process can be terminated while its object is still being 
@@ -131,10 +133,10 @@ namespace ProcessHacker
                 return;
 
             var item = listProcesses.Items.Add(new ListViewItem(new string[]
-            {
-                "(" + ex.Message + ")", 
-                pid.ToString()
-            }));
+                    {
+                        "(" + ex.Message + ")",
+                        pid.ToString()
+                    }));
 
             item.BackColor = Color.Red;
             item.ForeColor = Color.White;
@@ -161,7 +163,7 @@ namespace ProcessHacker
                             phandle,
                             pid,
                             ref totalCount, ref hiddenCount, ref terminatedCount,
-                            processes.ContainsKey
+                            (pid_) => processes.ContainsKey(pid_)
                             );
                 }
                 catch (WindowsException ex)
@@ -202,77 +204,84 @@ namespace ProcessHacker
                 var csrProcesses = this.GetCsrProcesses();
 
                 // Duplicate each process handle and check if they exist in the normal list.
-                foreach (ProcessHandle csrhandle in csrProcesses)
+                foreach (var csrhandle in csrProcesses)
                 {
                     try
                     {
-                        //var handles = csrhandle.GetHandles();
+                        var handles = csrhandle.GetHandles();
 
-                        //foreach (ProcessHandleInformation handle in handles)
-                        //{
-                        //    int pid = 0;
-                        //    bool isThread = false;
+                        foreach (var handle in handles)
+                        {
+                            int pid = 0;
+                            bool isThread = false;
 
-                        //    try
-                        //    {
-                        //        pid = 0;//pid = KProcessHacker.Instance.KphGetProcessId(csrhandle, handle.Handle);
+                            try
+                            {
+                                pid = KProcessHacker.Instance.KphGetProcessId(csrhandle, handle.Handle);
 
-                        //        // HACK: Using exception for program flow!
-                        //        if (pid == 0)
-                        //            throw new Exception();
-                        //    }
-                        //    catch
-                        //    {
-                        //        // Probably not a process handle.
-                        //        // Try opening it as a thread.
-                        //        try
-                        //        {
-                        //            int tid =0;// KProcessHacker.Instance.KphGetThreadId(csrhandle, handle.Handle, out pid);
-                        //            isThread = true;
+                                // HACK: Using exception for program flow!
+                                if (pid == 0)
+                                    throw new Exception();
+                            }
+                            catch
+                            {
+                                // Probably not a process handle.
+                                // Try opening it as a thread.
+                                try
+                                {
+                                    int tid = KProcessHacker.Instance.KphGetThreadId(csrhandle, handle.Handle, out pid);
+                                    isThread = true;
 
-                        //            if (tid == 0)
-                        //                throw new Exception();
-                        //        }
-                        //        catch
-                        //        {
-                        //            continue;
-                        //        }
-                        //    }
+                                    if (tid == 0)
+                                        throw new Exception();
+                                }
+                                catch
+                                {
+                                    continue;
+                                }
+                            }
 
-                        //    // Avoid duplicate PIDs.
-                        //    if (foundPids.Contains(pid))
-                        //        continue;
+                            // Avoid duplicate PIDs.
+                            if (foundPids.Contains(pid))
+                                continue;
 
-                        //    foundPids.Add(pid);
+                            foundPids.Add(pid);
 
-                        //    try
-                        //    {
-                        //        ProcessHandle phandle;
+                            try
+                            {
+                                ProcessHandle phandle;
 
-                        //        if (!isThread)
-                        //        {
-                        //            var dupHandle = new NativeHandle<ProcessAccess>(csrhandle, handle.Handle, Program.MinProcessQueryRights);
-                        //            phandle = ProcessHandle.FromHandle(dupHandle);
-                        //        }
-                        //        else
-                        //        {
-                        //            using (var dupHandle = new NativeHandle<ThreadAccess>(csrhandle, handle.Handle, Program.MinThreadQueryRights))
-                        //                phandle = ThreadHandle.FromHandle(dupHandle).GetProcess(Program.MinProcessQueryRights);
-                        //        }
+                                if (!isThread)
+                                {
+                                    var dupHandle =
+                                        new NativeHandle<ProcessAccess>(csrhandle,
+                                            handle.Handle,
+                                            Program.MinProcessQueryRights);
+                                    phandle = ProcessHandle.FromHandle(dupHandle);
+                                }
+                                else
+                                {
+                                    using (var dupHandle =
+                                        new NativeHandle<ThreadAccess>(csrhandle,
+                                            handle.Handle,
+                                            Program.MinThreadQueryRights))
+                                        phandle = ThreadHandle.FromHandle(dupHandle).
+                                            GetProcess(Program.MinProcessQueryRights);
+                                }
 
-                        //        AddProcessItem(
-                        //            phandle,
-                        //            pid,
-                        //            ref totalCount, ref hiddenCount, ref terminatedCount,
-                        //            processes.ContainsKey
-                        //            );
-                        //        phandle.Dispose();
-                        //    }
-                        //    catch (WindowsException ex2)
-                        //    {
-                        //        AddErrorItem(ex2, pid, ref totalCount, ref hiddenCount, ref terminatedCount);
-                        //    }
-                        //}
+                                AddProcessItem(
+                                    phandle,
+                                    pid,
+                                    ref totalCount, ref hiddenCount, ref terminatedCount,
+                                    (pid_) => processes.ContainsKey(pid_)
+                                    );
+                                phandle.Dispose();
+                            }
+                            catch (WindowsException ex2)
+                            {
+                                AddErrorItem(ex2, pid, ref totalCount, ref hiddenCount, ref terminatedCount);
+                            }
+                        }
                     }
                     catch (WindowsException ex)
                     {
@@ -298,24 +307,24 @@ namespace ProcessHacker
             }
         }
 
-        private ProcessHandle[] GetCsrProcesses()
+        private List<ProcessHandle> GetCsrProcesses()
         {
             List<ProcessHandle> csrProcesses = new List<ProcessHandle>();
 
             try
             {
-                foreach (KeyValuePair<int, SystemProcess> process in Windows.GetProcesses())
+                foreach (var process in Windows.GetProcesses())
                 {
                     if (process.Key <= 4)
                         continue;
 
                     try
                     {
-                        ProcessHandle phandle = new ProcessHandle(process.Key,
+                        var phandle = new ProcessHandle(process.Key,
                             Program.MinProcessQueryRights | ProcessAccess.DupHandle
                             );
 
-                        if (phandle.KnownProcessType == KnownProcess.WindowsSubsystem)
+                        if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
                             csrProcesses.Add(phandle);
                         else
                             phandle.Dispose();
@@ -327,9 +336,10 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 PhUtils.ShowException("Unable to get the list of CSR processes", ex);
+                return new List<ProcessHandle>();
             }
 
-            return csrProcesses.ToArray();
+            return csrProcesses;
         }
 
         private ProcessHandle OpenProcessCsr(int pid, ProcessAccess access)
@@ -338,43 +348,43 @@ namespace ProcessHacker
 
             foreach (var csrProcess in csrProcesses)
             {
-            //    foreach (var handle in csrProcess.GetHandles())
-            //    {
-            //        try
-            //        {
-            //            // Assume that the handle is a process handle.
-            //            int handlePid = 0;// KProcessHacker.Instance.KphGetProcessId(csrProcess, handle.Handle);
+                foreach (var handle in csrProcess.GetHandles())
+                {
+                    try
+                    {
+                        // Assume that the handle is a process handle.
+                        int handlePid = KProcessHacker.Instance.KphGetProcessId(csrProcess, handle.Handle);
 
-            //            if (handlePid == pid)
-            //                return ProcessHandle.FromHandle(
-            //                    new NativeHandle<ProcessAccess>(csrProcess, handle.Handle, access)
-            //                    );
-            //            else if (handlePid == 0)
-            //                throw new Exception(); // HACK
-            //        }
-            //        catch
-            //        {
-            //            try
-            //            {
-            //                // Assume that the handle is a thread handle.
-            //                int handlePid = 0;
+                        if (handlePid == pid)
+                            return ProcessHandle.FromHandle(
+                                new NativeHandle<ProcessAccess>(csrProcess, handle.Handle, access)
+                                );
+                        else if (handlePid == 0)
+                            throw new Exception(); // HACK
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            // Assume that the handle is a thread handle.
+                            int handlePid;
 
-            //                int tid = 0;// KProcessHacker.Instance.KphGetThreadId(csrProcess, handle.Handle, out handlePid);
+                            int tid = KProcessHacker.Instance.KphGetThreadId(csrProcess, handle.Handle, out handlePid);
 
-            //                if (tid == 0)
-            //                    throw new Exception();
+                            if (tid == 0)
+                                throw new Exception();
 
-            //                if (handlePid == pid)
-            //                {
-            //                    using (var dupHandle =
-            //                        new NativeHandle<ThreadAccess>(csrProcess, handle.Handle, Program.MinThreadQueryRights))
-            //                        return ThreadHandle.FromHandle(dupHandle).GetProcess(access);
-            //                }
-            //            }
-            //            catch
-            //            { }
-            //        }
-            //    }
+                            if (handlePid == pid)
+                            {
+                                using (var dupHandle =
+                                    new NativeHandle<ThreadAccess>(csrProcess, handle.Handle, Program.MinThreadQueryRights))
+                                    return ThreadHandle.FromHandle(dupHandle).GetProcess(access);
+                            }
+                        }
+                        catch
+                        { }
+                    }
+                }
 
                 csrProcess.Dispose();
             }
@@ -465,35 +475,34 @@ namespace ProcessHacker
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog sfd = new SaveFileDialog())
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.FileName = "Process Scan.txt";
+            sfd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            sfd.OverwritePrompt = true;
+
+            if (sfd.ShowDialog() == DialogResult.OK)
             {
-                sfd.FileName = "Process Scan.txt";
-                sfd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-                sfd.OverwritePrompt = true;
-
-                if (sfd.ShowDialog() == DialogResult.OK)
+                try
                 {
-                    try
+                    using (var sw = new StreamWriter(sfd.FileName))
                     {
-                        using (var sw = new StreamWriter(sfd.FileName))
-                        {
-                            sw.WriteLine("Process Hacker Hidden Processes Scan");
-                            sw.WriteLine("Method: " + comboMethod.SelectedItem.ToString());
-                            sw.WriteLine();
+                        sw.WriteLine("Process Hacker Hidden Processes Scan");
+                        sw.WriteLine("Method: " + comboMethod.SelectedItem.ToString());
+                        sw.WriteLine();
 
-                            foreach (ListViewItem item in listProcesses.Items)
-                            {
-                                sw.WriteLine(
-                                    (item.BackColor == Color.Red ? "[HIDDEN] " : "") +
-                                    (item.BackColor == Color.DarkGray ? "[Terminated] " : "") +
-                                    item.SubItems[1].Text + ": " + item.SubItems[0].Text);
-                            }
+                        foreach (ListViewItem item in listProcesses.Items)
+                        {
+                            sw.WriteLine(
+                                (item.BackColor == Color.Red ? "[HIDDEN] " : "") +
+                                (item.BackColor == Color.DarkGray ? "[Terminated] " : "") +
+                                item.SubItems[1].Text + ": " + item.SubItems[0].Text);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        PhUtils.ShowException("Unable to save the scan results", ex);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to save the scan results", ex);
                 }
             }
         }

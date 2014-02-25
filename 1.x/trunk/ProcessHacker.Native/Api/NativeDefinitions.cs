@@ -84,9 +84,9 @@ namespace ProcessHacker.Native.Api
         public const string TransactionManagerPath = @"\TransactionManager";
 
         public static readonly IntPtr KnownAceSidStartOffset = Marshal.OffsetOf(typeof(KnownAceStruct), "SidStart");
-        public static readonly int SecurityDescriptorMinLength = SecurityDescriptorStruct.SizeOf;
+        public static readonly int SecurityDescriptorMinLength = Marshal.SizeOf(typeof(SecurityDescriptorStruct));
         public static readonly int SecurityMaxSidSize =
-            SidStruct.SizeOf - sizeof(int) + (SidMaxSubAuthorities * sizeof(int));
+            Marshal.SizeOf(typeof(SidStruct)) - sizeof(int) + (SidMaxSubAuthorities * sizeof(int));
         public static readonly IntPtr UserSharedData = new IntPtr(0x7ffe0000);
 
         public static int CsrMakeApiNumber(int dllIndex, int apiIndex)

@@ -32,12 +32,11 @@ namespace ProcessHacker
 {
     public partial class EditDEPWindow : Form
     {
-        private readonly int _pid;
+        private int _pid;
 
         public EditDEPWindow(int PID)
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -45,9 +44,10 @@ namespace ProcessHacker
 
             try
             {
-                using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation))
+                using (ProcessHandle phandle
+                  = new ProcessHandle(_pid, ProcessAccess.QueryInformation))
                 {
-                    var depStatus = phandle.DepStatus;
+                    var depStatus = phandle.GetDepStatus();
                     string str;
 
                     if ((depStatus & DepStatus.Enabled) != 0)
@@ -64,7 +64,7 @@ namespace ProcessHacker
 
                     comboStatus.SelectedItem = str;
 
-                    if (KProcessHacker2.Instance.KphIsConnected)
+                    if (KProcessHacker.Instance != null)
                         checkPermanent.Visible = true;
                 }
             }
@@ -74,7 +74,7 @@ namespace ProcessHacker
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            if (KProcessHacker2.Instance.KphIsConnected)
+            if (KProcessHacker.Instance != null)
                 this.SetDepStatusKph();
             else
                 this.SetDepStatusNoKph();
@@ -82,22 +82,18 @@ namespace ProcessHacker
 
         private void SetDepStatusKph()
         {
-            DepStatus depStatus;
+            DepStatus depStatus = DepStatus.Enabled;
 
-            switch (this.comboStatus.SelectedItem.ToString())
+            if (comboStatus.SelectedItem.ToString() == "Disabled")
+                depStatus = 0;
+            else if (comboStatus.SelectedItem.ToString() == "Enabled")
+                depStatus = DepStatus.Enabled;
+            else if (comboStatus.SelectedItem.ToString() == "Enabled, DEP-ATL thunk emulation disabled")
+                depStatus = DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled;
+            else
             {
-                case "Disabled":
-                    depStatus = 0;
-                    break;
-                case "Enabled":
-                    depStatus = DepStatus.Enabled;
-                    break;
-                case "Enabled, DEP-ATL thunk emulation disabled":
-                    depStatus = DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled;
-                    break;
-                default:
-                    PhUtils.ShowError("Invalid value.");
-                    return;
+                PhUtils.ShowError("Invalid value.");
+                return;
             }
 
             if (checkPermanent.Checked)
@@ -105,8 +101,8 @@ namespace ProcessHacker
 
             try
             {
-                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    phandle.DepStatus = depStatus;
+                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    phandle.SetDepStatus(depStatus);
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -119,15 +115,13 @@ namespace ProcessHacker
 
         private void SetDepStatusNoKph()
         {
-            if (comboStatus.SelectedItem.ToString().StartsWith("Enabled", StringComparison.OrdinalIgnoreCase))
-            {
+            if (comboStatus.SelectedItem.ToString().StartsWith("Enabled"))
                 if (!PhUtils.ShowConfirmMessage(
                     "set",
                     "the DEP status",
                     "Enabling DEP in a process is a permanent action.",
                     false))
                     return;
-            }
 
             DepFlags flags = DepFlags.Enable;
 

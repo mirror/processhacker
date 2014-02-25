@@ -22,6 +22,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ProcessHacker
@@ -29,13 +32,12 @@ namespace ProcessHacker
     public partial class SearchWindow : Form
     {
         private SearchOptions _so;
-        private readonly List<string[]> _oldresults;
-        private readonly int _pid;
+        private List<string[]> _oldresults;
+        private int _pid;
 
         public SearchWindow(int PID, SearchOptions so)
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
 

@@ -21,7 +21,9 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api

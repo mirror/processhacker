@@ -55,7 +55,9 @@ namespace ProcessHacker
 
             try
             {
-                phandle = new ProcessHandle(PID, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
+                phandle = new ProcessHandle(PID, 
+                    ProcessAccess.QueryInformation |
+                    Program.MinProcessReadMemoryRights);
             }
             catch
             {
@@ -63,106 +65,105 @@ namespace ProcessHacker
                 return;
             }
 
-            phandle.EnumMemory(info =>
-            {
-                // skip unreadable areas
-                if (info.Protect == MemoryProtection.AccessDenied)
-                    return true;
-                if (info.State != MemoryState.Commit)
-                    return true;
-
-                if ((!opt_priv) && (info.Type == MemoryType.Private))
-                    return true;
-
-                if ((!opt_img) && (info.Type == MemoryType.Image))
-                    return true;
-
-                if ((!opt_map) && (info.Type == MemoryType.Mapped))
-                    return true;
-
-                byte[] data = new byte[info.RegionSize.ToInt32()];
-                int bytesRead = 0;
-
-                CallSearchProgressChanged(
-                    String.Format("Searching 0x{0} ({1} found)...", info.BaseAddress.ToString("x"), count));
-
-                try
+            phandle.EnumMemory((info) =>
                 {
-                    bytesRead = phandle.ReadMemory(info.BaseAddress, data, data.Length);
-
-                    if (bytesRead == 0)
+                    // skip unreadable areas
+                    if (info.Protect == MemoryProtection.AccessDenied)
                         return true;
-                }
-                catch
-                {
-                    return true;
-                }
+                    if (info.State != MemoryState.Commit)
+                        return true;
 
-                StringBuilder curstr = new StringBuilder();
-                bool isUnicode = false;
-                byte byte2 = 0;
-                byte byte1 = 0;
+                    if ((!opt_priv) && (info.Type == MemoryType.Private))
+                        return true;
 
-                for (int i = 0; i < bytesRead; i++)
-                {
-                    bool isChar = IsChar(data[i]);
+                    if ((!opt_img) && (info.Type == MemoryType.Image))
+                        return true;
 
-                    if (unicode && isChar && isUnicode && byte1 != 0)
+                    if ((!opt_map) && (info.Type == MemoryType.Mapped))
+                        return true;
+
+                    byte[] data = new byte[info.RegionSize.ToInt32()];
+                    int bytesRead = 0;
+
+                    CallSearchProgressChanged(
+                        String.Format("Searching 0x{0} ({1} found)...", info.BaseAddress.ToString("x"), count));
+
+                    try
                     {
-                        isUnicode = false;
+                        bytesRead = phandle.ReadMemory(info.BaseAddress, data, data.Length);
 
-                        if (curstr.Length > 0)
-                            curstr.Remove(curstr.Length - 1, 1);
-
-                        curstr.Append((char)data[i]);
+                        if (bytesRead == 0)
+                            return true;
                     }
-                    else if (isChar)
+                    catch
                     {
-                        curstr.Append((char)data[i]);
+                        return true;
                     }
-                    else if (unicode && data[i] == 0 && IsChar(byte1) && !IsChar(byte2))
+
+                    StringBuilder curstr = new StringBuilder();
+                    bool isUnicode = false;
+                    byte byte2 = 0;
+                    byte byte1 = 0;
+
+                    for (int i = 0; i < bytesRead; i++)
                     {
-                        // skip null byte
-                        isUnicode = true;
-                    }
-                    else if (unicode &&
-                             data[i] == 0 && IsChar(byte1) && IsChar(byte2) && curstr.Length < minsize)
-                    {
-                        // ... [char] [char] *[null]* ([char] [null] [char] [null]) ...
-                        //                   ^ we are here
-                        isUnicode = true;
-                        curstr = new StringBuilder();
-                        curstr.Append((char)byte1);
-                    }
-                    else
-                    {
-                        if (curstr.Length >= minsize)
+                        bool isChar = IsChar(data[i]);
+
+                        if (unicode && isChar && isUnicode && byte1 != 0)
                         {
-                            int length = curstr.Length;
+                            isUnicode = false;
 
-                            if (isUnicode)
-                                length *= 2;
+                            if (curstr.Length > 0)
+                                curstr.Remove(curstr.Length - 1, 1);
 
-                            Results.Add(new string[]
+                            curstr.Append((char)data[i]);
+                        }
+                        else if (isChar)
+                        {
+                            curstr.Append((char)data[i]);
+                        }
+                        else if (unicode && data[i] == 0 && IsChar(byte1) && !IsChar(byte2))
+                        {
+                            // skip null byte
+                            isUnicode = true;
+                        }
+                        else if (unicode &&
+                            data[i] == 0 && IsChar(byte1) && IsChar(byte2) && curstr.Length < minsize)
+                        {
+                            // ... [char] [char] *[null]* ([char] [null] [char] [null]) ...
+                            //                   ^ we are here
+                            isUnicode = true;
+                            curstr = new StringBuilder();
+                            curstr.Append((char)byte1);
+                        }
+                        else
+                        {
+                            if (curstr.Length >= minsize)
                             {
-                                Utils.FormatAddress(info.BaseAddress),
-                                String.Format("0x{0:x}", i - length), length.ToString(),
-                                curstr.ToString()
-                            });
+                                int length = curstr.Length;
 
-                            count++;
+                                if (isUnicode)
+                                    length *= 2;
+
+                                Results.Add(new string[] { Utils.FormatAddress(info.BaseAddress),
+                                    String.Format("0x{0:x}", i - length), length.ToString(), 
+                                    curstr.ToString() });
+
+                                count++;
+                            }
+
+                            isUnicode = false;
+                            curstr = new StringBuilder();
                         }
 
-                        isUnicode = false;
-                        curstr = new StringBuilder();
+                        byte2 = byte1;
+                        byte1 = data[i];
                     }
 
-                    byte2 = byte1;
-                    byte1 = data[i];
-                }
+                    data = null;
 
-                return true;
-            });
+                    return true;
+                });
 
             phandle.Dispose();
 

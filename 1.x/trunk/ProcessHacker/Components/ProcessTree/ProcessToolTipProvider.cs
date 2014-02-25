@@ -24,7 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Aga.Controls.Tree;
-using Microsoft.Win32;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
@@ -33,7 +32,7 @@ namespace ProcessHacker
 {
     public class ProcessToolTipProvider : IToolTipProvider
     {
-        private readonly ProcessTree _tree;
+        private ProcessTree _tree;
 
         public ProcessToolTipProvider(ProcessTree owner)
         {
@@ -47,18 +46,18 @@ namespace ProcessHacker
             // Use the process node's tooltip mechanism to allow caching.
             if (pNode != null)
                 return pNode.GetTooltipText(this);
-            
-            return string.Empty;
+            else
+                return "";
         }
 
         public string GetToolTip(ProcessNode pNode)
         {
             try
             {
-                string cmdText = (!string.IsNullOrEmpty(pNode.ProcessItem.CmdLine) ?
-                        (Utils.CreateEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", string.Empty), 100) + "\n") : string.Empty);
+                string cmdText = (pNode.ProcessItem.CmdLine != null ?
+                        (Utils.CreateEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", ""), 100) + "\n") : "");
 
-                string fileText = string.Empty;
+                string fileText = "";
 
                 try
                 {
@@ -66,21 +65,22 @@ namespace ProcessHacker
                     {
                         var info = pNode.ProcessItem.VersionInfo;
 
-                        fileText = "File:\n" + PhUtils.FormatFileInfo(info.FileName, info.FileDescription, info.CompanyName, info.FileVersion, 4);
+                        fileText = "File:\n" + PhUtils.FormatFileInfo(
+                            info.FileName, info.FileDescription, info.CompanyName, info.FileVersion, 4);
                     }
                 }
                 catch
                 {
-                    if (!string.IsNullOrEmpty(pNode.ProcessItem.FileName))
+                    if (pNode.ProcessItem.FileName != null)
                         fileText = "File:\n    " + pNode.ProcessItem.FileName;
                 }
 
-                string runDllText = string.Empty;
+                string runDllText = "";
 
-                if (!string.IsNullOrEmpty(pNode.ProcessItem.FileName) &&
+                if (pNode.ProcessItem.FileName != null &&
                     pNode.ProcessItem.FileName.EndsWith("\\rundll32.exe",
                     StringComparison.InvariantCultureIgnoreCase) &&
-                    !string.IsNullOrEmpty(pNode.ProcessItem.CmdLine))
+                    pNode.ProcessItem.CmdLine != null)
                 {
                     try
                     {
@@ -88,7 +88,7 @@ namespace ProcessHacker
                         string targetFile = pNode.ProcessItem.CmdLine.Split(new char[] { ' ' }, 2)[1].Split(',')[0];
 
                         // if it doesn't specify an absolute path, assume it's in system32.
-                        if (!targetFile.Contains(":", StringComparison.OrdinalIgnoreCase))
+                        if (!targetFile.Contains(":"))
                             targetFile = Environment.SystemDirectory + "\\" + targetFile;
 
                         FileVersionInfo info = FileVersionInfo.GetVersionInfo(targetFile);
@@ -103,32 +103,31 @@ namespace ProcessHacker
                     }
                 }
 
-                string dllhostText = string.Empty;
+                string dllhostText = "";
 
-                if (!string.IsNullOrEmpty(pNode.ProcessItem.FileName) &&
-                    pNode.ProcessItem.FileName.EndsWith("\\dllhost.exe", StringComparison.InvariantCultureIgnoreCase) &&
-                    !string.IsNullOrEmpty(pNode.ProcessItem.CmdLine))
+                if (pNode.ProcessItem.FileName != null &&
+                    pNode.ProcessItem.FileName.EndsWith("\\dllhost.exe",
+                    StringComparison.InvariantCultureIgnoreCase) &&
+                    pNode.ProcessItem.CmdLine != null)
                 {
                     try
                     {
-                        string clsid = pNode.ProcessItem.CmdLine.ToLowerInvariant().Split(new[]
+                        string clsid = pNode.ProcessItem.CmdLine.ToLowerInvariant().Split(
+                            new string[] { "/processid:" }, StringSplitOptions.None)[1].Split(' ')[0];
+                        using (var key = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey("CLSID\\" + clsid))
                         {
-                            "/processid:"
-                        }, StringSplitOptions.None)[1].Split(' ')[0];
+                            using (var inprocServer32 = key.OpenSubKey("InprocServer32"))
+                            {
+                                string name = key.GetValue("") as string;
+                                string fileName = inprocServer32.GetValue("") as string;
 
-                        using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("CLSID\\" + clsid))
-                        using (RegistryKey inprocServer32 = key.OpenSubKey("InprocServer32"))
-                        {
-                            string name = key.GetValue(string.Empty) as string;
-                            string fileName = inprocServer32.GetValue(string.Empty) as string;
+                                FileVersionInfo info = FileVersionInfo.GetVersionInfo(Environment.ExpandEnvironmentVariables(fileName));
 
-                            FileVersionInfo info = FileVersionInfo.GetVersionInfo(Environment.ExpandEnvironmentVariables(fileName));
-
-                            dllhostText = "\nCOM Target:\n    " + name + " (" + clsid.ToUpper() + ")\n    " +
-                                          info.FileName + "\n    " +
-                                          info.FileDescription + " " + info.FileVersion + "\n    " + info.CompanyName;
+                                dllhostText = "\nCOM Target:\n    " + name + " (" + clsid.ToUpper() + ")\n    " +
+                                    info.FileName + "\n    " +
+                                    info.FileDescription + " " + info.FileVersion + "\n    " + info.CompanyName;
+                            }
                         }
-
                     }
                     catch (Exception ex)
                     {
@@ -136,7 +135,7 @@ namespace ProcessHacker
                     }
                 }
 
-                string servicesText = string.Empty;
+                string servicesText = "";
 
                 try
                 {
@@ -160,8 +159,9 @@ namespace ProcessHacker
                         {
                             if (services.ContainsKey(service))
                             {
-                                if (string.IsNullOrEmpty(services[service].Status.DisplayName))
-                                    servicesText += "    " + service + " (" + services[service].Status.DisplayName + ")\n";
+                                if (services[service].Status.DisplayName != "")
+                                    servicesText += "    " + service + " (" +
+                                    services[service].Status.DisplayName + ")\n";
                                 else
                                     servicesText += "    " + service + "\n";
                             }
@@ -179,7 +179,7 @@ namespace ProcessHacker
                     Logging.Log(ex);
                 }
 
-                string otherNotes = string.Empty;
+                string otherNotes = "";
 
                 try
                 {
@@ -202,7 +202,7 @@ namespace ProcessHacker
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.Unknown &&
                             !Settings.Instance.VerifySignatures)
                         {
-                            otherNotes += string.Empty;
+                            otherNotes += "";
                         }
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.Unknown &&
                             Settings.Instance.VerifySignatures && !_tree.DumpMode)
@@ -231,7 +231,7 @@ namespace ProcessHacker
                     if (pNode.ProcessItem.IsWow64)
                         otherNotes += "\n    Process is 32-bit (running under WOW64).";
 
-                    if (otherNotes != string.Empty)
+                    if (otherNotes != "")
                         otherNotes = "\nNotes:" + otherNotes;
                 }
                 catch (Exception ex)

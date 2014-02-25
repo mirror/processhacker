@@ -53,7 +53,7 @@ namespace Be.Windows.Forms
 		/// <summary>
 		/// Contains all changes
 		/// </summary>
-		readonly WriteCollection _writes = new WriteCollection();
+		WriteCollection _writes = new WriteCollection();
 
 		/// <summary>
 		/// Contains the file name.
@@ -66,7 +66,7 @@ namespace Be.Windows.Forms
         /// <summary>
         /// Read-only access.
         /// </summary>
-        readonly bool _readOnly;
+        bool _readOnly;
 
 		/// <summary>
 		/// Initializes a new instance of the FileByteProvider class.

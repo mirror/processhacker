@@ -9,13 +9,16 @@
 
 namespace Debugger.Core.Wrappers.CorPub
 {
-    using Debugger.Wrappers;
+	using System;
+	using System.Runtime.InteropServices;
+	using System.Text;
+	using Debugger.Wrappers;
 	
-	public class ICorPublishProcess
+	public partial class ICorPublishProcess
 	{
-		private readonly Interop.CorPub.ICorPublishProcess wrappedObject;
+		private Debugger.Interop.CorPub.ICorPublishProcess wrappedObject;
 		
-		internal Interop.CorPub.ICorPublishProcess WrappedObject
+		internal Debugger.Interop.CorPub.ICorPublishProcess WrappedObject
 		{
 			get
 			{
@@ -23,23 +26,24 @@ namespace Debugger.Core.Wrappers.CorPub
 			}
 		}
 		
-		public ICorPublishProcess(Interop.CorPub.ICorPublishProcess wrappedObject)
+		public ICorPublishProcess(Debugger.Interop.CorPub.ICorPublishProcess wrappedObject)
 		{
 			this.wrappedObject = wrappedObject;
 			ResourceManager.TrackCOMObject(wrappedObject, typeof(ICorPublishProcess));
 		}
 		
-		public static ICorPublishProcess Wrap(Interop.CorPub.ICorPublishProcess objectToWrap)
+		public static ICorPublishProcess Wrap(Debugger.Interop.CorPub.ICorPublishProcess objectToWrap)
 		{
-		    if (objectToWrap != null)
+			if ((objectToWrap != null))
 			{
 				return new ICorPublishProcess(objectToWrap);
+			} else
+			{
+				return null;
 			}
-
-		    return null;
 		}
-
-	    public int ProcessId 
+		
+		public int ProcessId 
 		{
 			get 
 			{

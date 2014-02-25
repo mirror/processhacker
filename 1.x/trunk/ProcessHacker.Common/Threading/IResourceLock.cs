@@ -1,4 +1,8 @@
-﻿namespace ProcessHacker.Common.Threading
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ProcessHacker.Common.Threading
 {
     public interface IResourceLock
     {

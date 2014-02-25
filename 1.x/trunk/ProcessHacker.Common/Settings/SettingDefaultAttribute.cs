@@ -30,7 +30,7 @@ namespace ProcessHacker.Common.Settings
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class SettingDefaultAttribute : Attribute
     {
-        private readonly string _value;
+        private string _value;
 
         /// <summary>
         /// Initializes a new instance of the SettingDefaultAttribute class.

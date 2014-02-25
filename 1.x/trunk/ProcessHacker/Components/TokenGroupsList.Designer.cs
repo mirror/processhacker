@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listGroups = new ProcessHacker.Components.ExtendedListView();
-            this.columnGroupName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnFlags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listGroups = new System.Windows.Forms.ListView();
+            this.columnGroupName = new System.Windows.Forms.ColumnHeader();
+            this.columnFlags = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // listGroups
@@ -40,12 +40,11 @@
             this.columnGroupName,
             this.columnFlags});
             this.listGroups.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listGroups.DoubleClickChecks = true;
             this.listGroups.FullRowSelect = true;
             this.listGroups.Location = new System.Drawing.Point(0, 0);
             this.listGroups.Name = "listGroups";
             this.listGroups.ShowItemToolTips = true;
-            this.listGroups.Size = new System.Drawing.Size(416, 397);
+            this.listGroups.Size = new System.Drawing.Size(431, 397);
             this.listGroups.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listGroups.TabIndex = 4;
             this.listGroups.UseCompatibleStateImageBehavior = false;
@@ -61,21 +60,20 @@
             this.columnFlags.Text = "Flags";
             this.columnFlags.Width = 180;
             // 
-            // TokenGroupsList
+            // TokenGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listGroups);
-            this.Name = "TokenGroupsList";
-            this.Size = new System.Drawing.Size(416, 397);
+            this.Name = "TokenGroups";
+            this.Size = new System.Drawing.Size(431, 397);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private ExtendedListView listGroups;
+        private System.Windows.Forms.ListView listGroups;
         private System.Windows.Forms.ColumnHeader columnGroupName;
         private System.Windows.Forms.ColumnHeader columnFlags;
     }

@@ -65,11 +65,18 @@ namespace ProcessHacker.Components
 
         public GetToolTipDelegate GetToolTip;
 
-        private int _gridStartPos;
+        private int _gridStartPos = 0;
 
         private void Plotter_Paint(object sender, PaintEventArgs e)
         {
-            this.Render(e.Graphics);
+            try
+            {
+                this.Render(e.Graphics);
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         public void Render(Graphics g)
@@ -148,11 +155,10 @@ namespace ProcessHacker.Components
                 int hPre = (int)(tHeight - (tHeight * fPre));
 
                 // Fill in the area below the line.
-                g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor1)),new Point[] 
-                { 
-                    new Point(px, h), new Point(px + moveStep, hPre), 
-                    new Point(px + moveStep, tHeight), new Point(px, tHeight) 
-                });
+
+                g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor1)),
+                    new Point[] { new Point(px, h), new Point(px + moveStep, hPre), 
+                        new Point(px + moveStep, tHeight), new Point(px, tHeight) });
                 g.DrawLine(lGrid1, px, h, px + moveStep, hPre);
 
                 if (this.UseSecondLine)
@@ -175,25 +181,20 @@ namespace ProcessHacker.Components
                     hPre = (int)(tHeight - (tHeight * fPre));
 
                     // Draw the second line.
+
                     if (this.OverlaySecondLine)
                     {
-                        g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)), new Point[]
-                        {
-                            new Point(px, h), new Point(px + moveStep, hPre),
-                            new Point(px + moveStep, tHeight), new Point(px, tHeight)
-                        });
-
+                        g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
+                            new Point[] { new Point(px, h), new Point(px + moveStep, hPre), 
+                            new Point(px + moveStep, tHeight), new Point(px, tHeight) });
                         g.DrawLine(lGrid2, px, h, px + moveStep, hPre);
                     }
                     else
                     {
-                        g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)), new Point[]
-                        {
-                            new Point(px, h), new Point(px + moveStep, hPre),
+                        g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
+                            new Point[] { new Point(px, h), new Point(px + moveStep, hPre), 
                             new Point(px + moveStep, tHeight - (int)(tHeight * _data1[start])),
-                            new Point(px, tHeight - (int)(tHeight * _data1[start + 1]))
-                        });
-
+                            new Point(px, tHeight - (int)(tHeight * _data1[start + 1])) });
                         g.DrawLine(lGrid2, px, h, px + moveStep, hPre);
                     }
                 }
@@ -219,7 +220,12 @@ namespace ProcessHacker.Components
             }
         }
 
-        private void ShowToolTip(bool force = false)
+        private void ShowToolTip()
+        {
+            this.ShowToolTip(false);
+        }
+
+        private void ShowToolTip(bool force)
         {
             if (this.GetToolTip != null)
             {
@@ -335,7 +341,7 @@ namespace ProcessHacker.Components
             {
                 base.Text = _text = value;
 
-                _textSize = this.CreateGraphics().GetCachedSize(this.Text, this.Font);
+                _textSize = TextRenderer.MeasureText(this.Text, this.Font);
                 _boxSize = new Size(
                     _textSize.Width + _textPadding.Left + _textPadding.Right,
                     _textSize.Height + _textPadding.Top + _textPadding.Bottom);

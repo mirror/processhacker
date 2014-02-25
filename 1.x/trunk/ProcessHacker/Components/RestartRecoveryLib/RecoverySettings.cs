@@ -34,8 +34,8 @@ namespace ProcessHackerRestartRecovery
     /// </remarks>
     public class RecoverySettings
     {
-        private readonly RecoveryData recoveryData;
-        private readonly uint pingInterval;
+        private RecoveryData recoveryData;
+        private uint pingInterval;
 
         /// <summary>
         /// Initializes a new instance of the RecoverySettings class.
@@ -83,10 +83,9 @@ namespace ProcessHackerRestartRecovery
         public override string ToString()
         {
             return String.Format("delegate: {0}, state: {1}, ping: {2}",
-                this.recoveryData.Callback.Method,
-                this.recoveryData.State,
-                this.PingInterval
-                );
+                this.recoveryData.Callback.Method.ToString(),
+                this.recoveryData.State.ToString(),
+                this.PingInterval);
         }
     }
 }

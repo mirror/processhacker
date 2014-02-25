@@ -67,7 +67,7 @@ namespace ProcessHackerRestartRecovery
         public void Invoke()
         {
             if(Callback != null)
-               Callback(State);
+                Callback(State);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace ProcessHacker.Common.Threading
         public struct FastMutexContext : IDisposable
         {
             private bool _disposed;
-            private readonly FastMutex _fastMutex;
+            private FastMutex _fastMutex;
 
             internal FastMutexContext(FastMutex fastMutex)
             {
@@ -37,7 +37,7 @@ namespace ProcessHacker.Common.Threading
             }
         }
 
-        private readonly object _lock = new object();
+        private object _lock = new object();
 
         /// <summary>
         /// Acquires the mutex and prevents others from acquiring it. 

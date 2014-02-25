@@ -179,7 +179,7 @@ namespace ProcessHacker.Native.Api
         TruncateExisting = 5
     }
 
-    public enum GdiBlendMode
+    public enum GdiBlendMode : int
     {
         Black = 1,
         NotMergePen,
@@ -200,7 +200,7 @@ namespace ProcessHacker.Native.Api
         Last
     }
 
-    public enum GdiPenStyle
+    public enum GdiPenStyle : int
     {
         Solid = 0,
         Dash,
@@ -213,7 +213,7 @@ namespace ProcessHacker.Native.Api
         Alternate
     }
 
-    public enum GdiStockObject
+    public enum GdiStockObject : int
     {
         WhiteBrush = 0,
         LightGrayBrush,
@@ -236,7 +236,7 @@ namespace ProcessHacker.Native.Api
         DcPen
     }
 
-    public enum GetWindowLongOffset
+    public enum GetWindowLongOffset : int
     {
         WndProc = -4,
         HInstance = -6,
@@ -248,14 +248,14 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum HeapEntry32Flags
+    public enum HeapEntry32Flags : int
     {
         Fixed = 0x00000001,
         Free = 0x00000002,
         Moveable = 0x00000004
     }
 
-    public enum LoadImageType
+    public enum LoadImageType : int
     {
         Bitmap = 0,
         Icon = 1,
@@ -308,14 +308,14 @@ namespace ProcessHacker.Native.Api
         LargePages = 0x20000000
     }
 
-    public enum MemoryType
+    public enum MemoryType : int
     {
         Image = 0x1000000,
         Mapped = 0x40000,
         Private = 0x20000
     }
 
-    public enum MibTcpState
+    public enum MibTcpState : int
     {
         Closed = 1,
         Listening = 2,
@@ -331,7 +331,6 @@ namespace ProcessHacker.Native.Api
         DeleteTcb = 12
     }
 
-    [Flags]
     public enum MinidumpType : uint
     {
         Normal = 0x00000000,
@@ -455,41 +454,6 @@ namespace ProcessHacker.Native.Api
         RealTime = 0x100,
         BelowNormal = 0x4000,
         AboveNormal = 0x8000
-    }
-
-    [Flags]
-    public enum PropSheetPageFlags
-    {
-        Default = 0x0,
-        DlgIndirect = 0x1,
-        UseHIcon = 0x2,
-        UseIconID = 0x4,
-        UseTitle = 0x8,
-        RtlReading = 0x10,
-
-        HasHelp = 0x20,
-        UseRefParent = 0x40,
-        UseCallback = 0x80,
-        Premature = 0x400,
-
-        HideHeader = 0x800,
-        UseHeaderTitle = 0x1000,
-        UseHeaderSubTitle = 0x2000,
-        UseFusionContext = 0x4000
-    }
-
-    public enum PropSheetPageCallbackMessage
-    {
-        AddRef = 0,
-        Release = 1,
-        Create = 2
-    }
-
-    public enum PropSheetNotification : uint
-    {
-        First = ~200u + 1, // -200
-        SetActive = First - 0,
-        KillActive = First - 1
     }
 
     [Flags]

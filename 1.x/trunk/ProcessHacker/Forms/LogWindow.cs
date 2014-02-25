@@ -35,23 +35,25 @@ namespace ProcessHacker
         public LogWindow()
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
 
-            this.listLog.ContextMenu = this.listLog.GetCopyMenu(this.listLog_RetrieveVirtualItem);
-            this.listLog.AddShortcuts(this.listLog_RetrieveVirtualItem);
+            listLog.SetDoubleBuffered(true);
+            listLog.SetTheme("explorer");
+            listLog.ContextMenu = listLog.GetCopyMenu(listLog_RetrieveVirtualItem);
+            listLog.AddShortcuts(listLog_RetrieveVirtualItem);
 
             this.UpdateLog();
 
-            if (this.listLog.SelectedIndices.Count == 0 && this.listLog.VirtualListSize > 0)
-                this.listLog.EnsureVisible(this.listLog.VirtualListSize - 1);
+            if (listLog.SelectedIndices.Count == 0 && listLog.VirtualListSize > 0)
+                listLog.EnsureVisible(listLog.VirtualListSize - 1);
 
-            Program.HackerWindow.LogUpdated += this.HackerWindow_LogUpdated;
+            Program.HackerWindow.LogUpdated += new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
 
             this.Size = Settings.Instance.LogWindowSize;
-            this.Location = Utils.FitRectangle(new Rectangle(Settings.Instance.LogWindowLocation, this.Size), this).Location;
-            this.checkAutoscroll.Checked = Settings.Instance.LogWindowAutoScroll;
+            this.Location = Utils.FitRectangle(new Rectangle(
+                Settings.Instance.LogWindowLocation, this.Size), this).Location;
+            checkAutoscroll.Checked = Settings.Instance.LogWindowAutoScroll;
         }
 
         private void HackerWindow_LogUpdated(KeyValuePair<DateTime, string>? value)
@@ -83,7 +85,7 @@ namespace ProcessHacker
 
             Settings.Instance.LogWindowAutoScroll = checkAutoscroll.Checked;
             
-            Program.HackerWindow.LogUpdated -= this.HackerWindow_LogUpdated;
+            Program.HackerWindow.LogUpdated -= new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
@@ -123,29 +125,27 @@ namespace ProcessHacker
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog sfd = new SaveFileDialog
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.FileName = "Process Hacker Log.txt";
+            sfd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
             {
-                FileName = "Process Hacker Log.txt",
-                Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*"
-            })
-            {
-                if (sfd.ShowDialog() == DialogResult.OK)
+                StringBuilder sb = new StringBuilder();
+
+                foreach (var value in Program.HackerWindow.Log)
                 {
-                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine(value.Key.ToString() + ": " + value.Value);
+                }
 
-                    foreach (var value in Program.HackerWindow.Log)
-                    {
-                        sb.AppendLine(value.Key.ToString() + ": " + value.Value);
-                    }
-
-                    try
-                    {
-                        System.IO.File.WriteAllText(sfd.FileName, sb.ToString());
-                    }
-                    catch (Exception ex)
-                    {
-                        PhUtils.ShowException("Unable to save the log", ex);
-                    }
+                try
+                {
+                    System.IO.File.WriteAllText(sfd.FileName, sb.ToString());
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to save the log", ex);
                 }
             }
         }
@@ -157,10 +157,9 @@ namespace ProcessHacker
 
         private void listLog_DoubleClick(object sender, EventArgs e)
         {
-            using (InformationBox info = new InformationBox(Program.HackerWindow.Log[listLog.SelectedIndices[0]].Value))
-            {
-                info.ShowDialog();
-            }
+            InformationBox info = new InformationBox(Program.HackerWindow.Log[listLog.SelectedIndices[0]].Value);
+
+            info.ShowDialog();
         }
     }
 }

@@ -90,19 +90,23 @@ namespace ProcessHacker.Native.Objects
 
         private static NtStatus WaitForMultipleObjects(ISynchronizable[] objects, WaitType waitType, bool alertable, long timeout, bool relative)
         {
+            NtStatus status;
             IntPtr[] handles = new IntPtr[objects.Length];
             long realTimeout = relative ? -timeout : timeout;
 
             for (int i = 0; i < objects.Length; i++)
                 handles[i] = objects[i].Handle;
 
-            return Win32.NtWaitForMultipleObjects(
+            if ((status = Win32.NtWaitForMultipleObjects(
                 handles.Length,
                 handles,
                 waitType,
                 alertable,
                 ref realTimeout
-                );
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
 
         public static implicit operator int(NativeHandle handle)
@@ -220,80 +224,66 @@ namespace ProcessHacker.Native.Objects
         /// Gets the handle's name.
         /// </summary>
         /// <returns>A string.</returns>
-        public virtual string ObjectName
+        public virtual string GetObjectName()
         {
-            get
+            NtStatus status;
+            int retLength;
+
+            status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
+                  IntPtr.Zero, 0, out retLength);
+
+            if (retLength > 0)
             {
-                int retLength;
-
-                Win32.NtQueryObject(
-                    this,
-                    ObjectInformationClass.ObjectNameInformation,
-                    IntPtr.Zero,
-                    0,
-                    out retLength
-                    );
-
-                if (retLength > 0)
+                using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
                 {
-                    using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
-                    {
-                        Win32.NtQueryObject(
-                            this,
-                            ObjectInformationClass.ObjectNameInformation,
-                            oniMem,
-                            oniMem.Size,
-                            out retLength
-                            ).ThrowIf();
+                    if ((status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
+                        oniMem, oniMem.Size, out retLength)) >= NtStatus.Error)
+                        Win32.Throw(status);
 
-                        ObjectNameInformation oni = oniMem.ReadStruct<ObjectNameInformation>();
+                    var oni = oniMem.ReadStruct<ObjectNameInformation>();
 
-                        return oni.Name.Text;
-                    }
+                    return oni.Name.Read();
                 }
-
-                return null;
             }
+            else
+            {
+                Win32.Throw(status);
+            }
+
+            return null;
         }
 
         /// <summary>
         /// Gets the handle's type name.
         /// </summary>
         /// <returns>A string.</returns>
-        public virtual string ObjectTypeName
+        public virtual string GetObjectTypeName()
         {
-            get
+            NtStatus status;
+            int retLength;
+
+            status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectTypeInformation,
+                  IntPtr.Zero, 0, out retLength);
+
+            if (retLength > 0)
             {
-                int retLength;
-
-                Win32.NtQueryObject(
-                    this,
-                    ObjectInformationClass.ObjectTypeInformation,
-                    IntPtr.Zero,
-                    0,
-                    out retLength
-                    );
-
-                if (retLength > 0)
+                using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
                 {
-                    using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
-                    {
-                        Win32.NtQueryObject(
-                            this,
-                            ObjectInformationClass.ObjectTypeInformation,
-                            otiMem,
-                            otiMem.Size,
-                            out retLength
-                            ).ThrowIf();
+                    if ((status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectTypeInformation,
+                        otiMem, otiMem.Size, out retLength)) >= NtStatus.Error)
+                        Win32.Throw(status);
 
-                        ObjectTypeInformation oni = otiMem.ReadStruct<ObjectTypeInformation>();
+                    var oni = otiMem.ReadStruct<ObjectTypeInformation>();
 
-                        return oni.Name.Text;
-                    }
+                    return oni.Name.Read();
                 }
-
-                return null;
             }
+            else
+            {
+                Win32.Throw(status);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -322,7 +312,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public virtual void MakeObjectPermanent()
         {
-            Win32.NtMakePermanentObject(this).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.NtMakePermanentObject(this)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -332,16 +325,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public virtual void MakeObjectTemporary()
         {
-            Win32.NtMakeTemporaryObject(this).ThrowIf();
-        }
+            NtStatus status;
 
-        /// <summary>
-        /// Marks the handle as invalid. This method must only be called from 
-        /// within a derived class constructor.
-        /// </summary>
-        protected bool IsValid
-        {
-            get { return this._handle != IntPtr.Zero; }
+            if ((status = Win32.NtMakeTemporaryObject(this)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -414,14 +401,18 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public virtual NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable, long timeout, bool relative)
         {
+            NtStatus status;
             long realTimeout = relative ? -timeout : timeout;
 
-            return Win32.NtSignalAndWaitForSingleObject(
+            if ((status = Win32.NtSignalAndWaitForSingleObject(
                 this,
                 waitObject.Handle,
                 alertable,
-                ref realTimeout
-                );
+                ref timeout
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
 
         /// <summary>
@@ -522,20 +513,25 @@ namespace ProcessHacker.Native.Objects
         /// <param name="relative">Whether the timeout value is relative.</param>
         public virtual NtStatus Wait(bool alertable, long timeout, bool relative)
         {
+            NtStatus status;
             long realTimeout = relative ? -timeout : timeout;
 
-            return Win32.NtWaitForSingleObject(
+            if ((status = Win32.NtWaitForSingleObject(
                 this,
                 alertable,
                 ref realTimeout
-                );
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
 }
 
     /// <summary>
     /// Represents a generic Windows handle which acts as a kernel handle by default.
     /// </summary>
-    public class NativeHandle<TAccess> : NativeHandle where TAccess : struct
+    public class NativeHandle<TAccess> : NativeHandle
+        where TAccess : struct
     {
         /// <summary>
         /// Creates a new, invalid handle. You must set the handle using the Handle property.
@@ -571,16 +567,8 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr newHandle;
 
-            Win32.NtDuplicateObject(
-                ProcessHandle.Current, 
-                handle, 
-                ProcessHandle.Current, 
-                out newHandle, 
-                (int)Convert.ChangeType(access, typeof(int)), 
-                0, 
-                0
-                );
-
+            Win32.DuplicateObject(ProcessHandle.Current, handle, ProcessHandle.Current, out newHandle,
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             this.Handle = newHandle;
         }
 
@@ -594,16 +582,8 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr newHandle;
 
-            Win32.NtDuplicateObject(
-                processHandle, 
-                handle, 
-                ProcessHandle.Current, 
-                out newHandle,
-                (int)Convert.ChangeType(access, typeof(int)), 
-                0, 
-                0
-                );
-
+            Win32.DuplicateObject(processHandle, handle, ProcessHandle.Current, out newHandle,
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             this.Handle = newHandle;
         }
 
@@ -615,16 +595,8 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr newHandle;
 
-            Win32.NtDuplicateObject(
-                ProcessHandle.Current, 
-                this, 
-                ProcessHandle.Current, 
-                out newHandle,
-                (int)Convert.ChangeType(access, typeof(int)), 
-                0, 
-                0
-                );
-
+            Win32.DuplicateObject(ProcessHandle.Current, this, ProcessHandle.Current, out newHandle,
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             this.SwapHandle(newHandle);
         }
 
@@ -648,6 +620,7 @@ namespace ProcessHacker.Native.Objects
         /// Creates a new, invalid handle. You must set the handle using the Handle property.
         /// </summary>
         protected GenericHandle()
+            : base()
         { }
 
         /// <summary>

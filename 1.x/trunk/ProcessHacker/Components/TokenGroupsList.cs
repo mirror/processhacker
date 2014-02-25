@@ -38,17 +38,18 @@ namespace ProcessHacker.Components
 
             if (groups != null)
             {
-                foreach (Sid t in groups)
+                for (int i = 0; i < groups.Length; i++)
                 {
-                    ListViewItem item = this.listGroups.Items.Add(new ListViewItem());
+                    ListViewItem item = listGroups.Items.Add(new ListViewItem());
 
-                    item.Text = t.GetFullName(Settings.Instance.ShowAccountDomains);
-                    item.BackColor = this.GetAttributeColor(t.Attributes);
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, this.GetAttributeString(t.Attributes)));
+                    item.Text = groups[i].GetFullName(Settings.Instance.ShowAccountDomains);
+                    item.BackColor = GetAttributeColor(groups[i].Attributes);
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(groups[i].Attributes)));
                 }
             }
 
             listGroups.ListViewItemSorter = new SortedListViewComparer(listGroups);
+            listGroups.SetDoubleBuffered(true);
             listGroups.ContextMenu = listGroups.GetCopyMenu();
             ColumnSettings.LoadSettings(Settings.Instance.GroupListColumns, listGroups);
             listGroups.AddShortcuts();
@@ -70,17 +71,16 @@ namespace ProcessHacker.Components
 
         private string GetAttributeString(SidAttributes Attributes)
         {
-            string text = string.Empty;
+            string text = "";
 
             if ((Attributes & SidAttributes.Integrity) != 0)
             {
                 if ((Attributes & SidAttributes.IntegrityEnabled) != 0)
                     return "Integrity";
-                
-                return "Integrity (Disabled)";
+                else
+                    return "Integrity (Disabled)";
             }
-            
-            if ((Attributes & SidAttributes.LogonId) != 0)
+            else if ((Attributes & SidAttributes.LogonId) != 0)
                 text = "Logon ID";
             else if ((Attributes & SidAttributes.Mandatory) != 0)
                 text = "Mandatory";
@@ -93,11 +93,10 @@ namespace ProcessHacker.Components
 
             if ((Attributes & SidAttributes.EnabledByDefault) != 0)
                 return text + " (Default Enabled)";
-            
-            if ((Attributes & SidAttributes.Enabled) != 0)
+            else if ((Attributes & SidAttributes.Enabled) != 0)
                 return text;
-            
-            return text + " (Disabled)";
+            else
+                return text + " (Disabled)";
         }
 
         private Color GetAttributeColor(SidAttributes Attributes)
@@ -106,17 +105,16 @@ namespace ProcessHacker.Components
             {
                 if ((Attributes & SidAttributes.IntegrityEnabled) == 0)
                     return Color.FromArgb(0xe0e0e0);
-                
-                return Color.White;
+                else
+                    return Color.White;
             }
 
             if ((Attributes & SidAttributes.EnabledByDefault) != 0)
                 return Color.FromArgb(0xe0f0e0);
-            
-            if ((Attributes & SidAttributes.Enabled) != 0)
+            else if ((Attributes & SidAttributes.Enabled) != 0)
                 return Color.White;
-            
-            return Color.FromArgb(0xf0e0e0);
+            else
+                return Color.FromArgb(0xf0e0e0);
         }
     }
 }

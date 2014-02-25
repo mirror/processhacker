@@ -41,22 +41,20 @@ namespace ProcessHacker.Native.Threading
         {
             public event ObjectSignaledDelegate ObjectSignaled;
 
-            private readonly Waiter _owner;
-            private bool _terminating;
-            private readonly Thread _thread;
+            private Waiter _owner;
+            private bool _terminating = false;
+            private Thread _thread;
             private FastEvent _threadInitializedEvent = new FastEvent(false);
             private ThreadHandle _threadHandle;
-            private readonly List<ISynchronizable> _waitObjects = new List<ISynchronizable>();
+            private List<ISynchronizable> _waitObjects = new List<ISynchronizable>();
 
             public WaiterThread(Waiter owner)
             {
                 _owner = owner;
 
                 // Create the waiter thread.
-                _thread = new Thread(this.WaiterThreadStart, Common.Utils.SixteenthStackSize)
-                {
-                    IsBackground = true
-                };
+                _thread = new Thread(this.WaiterThreadStart, ProcessHacker.Common.Utils.SixteenthStackSize);
+                _thread.IsBackground = true;
                 _thread.SetApartmentState(ApartmentState.STA);
                 _thread.Start();
 
@@ -233,8 +231,8 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public event ObjectSignaledDelegate ObjectSignaled;
 
-        private readonly List<WaiterThread> _waiterThreads = new List<WaiterThread>();
-        private readonly List<ISynchronizable> _waitObjects = new List<ISynchronizable>();
+        private List<WaiterThread> _waiterThreads = new List<WaiterThread>();
+        private List<ISynchronizable> _waitObjects = new List<ISynchronizable>();
 
         /// <summary>
         /// Creates a waiter.
@@ -303,7 +301,12 @@ namespace ProcessHacker.Native.Threading
             }
         }
 
-        private void CreateWaiterThread(ISynchronizable obj = null)
+        private WaiterThread CreateWaiterThread()
+        {
+            return this.CreateWaiterThread(null);
+        }
+
+        private WaiterThread CreateWaiterThread(ISynchronizable obj)
         {
             WaiterThread waiterThread = new WaiterThread(this);
 
@@ -314,6 +317,8 @@ namespace ProcessHacker.Native.Threading
 
             lock (_waiterThreads)
                 _waiterThreads.Add(waiterThread);
+
+            return waiterThread;
         }
 
         private void DeleteWaiterThread(WaiterThread waiterThread)

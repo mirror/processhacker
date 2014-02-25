@@ -20,7 +20,10 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading;
 
 namespace ProcessHacker
 {
@@ -47,8 +50,8 @@ namespace ProcessHacker
     /// </summary>
     public class Searcher : ISearcher
     {
-        private readonly int _pid;
-        private readonly Dictionary<string, object> _params;
+        private int _pid;
+        private Dictionary<string, object> _params;
         private List<string[]> _results;
 
         public event SearchFinished SearchFinished;
@@ -83,7 +86,7 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// A <see cref="Results"/> containing the search results.
+        /// A <see cref="List"/> containing the search results.
         /// </summary>
         public List<string[]> Results
         {

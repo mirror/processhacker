@@ -31,7 +31,7 @@ namespace ProcessHacker.Native
     /// </summary>
     public sealed class LsaMemoryAlloc : MemoryAlloc
     {
-        private readonly bool _secur32;
+        private bool _secur32;
 
         public LsaMemoryAlloc(IntPtr memory)
             : this(memory, false)

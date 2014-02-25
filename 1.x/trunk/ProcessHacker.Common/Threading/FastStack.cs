@@ -13,13 +13,8 @@ namespace ProcessHacker.Common.Threading
             public FastStackNode<U> Next;
         }
 
-        private readonly int _count;
-        private FastStackNode<T> _bottom;
-
-        public FastStack(int count)
-        {
-            _count = count;
-        }
+        private int _count = 0;
+        private FastStackNode<T> _bottom = null;
 
         public int Count
         {
@@ -53,7 +48,7 @@ namespace ProcessHacker.Common.Threading
                     throw new InvalidOperationException("The stack is empty.");
 
                 // Try to replace the pointer.
-                if (Interlocked.CompareExchange(
+                if (Interlocked.CompareExchange<FastStackNode<T>>(
                     ref _bottom,
                     bottom.Next,
                     bottom
@@ -68,11 +63,10 @@ namespace ProcessHacker.Common.Threading
         public void Push(T value)
         {
             FastStackNode<T> bottom;
+            FastStackNode<T> entry;
 
-            FastStackNode<T> entry = new FastStackNode<T>
-            {
-                Value = value
-            };
+            entry = new FastStackNode<T>();
+            entry.Value = value;
 
             // Atomically replace the bottom of the stack.
             while (true)
@@ -81,7 +75,7 @@ namespace ProcessHacker.Common.Threading
                 entry.Next = bottom;
 
                 // Try to replace the pointer.
-                if (Interlocked.CompareExchange(
+                if (Interlocked.CompareExchange<FastStackNode<T>>(
                     ref _bottom,
                     entry,
                     bottom

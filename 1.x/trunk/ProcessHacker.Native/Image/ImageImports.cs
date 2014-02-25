@@ -28,10 +28,10 @@ namespace ProcessHacker.Native.Image
     {
         public delegate bool EnumEntriesDelegate(ImageExportEntry entry);
 
-        private readonly MappedImage _mappedImage;
-        private readonly int _count;
-        private readonly ImageImportDescriptor* _descriptorTable;
-        private readonly ImageImportDll[] _dlls;
+        private MappedImage _mappedImage;
+        private int _count;
+        private ImageImportDescriptor* _descriptorTable;
+        private ImageImportDll[] _dlls;
 
         internal ImageImports(MappedImage mappedImage)
         {
@@ -82,11 +82,11 @@ namespace ProcessHacker.Native.Image
 
     public unsafe sealed class ImageImportDll
     {
-        private readonly MappedImage _mappedImage;
-        private readonly ImageImportDescriptor* _descriptor;
+        private MappedImage _mappedImage;
+        private ImageImportDescriptor* _descriptor;
         private string _name;
-        private readonly void* _lookupTable;
-        private readonly int _count;
+        private void* _lookupTable;
+        private int _count;
 
         internal ImageImportDll(MappedImage mappedImage, ImageImportDescriptor* descriptor)
         {
@@ -144,50 +144,45 @@ namespace ProcessHacker.Native.Image
             if (index >= _count)
                 return ImageImportEntry.Empty;
 
-            switch (this._mappedImage.Magic)
+            if (_mappedImage.Magic == Win32.Pe32Magic)
             {
-                case Win32.Pe32Magic:
+                int entry = ((int*)_lookupTable)[index];
+
+                // Is this entry using an ordinal?
+                if ((entry & 0x80000000) != 0)
+                {
+                    return new ImageImportEntry() { Ordinal = (short)(entry & 0xffff) };
+                }
+                else
+                {
+                    ImageImportByName* nameEntry = (ImageImportByName*)_mappedImage.RvaToVa(entry);
+
+                    return new ImageImportEntry()
                     {
-                        int entry = ((int*)this._lookupTable)[index];
+                        NameHint = nameEntry->Hint,
+                        Name = new string((sbyte*)&nameEntry->Name)
+                    };
+                }
+            }
+            else if (_mappedImage.Magic == Win32.Pe32PlusMagic)
+            {
+                long entry = ((long*)_lookupTable)[index];
 
-                        // Is this entry using an ordinal?
-                        if ((entry & 0x80000000) != 0)
-                        {
-                            return new ImageImportEntry
-                            { 
-                                Ordinal = (short)(entry & 0xffff)
-                            };
-                        }
+                // Is this entry using an ordinal?
+                if (((ulong)entry & 0x8000000000000000) != 0)
+                {
+                    return new ImageImportEntry() { Ordinal = (short)(entry & 0xffff) };
+                }
+                else
+                {
+                    ImageImportByName* nameEntry = (ImageImportByName*)_mappedImage.RvaToVa((int)(entry & 0xffffffff));
 
-                        ImageImportByName* nameEntry = (ImageImportByName*)this._mappedImage.RvaToVa(entry);
-
-                        return new ImageImportEntry
-                        {
-                            NameHint = nameEntry->Hint,
-                            Name = new string((sbyte*)&nameEntry->Name)
-                        };
-                    }
-                case Win32.Pe32PlusMagic:
+                    return new ImageImportEntry()
                     {
-                        long entry = ((long*)this._lookupTable)[index];
-
-                        // Is this entry using an ordinal?
-                        if (((ulong)entry & 0x8000000000000000) != 0)
-                        {
-                            return new ImageImportEntry
-                            { 
-                                Ordinal = (short)(entry & 0xffff) 
-                            };
-                        }
-                        
-                        ImageImportByName* nameEntry = (ImageImportByName*)this._mappedImage.RvaToVa((int)(entry & 0xffffffff));
-
-                        return new ImageImportEntry
-                        {
-                            NameHint = nameEntry->Hint,
-                            Name = new string((sbyte*)&nameEntry->Name)
-                        };
-                    }
+                        NameHint = nameEntry->Hint,
+                        Name = new string((sbyte*)&nameEntry->Name)
+                    };
+                }
             }
 
             return ImageImportEntry.Empty;

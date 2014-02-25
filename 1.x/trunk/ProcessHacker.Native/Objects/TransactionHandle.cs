@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -30,7 +31,7 @@ namespace ProcessHacker.Native.Objects
     {
         public struct CurrentTransactionContext : IDisposable
         {
-            private readonly TransactionHandle _oldHandle;
+            private TransactionHandle _oldHandle;
             private bool _disposed;
 
             internal CurrentTransactionContext(TransactionHandle handle)
@@ -83,6 +84,7 @@ namespace ProcessHacker.Native.Objects
             string description
             )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
@@ -95,7 +97,7 @@ namespace ProcessHacker.Native.Objects
 
                 try
                 {
-                    Win32.NtCreateTransaction(
+                    if ((status = Win32.NtCreateTransaction(
                         out handle,
                         access,
                         ref oa,
@@ -106,7 +108,8 @@ namespace ProcessHacker.Native.Objects
                         0,
                         ref timeout,
                         ref descriptionStr
-                        ).ThrowIf();
+                        )) >= NtStatus.Error)
+                        Win32.Throw(status);
                 }
                 finally
                 {
@@ -123,12 +126,14 @@ namespace ProcessHacker.Native.Objects
 
         public static TransactionHandle GetCurrent()
         {
-            IntPtr handle = Win32.RtlGetCurrentTransaction();
+            IntPtr handle;
+
+            handle = Win32.RtlGetCurrentTransaction();
 
             if (handle != IntPtr.Zero)
                 return new TransactionHandle(handle, false);
-
-            return null;
+            else
+                return null;
         }
 
         public static void SetCurrent(TransactionHandle transactionHandle)
@@ -154,18 +159,20 @@ namespace ProcessHacker.Native.Objects
             TransactionAccess access
             )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenTransaction(
+                if ((status = Win32.NtOpenTransaction(
                     out handle,
                     access,
                     ref oa,
                     ref unitOfWorkGuid,
                     tmHandle ?? IntPtr.Zero
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -182,51 +189,51 @@ namespace ProcessHacker.Native.Objects
 
         public void Commit(bool wait)
         {
-            Win32.NtCommitTransaction(this, wait).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.NtCommitTransaction(this, wait)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
-        public TransactionBasicInformation BasicInformation
+        public TransactionBasicInformation GetBasicInformation()
         {
-            get
-            {
-                TransactionBasicInformation basicInfo;
-                int retLength;
+            NtStatus status;
+            TransactionBasicInformation basicInfo;
+            int retLength;
 
-                Win32.NtQueryInformationTransaction(
-                    this,
-                    TransactionInformationClass.TransactionBasicInformation,
-                    out basicInfo,
-                    TransactionBasicInformation.SizeOf,
-                    out retLength
-                    ).ThrowIf();
+            if ((status = Win32.NtQueryInformationTransaction(
+                this,
+                TransactionInformationClass.TransactionBasicInformation,
+                out basicInfo,
+                Marshal.SizeOf(typeof(TransactionBasicInformation)),
+                out retLength
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
-                return basicInfo;
-            }
+            return basicInfo;
         }
 
-        public string Description
+        public string GetDescription()
         {
-            get
+            using (var data = this.GetPropertiesInformation())
             {
-                using (MemoryAlloc data = this.GetPropertiesInformation())
-                {
-                    TransactionPropertiesInformation propertiesInfo = data.ReadStruct<TransactionPropertiesInformation>();
+                var propertiesInfo = data.ReadStruct<TransactionPropertiesInformation>();
 
-                    return data.ReadUnicodeString(
-                        TransactionPropertiesInformation.DescriptionOffset,
-                        propertiesInfo.DescriptionLength / 2
-                        );
-                }
+                return data.ReadUnicodeString(
+                    TransactionPropertiesInformation.DescriptionOffset,
+                    propertiesInfo.DescriptionLength / 2
+                    );
             }
         }
 
         private MemoryAlloc GetPropertiesInformation()
         {
+            NtStatus status;
             int retLength;
 
-            MemoryAlloc data = new MemoryAlloc(0x1000);
+            var data = new MemoryAlloc(0x1000);
 
-            NtStatus status = Win32.NtQueryInformationTransaction(
+            status = Win32.NtQueryInformationTransaction(
                 this,
                 TransactionInformationClass.TransactionPropertiesInformation,
                 data,
@@ -248,29 +255,27 @@ namespace ProcessHacker.Native.Objects
                     );
             }
 
-            if (status.IsError())
+            if (status >= NtStatus.Error)
             {
                 data.Dispose();
-                status.Throw();
+                Win32.Throw(status);
             }
 
             return data;
         }
 
-        public long Timeout
+        public long GetTimeout()
         {
-            get
-            {
-                using (MemoryAlloc data = this.GetPropertiesInformation())
-                {
-                    return data.ReadStruct<TransactionPropertiesInformation>().Timeout;
-                }
-            }
+            using (var data = this.GetPropertiesInformation())
+                return data.ReadStruct<TransactionPropertiesInformation>().Timeout;
         }
 
         public void Rollback(bool wait)
         {
-            Win32.NtRollbackTransaction(this, wait).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.NtRollbackTransaction(this, wait)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
     }
 }

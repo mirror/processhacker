@@ -20,7 +20,9 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ProcessHacker
 {
@@ -37,7 +39,7 @@ namespace ProcessHacker
     /// </summary>
     public class SearchOptions
     {                                      
-        private readonly int _pid;
+        private int _pid;
         private SearchType _type = SearchType.Literal;
         private Searcher _searcher;
                           
@@ -54,7 +56,7 @@ namespace ProcessHacker
 
             // defaults
             _searcher.Params.Add("text", new byte[0]);
-            _searcher.Params.Add("regex", string.Empty);
+            _searcher.Params.Add("regex", "");
             _searcher.Params.Add("s_ms", "10");
             _searcher.Params.Add("unicode", true);
             _searcher.Params.Add("h_ms", "1024");
@@ -63,7 +65,7 @@ namespace ProcessHacker
             _searcher.Params.Add("private", true);
             _searcher.Params.Add("image", false);
             _searcher.Params.Add("mapped", false);
-            _searcher.Params.Add("struct", string.Empty);
+            _searcher.Params.Add("struct", "");
             _searcher.Params.Add("struct_align", "4");
 
             Type = type;  

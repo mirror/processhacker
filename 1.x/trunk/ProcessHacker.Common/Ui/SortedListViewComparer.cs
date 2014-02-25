@@ -43,19 +43,26 @@ namespace ProcessHacker.Common.Ui
     {
         private class DefaultComparer : ISortedListViewComparer
         {
+            private SortedListViewComparer _sortedListComparer;
+
+            public DefaultComparer(SortedListViewComparer sortedListComparer)
+            {
+                _sortedListComparer = sortedListComparer;
+            }
+
             public int Compare(ListViewItem x, ListViewItem y, int column)
             {
                 string sx, sy;
                 long ix, iy;
                 IComparable cx, cy;
 
-                sx = x.SubItems[column].Text.Replace(",", string.Empty);
-                sy = y.SubItems[column].Text.Replace(",", string.Empty);
+                sx = x.SubItems[column].Text.Replace(",", "");
+                sy = y.SubItems[column].Text.Replace(",", "");
 
-                if (!long.TryParse(sx.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? sx.Substring(2) : sx,
+                if (!long.TryParse(sx.StartsWith("0x") ? sx.Substring(2) : sx,
                     sx.StartsWith("0x") ? NumberStyles.AllowHexSpecifier : 0,
                     null, out ix) ||
-                    !long.TryParse(sy.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? sy.Substring(2) : sy,
+                    !long.TryParse(sy.StartsWith("0x") ? sy.Substring(2) : sy,
                     sy.StartsWith("0x") ? NumberStyles.AllowHexSpecifier : 0,
                     null, out iy))
                 {
@@ -72,17 +79,17 @@ namespace ProcessHacker.Common.Ui
             }
         }
 
-        private readonly ListView _list;
-        private bool _virtualMode;
+        private ListView _list;
+        private bool _virtualMode = false;
         private RetrieveVirtualItemEventHandler _retrieveVirtualItem;
-        private bool _triState;
+        private bool _triState = false;
         private ISortedListViewComparer _comparer;
         private ISortedListViewComparer _triStateComparer;
         private int _sortColumn;
         private SortOrder _sortOrder;
-        private readonly Dictionary<int, Comparison<ListViewItem>> _customSorters =
+        private Dictionary<int, Comparison<ListViewItem>> _customSorters =
             new Dictionary<int, Comparison<ListViewItem>>();
-        private readonly List<int> _columnSortOrder = new List<int>();
+        private List<int> _columnSortOrder = new List<int>();
 
         /// <summary>
         /// Creates a new sorted list manager.
@@ -91,10 +98,10 @@ namespace ProcessHacker.Common.Ui
         public SortedListViewComparer(ListView list)
         {
             _list = list;
-            _list.ColumnClick += this.list_ColumnClick;
+            _list.ColumnClick += new ColumnClickEventHandler(list_ColumnClick);
             _sortColumn = 0;
             _sortOrder = SortOrder.Ascending;
-            _comparer = new DefaultComparer();
+            _comparer = new DefaultComparer(this);
             this.SetSortIcon();
         }
 
@@ -135,7 +142,7 @@ namespace ProcessHacker.Common.Ui
             set
             {
                 if (value == null)
-                    _comparer = new DefaultComparer();
+                    _comparer = new DefaultComparer(this);
                 else
                     _comparer = value;
             }
@@ -229,20 +236,31 @@ namespace ProcessHacker.Common.Ui
             // Avoid forcing handle creation before all other initialization 
             // has finished. This is done by handling the Layout event and 
             // performing the icon setting there.
-            _list.DoDelayed(control => _list.Columns[_sortColumn].SetSortIcon(_sortOrder));
+            _list.DoDelayed((control) => _list.Columns[_sortColumn].SetSortIcon(_sortOrder));
+        }
+
+        private ListViewItem GetItem(int index)
+        {
+            if (_virtualMode)
+            {
+                var args = new RetrieveVirtualItemEventArgs(index);
+                _retrieveVirtualItem(this, args);
+                return args.Item;
+            }
+            else
+            {
+                return _list.Items[index];
+            }
         }
 
         private int ModifySort(int result, SortOrder order)
         {
-            switch (order)
-            {
-                case SortOrder.Ascending:
-                    return result;
-                case SortOrder.Descending:
-                    return -result;
-                default:
-                    return result;
-            }
+            if (order == SortOrder.Ascending)
+                return result;
+            else if (order == SortOrder.Descending)
+                return -result;
+            else
+                return result;
         }
 
         private int Compare(ListViewItem x, ListViewItem y, int column)

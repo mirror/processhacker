@@ -25,7 +25,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
-    public enum OSArch
+    public enum OSArch : int
     {
         Unknown,
         I386,
@@ -60,11 +60,6 @@ namespace ProcessHacker.Native
         Seven = 61,
 
         /// <summary>
-        /// Windows 8.
-        /// </summary>
-        Eight = 62,
-
-        /// <summary>
         /// An unknown version of Windows.
         /// </summary>
         Unknown = int.MinValue
@@ -72,31 +67,31 @@ namespace ProcessHacker.Native
 
     public static class OSVersion
     {
-        private static readonly int _bits = IntPtr.Size * 8;
-        private static readonly OSArch _arch = IntPtr.Size == 4 ? OSArch.I386 : OSArch.Amd64;
-        private static readonly string _versionString;
-        private static readonly WindowsVersion _windowsVersion;
+        private static int _bits = IntPtr.Size * 8;
+        private static OSArch _arch = IntPtr.Size == 4 ? OSArch.I386 : OSArch.Amd64;
+        private static string _versionString;
+        private static WindowsVersion _windowsVersion;
 
-        private static readonly ProcessAccess _minProcessQueryInfoAccess = ProcessAccess.QueryInformation;
-        private static readonly ThreadAccess _minThreadQueryInfoAccess = ThreadAccess.QueryInformation;
-        private static readonly ThreadAccess _minThreadSetInfoAccess = ThreadAccess.SetInformation;
+        private static ProcessAccess _minProcessQueryInfoAccess = ProcessAccess.QueryInformation;
+        private static ThreadAccess _minThreadQueryInfoAccess = ThreadAccess.QueryInformation;
+        private static ThreadAccess _minThreadSetInfoAccess = ThreadAccess.SetInformation;
 
-        private static readonly bool _hasCycleTime;
-        private static readonly bool _hasExtendedTaskbar;
-        private static readonly bool _hasIoPriority;
-        private static readonly bool _hasPagePriority;
-        private static readonly bool _hasProtectedProcesses;
-        private static readonly bool _hasPsSuspendResumeProcess;
-        private static readonly bool _hasQueryLimitedInformation;
-        private static readonly bool _hasSetAccessToken;
-        private static readonly bool _hasTaskDialogs;
-        private static readonly bool _hasThemes;
-        private static readonly bool _hasUac;
-        private static readonly bool _hasWin32ImageFileName;
+        private static bool _hasCycleTime = false;
+        private static bool _hasExtendedTaskbar = false;
+        private static bool _hasIoPriority = false;
+        private static bool _hasPagePriority = false;
+        private static bool _hasProtectedProcesses = false;
+        private static bool _hasPsSuspendResumeProcess = false;
+        private static bool _hasQueryLimitedInformation = false;
+        private static bool _hasSetAccessToken = false;
+        private static bool _hasTaskDialogs = false;
+        private static bool _hasThemes = false;
+        private static bool _hasUac = false;
+        private static bool _hasWin32ImageFileName = false;
 
         static OSVersion()
         {
-            Version version = Environment.OSVersion.Version;
+            System.Version version = Environment.OSVersion.Version;
 
             if (version.Major == 5 && version.Minor == 0)
                 _windowsVersion = WindowsVersion.TwoThousand;
@@ -107,9 +102,7 @@ namespace ProcessHacker.Native
             else if (version.Major == 6 && version.Minor == 0)
                 _windowsVersion = WindowsVersion.Vista;
             else if (version.Major == 6 && version.Minor == 1)
-                _windowsVersion = WindowsVersion.Seven;  
-            else if (version.Major == 6 && version.Minor == 2)
-                _windowsVersion = WindowsVersion.Eight;
+                _windowsVersion = WindowsVersion.Seven;
             else
                 _windowsVersion = WindowsVersion.Unknown;
 
@@ -263,22 +256,22 @@ namespace ProcessHacker.Native
 
         public static bool IsAbove(WindowsVersion version)
         {
-            return _windowsVersion > version;
+            return (int)_windowsVersion > (int)version;
         }
 
         public static bool IsAboveOrEqual(WindowsVersion version)
         {
-            return _windowsVersion >= version;
+            return (int)_windowsVersion >= (int)version;
         }
 
         public static bool IsBelowOrEqual(WindowsVersion version)
         {
-            return _windowsVersion <= version;
+            return (int)_windowsVersion <= (int)version;
         }
 
         public static bool IsBelow(WindowsVersion version)
         {
-            return _windowsVersion < version;
+            return (int)_windowsVersion < (int)version;
         }
 
         public static bool IsEqualTo(WindowsVersion version)

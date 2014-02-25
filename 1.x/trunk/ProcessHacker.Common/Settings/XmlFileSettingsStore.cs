@@ -20,7 +20,10 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace ProcessHacker.Common.Settings
@@ -34,8 +37,8 @@ namespace ProcessHacker.Common.Settings
         private const string _settingElementName = "setting";
         private const string _nameAttributeName = "name";
 
-        private readonly string _fileName;
-        private readonly object _docLock = new object();
+        private string _fileName;
+        private object _docLock = new object();
         private XmlDocument _doc;
         private XmlNode _rootNode;
 
@@ -80,10 +83,7 @@ namespace ProcessHacker.Common.Settings
         {
             lock (_docLock)
             {
-                XmlNodeList nodes = _rootNode.SelectNodes(_settingElementName + "[@" + _nameAttributeName + "='" + name + "']");
-
-                if (nodes == null)
-                    return null;
+                var nodes = _rootNode.SelectNodes(_settingElementName + "[@" + _nameAttributeName + "='" + name + "']");
 
                 if (nodes.Count == 0)
                     return null;
@@ -146,16 +146,16 @@ namespace ProcessHacker.Common.Settings
         {
             lock (_docLock)
             {
-                XmlNodeList nodes = _rootNode.SelectNodes(_settingElementName + "[@" + _nameAttributeName + "='" + name + "']");
+                var nodes = _rootNode.SelectNodes(_settingElementName + "[@" + _nameAttributeName + "='" + name + "']");
 
-                if (nodes != null && nodes.Count != 0)
+                if (nodes.Count != 0)
                 {
                     nodes[0].InnerText = value;
                 }
                 else
                 {
-                    XmlElement settingElement = _doc.CreateElement(_settingElementName);
-                    XmlAttribute nameAttribute = _doc.CreateAttribute(_nameAttributeName);
+                    var settingElement = _doc.CreateElement(_settingElementName);
+                    var nameAttribute = _doc.CreateAttribute(_nameAttributeName);
 
                     nameAttribute.Value = name;
                     settingElement.Attributes.Append(nameAttribute);

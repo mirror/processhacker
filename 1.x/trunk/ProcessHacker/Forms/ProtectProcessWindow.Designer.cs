@@ -44,7 +44,7 @@
             this.checkProtect.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkProtect.Location = new System.Drawing.Point(12, 12);
             this.checkProtect.Name = "checkProtect";
-            this.checkProtect.Size = new System.Drawing.Size(132, 18);
+            this.checkProtect.Size = new System.Drawing.Size(125, 18);
             this.checkProtect.TabIndex = 0;
             this.checkProtect.Text = "Protect this process";
             this.checkProtect.UseVisualStyleBackColor = true;
@@ -52,30 +52,30 @@
             // 
             // label1
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 62);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(129, 13);
+            this.label1.Size = new System.Drawing.Size(124, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Allowed process access:";
             // 
             // label2
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 175);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(124, 13);
+            this.label2.Size = new System.Drawing.Size(117, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Allowed thread access:";
             // 
             // listProcessAccess
             // 
-            this.listProcessAccess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listProcessAccess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listProcessAccess.FormattingEnabled = true;
             this.listProcessAccess.Location = new System.Drawing.Point(12, 78);
             this.listProcessAccess.Name = "listProcessAccess";
@@ -84,8 +84,8 @@
             // 
             // listThreadAccess
             // 
-            this.listThreadAccess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listThreadAccess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listThreadAccess.FormattingEnabled = true;
             this.listThreadAccess.Location = new System.Drawing.Point(12, 191);
             this.listThreadAccess.Name = "listThreadAccess";
@@ -122,7 +122,7 @@
             this.checkDontAllowKernelMode.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkDontAllowKernelMode.Location = new System.Drawing.Point(12, 36);
             this.checkDontAllowKernelMode.Name = "checkDontAllowKernelMode";
-            this.checkDontAllowKernelMode.Size = new System.Drawing.Size(297, 18);
+            this.checkDontAllowKernelMode.Size = new System.Drawing.Size(270, 18);
             this.checkDontAllowKernelMode.TabIndex = 1;
             this.checkDontAllowKernelMode.Text = "Don\'t allow kernel-mode code to bypass protection";
             this.checkDontAllowKernelMode.UseVisualStyleBackColor = true;
@@ -132,7 +132,6 @@
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(498, 326);
             this.Controls.Add(this.checkDontAllowKernelMode);
             this.Controls.Add(this.buttonOK);

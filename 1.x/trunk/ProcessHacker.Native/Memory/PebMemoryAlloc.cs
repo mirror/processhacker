@@ -33,9 +33,11 @@ namespace ProcessHacker.Native
     {
         public PebMemoryAlloc(int size)
         {
+            NtStatus status;
             IntPtr block;
 
-            Win32.RtlAllocateFromPeb(size, out block).ThrowIf();
+            if ((status = Win32.RtlAllocateFromPeb(size, out block)) >= NtStatus.Error)
+                Win32.Throw(status);
 
             this.Memory = block;
             this.Size = size;
@@ -43,7 +45,10 @@ namespace ProcessHacker.Native
 
         protected override void Free()
         {
-            Win32.RtlFreeToPeb(this, this.Size).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.RtlFreeToPeb(this, this.Size)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

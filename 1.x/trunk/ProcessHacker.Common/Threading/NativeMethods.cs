@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 
 namespace ProcessHacker.Common.Threading
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using ProcessHacker.Common;
-using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
@@ -9,7 +8,7 @@ namespace ProcessHacker.Components
 {
     public partial class EventProperties : UserControl
     {
-        private readonly EventHandle _eventHandle;
+        private EventHandle _eventHandle;
 
         public EventProperties(EventHandle eventHandle)
         {
@@ -22,7 +21,7 @@ namespace ProcessHacker.Components
 
         private void UpdateInfo()
         {
-            EventBasicInformation basicInfo = _eventHandle.BasicInformation;
+            var basicInfo = _eventHandle.GetBasicInformation();
 
             labelType.Text = basicInfo.EventType.ToString();
             labelSignaled.Text = (basicInfo.EventState != 0).ToString();
@@ -43,11 +42,11 @@ namespace ProcessHacker.Components
         private void UpgradeExecute(MethodInvoker action)
         {
             this.TryExecute(() =>
-            {
-                _eventHandle.ChangeAccess(EventAccess.QueryState | EventAccess.ModifyState);
+                {
+                    _eventHandle.ChangeAccess(EventAccess.QueryState | EventAccess.ModifyState);
 
-                action();
-            });
+                    action();
+                });
         }
 
         private void buttonSet_Click(object sender, EventArgs e)
@@ -64,7 +63,7 @@ namespace ProcessHacker.Components
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
-            this.UpgradeExecute(_eventHandle.Clear);
+            this.UpgradeExecute(() => _eventHandle.Clear());
             this.UpdateInfo();
         }
 

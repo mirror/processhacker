@@ -23,6 +23,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -42,18 +44,20 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Used to resolve device prefixes (\Device\Harddisk1) into DOS drive names.
         /// </summary>
-        private static Dictionary<string, string> _fileNamePrefixes;
+        private static Dictionary<string, string> _fileNamePrefixes = new Dictionary<string, string>();
 
         public static string FindFile(string basePath, string fileName)
         {
-            if (!string.IsNullOrEmpty(basePath))
+            string path;
+
+            if (basePath != null)
             {
                 // Search the base path first.
                 if (System.IO.File.Exists(basePath + "\\" + fileName))
                     return System.IO.Path.Combine(basePath, fileName);
             }
 
-            string path = Environment.GetEnvironmentVariable("Path");
+            path = Environment.GetEnvironmentVariable("Path");
 
             string[] directories = path.Split(';');
 
@@ -68,11 +72,12 @@ namespace ProcessHacker.Native
 
         public static string FindFileWin32(string fileName)
         {
-            using (MemoryAlloc data = new MemoryAlloc(0x400))
+            using (var data = new MemoryAlloc(0x400))
             {
+                int retLength;
                 IntPtr filePart;
 
-                int retLength = Win32.SearchPath(null, fileName, null, data.Size / 2, data, out filePart);
+                retLength = Win32.SearchPath(null, fileName, null, data.Size / 2, data, out filePart);
 
                 if (retLength * 2 > data.Size)
                 {
@@ -94,67 +99,28 @@ namespace ProcessHacker.Native
 
         public static Icon GetFileIcon(string fileName, bool large)
         {
+            ShFileInfo shinfo = new ShFileInfo();
+
             if (string.IsNullOrEmpty(fileName))
                 throw new Exception("File name cannot be empty.");
 
             try
             {
-                ShFileInfo shinfo;
-
-                if (Win32.SHGetFileInfo(
-                    fileName, 
-                    0, 
-                    out shinfo,
-                    (uint)ShFileInfo.SizeOf,
+                if (Win32.SHGetFileInfo(fileName, 0, out shinfo,
+                    (uint)Marshal.SizeOf(shinfo),
                     Win32.ShgFiIcon |
-                    (large ? Win32.ShgFiLargeIcon : Win32.ShgFiSmallIcon)
-                    ) == 0)
+                    (large ? Win32.ShgFiLargeIcon : Win32.ShgFiSmallIcon)) == 0)
                 {
                     return null;
                 }
-
-                return Icon.FromHandle(shinfo.hIcon);
+                else
+                {
+                    return Icon.FromHandle(shinfo.hIcon);
+                }
             }
             catch
             {
                 return null;
-            }
-        }
-
-        public static unsafe string GetVistaFileName(int pid)
-        {
-            using (MemoryAlloc buffer = new MemoryAlloc(0x100))
-            {
-                SystemProcessImageNameInformation info;
-
-                info.ProcessId = pid;
-                info.ImageName.Length = 0;
-                info.ImageName.MaximumLength = 0x100;
-                info.ImageName.Buffer = buffer;
-
-                NtStatus status = Win32.NtQuerySystemInformation(
-                    SystemInformationClass.SystemProcessImageName,
-                    &info,
-                    SystemProcessImageNameInformation.SizeOf,
-                    null
-                    );
-
-                if (status == NtStatus.InfoLengthMismatch)
-                {
-                    // Our buffer was too small. The required buffer length is stored in MaximumLength.
-                    buffer.ResizeNew(info.ImageName.MaximumLength);
-
-                    status = Win32.NtQuerySystemInformation(
-                        SystemInformationClass.SystemProcessImageName,
-                        &info,
-                        SystemProcessImageNameInformation.SizeOf,
-                        null
-                        );
-                }
-
-                status.ThrowIf();
-
-                return GetFileName(info.ImageName.Text);
             }
         }
 
@@ -180,23 +146,25 @@ namespace ProcessHacker.Native
                 alreadyCanonicalized = true;
             }
             // If the path starts with "\??\", we can remove it and we will have the path.
-            else if (fileName.StartsWith("\\??\\", StringComparison.OrdinalIgnoreCase))
+            else if (fileName.StartsWith("\\??\\"))
             {
                 fileName = fileName.Substring(4);
             }
 
             // If the path still starts with a backslash, we probably need to 
             // resolve any native object name to a DOS drive letter.
-            if (fileName.StartsWith("\\", StringComparison.OrdinalIgnoreCase))
+            if (fileName.StartsWith("\\"))
             {
-                foreach (KeyValuePair<string, string> pair in _fileNamePrefixes)
+                var prefixes = _fileNamePrefixes;
+
+                foreach (var pair in prefixes)
                 {
-                    if (fileName.StartsWith(pair.Key + "\\", StringComparison.OrdinalIgnoreCase))
+                    if (fileName.StartsWith(pair.Key + "\\"))
                     {
                         fileName = pair.Value + "\\" + fileName.Substring(pair.Key.Length + 1);
                         break;
                     }
-                    if (fileName == pair.Key)
+                    else if (fileName == pair.Key)
                     {
                         fileName = pair.Value;
                         break;
@@ -217,44 +185,42 @@ namespace ProcessHacker.Native
             if (driveLetter < 'A' || driveLetter > 'Z')
                 throw new ArgumentException("The drive letter must be between A to Z (inclusive).");
 
-            using (SymbolicLinkHandle shandle = new SymbolicLinkHandle(@"\??\" + driveLetter + ":", SymbolicLinkAccess.Query))
+            using (var shandle = new SymbolicLinkHandle(@"\??\" + driveLetter + ":", SymbolicLinkAccess.Query))
             {
-                return shandle.Target;
+                return shandle.GetTarget();
             }
         }
 
         public static void RefreshFileNamePrefixes()
         {
-            if (_fileNamePrefixes == null)
+            // Just create a new dictionary to avoid having to lock the existing one.
+            var newPrefixes = new Dictionary<string, string>();
+
+            for (char c = 'A'; c <= 'Z'; c++)
             {
-                // Just create a new dictionary to avoid having to lock the existing one.
-                _fileNamePrefixes = new Dictionary<string, string>();
-
-                for (char c = 'A'; c <= 'Z'; c++)
+                using (var data = new MemoryAlloc(1024))
                 {
-                    using (MemoryAlloc data = new MemoryAlloc(1024))
-                    {
-                        int length;
+                    int length;
 
-                        if ((length = Win32.QueryDosDevice(c.ToString() + ":", data, data.Size/2)) > 2)
-                        {
-                            _fileNamePrefixes.Add(data.ReadUnicodeString(0, length - 2), c.ToString() + ":");
-                        }
+                    if ((length = Win32.QueryDosDevice(c.ToString() + ":", data, data.Size / 2)) > 2)
+                    {
+                        newPrefixes.Add(data.ReadUnicodeString(0, length - 2), c.ToString() + ":");
                     }
                 }
             }
+
+            _fileNamePrefixes = newPrefixes;
         }
 
         public static void ShowProperties(string fileName)
         {
-            ShellExecuteInfo info = new ShellExecuteInfo
-            {
-                cbSize = ShellExecuteInfo.SizeOf, 
-                lpFile = fileName, 
-                nShow = ShowWindowType.Show, 
-                fMask = Win32.SeeMaskInvokeIdList, 
-                lpVerb = "properties"
-            };
+            var info = new ShellExecuteInfo();
+
+            info.cbSize = Marshal.SizeOf(info);
+            info.lpFile = fileName;
+            info.nShow = ShowWindowType.Show;
+            info.fMask = Win32.SeeMaskInvokeIdList;
+            info.lpVerb = "properties";
 
             Win32.ShellExecuteEx(ref info);
         }

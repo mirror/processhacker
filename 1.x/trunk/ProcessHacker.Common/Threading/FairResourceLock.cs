@@ -21,11 +21,8 @@
  */
 
 #define DEFER_EVENT_CREATION
-
-#if DEBUG
-#define ENABLE_STATISTICS
-#define RIGOROUS_CHECKS
-#endif
+//#define ENABLE_STATISTICS
+//#define RIGOROUS_CHECKS
 
 using System;
 using System.Runtime.InteropServices;
@@ -124,18 +121,13 @@ namespace ProcessHacker.Common.Threading
             public int PeakShrdWtrsCount;
         }
 
-        private struct WaitBlock
+        private unsafe struct WaitBlock
         {
-            public static readonly int SizeOf;
+            public static readonly int Size = Marshal.SizeOf(typeof(WaitBlock));
 
             public WaitBlock* Flink;
             public WaitBlock* Blink;
             public int Flags;
-
-            static WaitBlock()
-            {
-                SizeOf = Marshal.SizeOf(typeof(WaitBlock));
-            }
         }
 
         private enum ListPosition
@@ -214,20 +206,20 @@ namespace ProcessHacker.Common.Threading
         private WaitBlock* _firstSharedWaiter;
 
 #if ENABLE_STATISTICS
-        private int _exclusiveWaitersCount;
-        private int _sharedWaitersCount;
+        private int _exclusiveWaitersCount = 0;
+        private int _sharedWaitersCount = 0;
 
-        private int _acqExclCount;
-        private int _acqShrdCount;
-        private int _acqExclContCount;
-        private int _acqShrdContCount;
-        private int _acqExclBlkCount;
-        private int _acqShrdBlkCount;
-        private int _acqExclSlpCount;
-        private int _acqShrdSlpCount;
-        private int _insWaitBlkRetryCount;
-        private int _peakExclWtrsCount;
-        private int _peakShrdWtrsCount;
+        private int _acqExclCount = 0;
+        private int _acqShrdCount = 0;
+        private int _acqExclContCount = 0;
+        private int _acqShrdContCount = 0;
+        private int _acqExclBlkCount = 0;
+        private int _acqShrdBlkCount = 0;
+        private int _acqExclSlpCount = 0;
+        private int _acqShrdSlpCount = 0;
+        private int _insWaitBlkRetryCount = 0;
+        private int _peakExclWtrsCount = 0;
+        private int _peakShrdWtrsCount = 0;
 #endif
 
         /// <summary>
@@ -249,7 +241,7 @@ namespace ProcessHacker.Common.Threading
             _lock = new SpinLock();
             _spinCount = Environment.ProcessorCount != 1 ? spinCount : 0;
 
-            _waitersListHead = (WaitBlock*)Marshal.AllocHGlobal(WaitBlock.SizeOf);
+            _waitersListHead = (WaitBlock*)Marshal.AllocHGlobal(WaitBlock.Size);
             _waitersListHead->Flink = _waitersListHead;
             _waitersListHead->Blink = _waitersListHead;
             _waitersListHead->Flags = 0;
@@ -726,7 +718,7 @@ namespace ProcessHacker.Common.Threading
         public Statistics GetStatistics()
         {
 #if ENABLE_STATISTICS
-            return new Statistics
+            return new Statistics()
             {
                 AcqExcl = _acqExclCount,
                 AcqShrd = _acqShrdCount,
@@ -1134,7 +1126,7 @@ namespace ProcessHacker.Common.Threading
         private void WakeShared()
         {
             WaitBlock wakeList = new WaitBlock();
-            WaitBlock* wb;
+            WaitBlock* wb = null;
 
             wakeList.Flink = &wakeList;
             wakeList.Blink = &wakeList;

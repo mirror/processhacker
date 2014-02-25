@@ -10,32 +10,31 @@ namespace ProcessHacker.UI.Actions
 {
     public class SessionActions
     {
-        private static bool Prompt(IWin32Window window, string name, string action, string content)
+        private static bool Prompt(IWin32Window window, string name,
+            string action, string content)
         {
             DialogResult result = DialogResult.No;
 
             if (OSVersion.HasTaskDialogs)
             {
-                TaskDialog td = new TaskDialog
+                TaskDialog td = new TaskDialog();
+
+                td.WindowTitle = "Process Hacker";
+                td.MainInstruction = "Do you want to " + action + " " + name + "?";
+                td.Content = content;
+
+                td.Buttons = new TaskDialogButton[]
                 {
-                    PositionRelativeToWindow = true, 
-                    WindowTitle = "Process Hacker", 
-                    MainInstruction = "Do you want to " + action + " " + name + "?", 
-                    Content = content, 
-                    Buttons = new[]
-                    {
-                        new TaskDialogButton((int)DialogResult.Yes, char.ToUpper(action[0]) + action.Substring(1)),
-                        new TaskDialogButton((int)DialogResult.No, "Cancel")
-                    }, 
-                    DefaultButton = (int)DialogResult.No
+                    new TaskDialogButton((int)DialogResult.Yes, char.ToUpper(action[0]) + action.Substring(1)),
+                    new TaskDialogButton((int)DialogResult.No, "Cancel")
                 };
+                td.DefaultButton = (int)DialogResult.No;
 
                 result = (DialogResult)td.Show(window);
             }
             else
             {
-                result = MessageBox.Show(
-                    "Are you sure you want to " + action + " " + name + "?",
+                result = MessageBox.Show("Are you sure you want to " + action + " " + name + "?",
                     "Process Hacker", MessageBoxButtons.YesNo,
                     MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
             }
@@ -54,7 +53,9 @@ namespace ProcessHacker.UI.Actions
             }
             catch (WindowsException ex)
             {
-                if (ex.ErrorCode == Win32Error.AccessDenied && OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
+                if (ex.ErrorCode == Win32Error.AccessDenied && 
+                    OSVersion.HasUac &&
+                    Program.ElevationType == ProcessHacker.Native.Api.TokenElevationType.Limited)
                 {
                     DialogResult result;
 
@@ -64,31 +65,31 @@ namespace ProcessHacker.UI.Actions
                     }
                     else
                     {
-                        TaskDialog td = new TaskDialog
-                        {
-                            PositionRelativeToWindow = true,
-                            WindowTitle = "Process Hacker",
-                            MainIcon = TaskDialogIcon.Warning,
-                            MainInstruction = "Do you want to elevate the action?",
-                            Content = "The action could not be performed in the current security context. " +
-                            "Do you want Process Hacker to prompt for the appropriate credentials and elevate the action?",
-                            ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")",
-                            ExpandFooterArea = true,
-                            Buttons = new TaskDialogButton[] 
-                            {                   
-                                new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and elevate the action.")
-                            },
-                            CommonButtons = TaskDialogCommonButtons.Cancel,
-                            UseCommandLinks = true,
-                            Callback = (taskDialog, args, userData) =>
-                            {
-                                if (args.Notification == TaskDialogNotification.Created)
-                                {
-                                    taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
-                                }
+                        TaskDialog td = new TaskDialog();
 
-                                return false;
+                        td.WindowTitle = "Process Hacker";
+                        td.MainIcon = TaskDialogIcon.Warning;
+                        td.MainInstruction = "Do you want to elevate the action?";
+                        td.Content = "The action could not be performed in the current security context. " +
+                            "Do you want Process Hacker to prompt for the appropriate credentials and elevate the action?";
+
+                        td.ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")";
+                        td.ExpandFooterArea = true;
+
+                        td.Buttons = new TaskDialogButton[]
+                        {
+                            new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and elevate the action.")
+                        };
+                        td.CommonButtons = TaskDialogCommonButtons.Cancel;
+                        td.UseCommandLinks = true;
+                        td.Callback = (taskDialog, args, userData) =>
+                        {
+                            if (args.Notification == TaskDialogNotification.Created)
+                            {
+                                taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
                             }
+
+                            return false;
                         };
 
                         result = (DialogResult)td.Show(window);
@@ -96,8 +97,7 @@ namespace ProcessHacker.UI.Actions
 
                     if (result == DialogResult.Yes)
                     {
-                        Program.StartProcessHackerAdmin(
-                            "-e -type session -action " + actionName + " -obj \"" +
+                        Program.StartProcessHackerAdmin("-e -type session -action " + actionName + " -obj \"" +
                             session.ToString() + "\" -hwnd " + window.Handle.ToString(), null, window.Handle);
                     }
                 }
@@ -113,7 +113,10 @@ namespace ProcessHacker.UI.Actions
             if (prompt && !Prompt(window, "the session", "disconnect", ""))
                 return;
 
-            ElevateIfRequired(window, session, "disconnect", () => TerminalServerHandle.GetCurrent().GetSession(session).Disconnect());
+            ElevateIfRequired(window, session, "disconnect", () =>
+                {
+                    TerminalServerHandle.GetCurrent().GetSession(session).Disconnect();
+                });
         }
 
         public static void Logoff(IWin32Window window, int session, bool prompt)
@@ -121,7 +124,10 @@ namespace ProcessHacker.UI.Actions
             if (prompt && !Prompt(window, "the session", "logoff", ""))
                 return;
 
-            ElevateIfRequired(window, session, "logoff", () => TerminalServerHandle.GetCurrent().GetSession(session).Logoff());
+            ElevateIfRequired(window, session, "logoff", () =>
+            {
+                TerminalServerHandle.GetCurrent().GetSession(session).Logoff();
+            });
         }
     }
 }

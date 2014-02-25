@@ -60,13 +60,11 @@ namespace ProcessHacker.Native
             return heaps;
         }
 
-        private readonly IntPtr _heap;
-        private readonly HeapFlags _flags;
+        private IntPtr _heap;
 
         private Heap(IntPtr heap)
         {
             _heap = heap;
-            _flags = 0;
         }
 
         public Heap(HeapFlags flags)
@@ -86,8 +84,6 @@ namespace ProcessHacker.Native
 
             if (_heap == IntPtr.Zero)
                 throw new OutOfMemoryException();
-
-            _flags = flags;
         }
 
         public IntPtr Address
@@ -95,9 +91,9 @@ namespace ProcessHacker.Native
             get { return _heap; }
         }
 
-        public IntPtr Allocate(int size)
+        public IntPtr Allocate(HeapFlags flags, int size)
         {
-            IntPtr memory = Win32.RtlAllocateHeap(_heap, _flags, size.ToIntPtr());
+            IntPtr memory = Win32.RtlAllocateHeap(_heap, flags, size.ToIntPtr());
 
             if (memory == IntPtr.Zero)
                 throw new OutOfMemoryException();
@@ -105,9 +101,9 @@ namespace ProcessHacker.Native
             return memory;
         }
 
-        public int Compact()
+        public int Compact(HeapFlags flags)
         {
-            return Win32.RtlCompactHeap(_heap, _flags).ToInt32();
+            return Win32.RtlCompactHeap(_heap, flags).ToInt32();
         }
 
         public void Destroy()
@@ -115,19 +111,19 @@ namespace ProcessHacker.Native
             Win32.RtlDestroyHeap(_heap);
         }
 
-        public void Free(IntPtr memory)
+        public void Free(HeapFlags flags, IntPtr memory)
         {
-            Win32.RtlFreeHeap(_heap, _flags, memory);
+            Win32.RtlFreeHeap(_heap, flags, memory);
         }
 
-        public int GetBlockSize(IntPtr memory)
+        public int GetBlockSize(HeapFlags flags, IntPtr memory)
         {
-            return Win32.RtlSizeHeap(_heap, _flags, memory).ToInt32();
+            return Win32.RtlSizeHeap(_heap, flags, memory).ToInt32();
         }
 
-        public IntPtr Reallocate(IntPtr memory, int size)
+        public IntPtr Reallocate(HeapFlags flags, IntPtr memory, int size)
         {
-            IntPtr newMemory = Win32.RtlReAllocateHeap(_heap, _flags, memory, size.ToIntPtr());
+            IntPtr newMemory = Win32.RtlReAllocateHeap(_heap, flags, memory, size.ToIntPtr());
 
             if (newMemory == IntPtr.Zero)
                 throw new OutOfMemoryException();

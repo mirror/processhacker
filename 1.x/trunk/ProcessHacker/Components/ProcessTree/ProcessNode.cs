@@ -38,16 +38,16 @@ namespace ProcessHacker
         private static ProcessNode[] _processNodeTreePathBuffer;
         private const int _processNodeTreePathMaxDepth = 512;
 
-        private ProcessNode _parent;
-        private readonly List<ProcessNode> _children = new List<ProcessNode>();
-        private TreePath _treePath;
+        private ProcessNode _parent = null;
+        private List<ProcessNode> _children = new List<ProcessNode>();
+        private TreePath _treePath = null;
 
         private ProcessItem _pitem;
-        private bool _wasNoIcon;
+        private bool _wasNoIcon = false;
         private Bitmap _icon;
 
         private string _tooltipText;
-        private int _lastTooltipTickCount;
+        private int _lastTooltipTickCount = 0;
 
         public ProcessNode(ProcessItem pitem)
         {
@@ -57,7 +57,7 @@ namespace ProcessHacker
             if (_pitem.Icon == null)
             {
                 _wasNoIcon = true;
-                _icon = Properties.Resources.Process_small.ToBitmap();
+                _icon = global::ProcessHacker.Properties.Resources.Process_small.ToBitmap();
             }
             else
             {
@@ -68,7 +68,7 @@ namespace ProcessHacker
                 catch
                 {
                     _wasNoIcon = true;
-                    _icon = Properties.Resources.Process_small.ToBitmap();
+                    _icon = global::ProcessHacker.Properties.Resources.Process_small.ToBitmap();
                 }
             }
         }
@@ -161,7 +161,9 @@ namespace ProcessHacker
                 currentNode = currentNode.Parent;
             }
 
-            ProcessNode[] path = new ProcessNode[_processNodeTreePathMaxDepth - i];
+            ProcessNode[] path;
+
+            path = new ProcessNode[_processNodeTreePathMaxDepth - i];
             Array.Copy(_processNodeTreePathBuffer, i, path, 0, _processNodeTreePathMaxDepth - i);
 
             _treePath = new TreePath(path);
@@ -181,7 +183,7 @@ namespace ProcessHacker
         {
             get
             {
-                return new ProcessHacker.Components.NodePlotter.PlotterInfo
+                return new ProcessHacker.Components.NodePlotter.PlotterInfo()
                 {
                     UseSecondLine = true,
                     OverlaySecondLine = false,
@@ -198,7 +200,7 @@ namespace ProcessHacker
         {
             get
             {
-                return new ProcessHacker.Components.NodePlotter.PlotterInfo
+                return new ProcessHacker.Components.NodePlotter.PlotterInfo()
                 {
                     UseSecondLine = true,
                     OverlaySecondLine = true,
@@ -213,7 +215,7 @@ namespace ProcessHacker
 
         public string Name
         {
-            get { return _pitem.Name ?? string.Empty; }
+            get { return _pitem.Name ?? ""; }
         }
 
         public string DisplayPid
@@ -222,8 +224,8 @@ namespace ProcessHacker
             {
                 if (_pitem.Pid >= 0)
                     return _pitem.Pid.ToString();
-                
-                return string.Empty;
+                else
+                    return "";
             }
         }
 
@@ -234,13 +236,7 @@ namespace ProcessHacker
 
         public int PPid
         {
-            get
-            {
-                if (_pitem.Pid == _pitem.ParentPid) 
-                    return -1;
-
-                return this._pitem.ParentPid;
-            }
+            get { if (_pitem.Pid == _pitem.ParentPid) return -1; else return _pitem.ParentPid; }
         }
 
         public string PvtMemory
@@ -263,16 +259,19 @@ namespace ProcessHacker
 
         private int GetWorkingSetNumber(NProcessHacker.WsInformationClass WsInformationClass)
         {
-            if (_pitem.ProcessQueryHandle == null)
-                return 0;
-
+            NtStatus status;
             int wsInfo;
             int retLen;
 
             try
             {
-                if (NProcessHacker.PhQueryProcessWs(_pitem.ProcessQueryHandle, WsInformationClass, out wsInfo, 4, out retLen) < NtStatus.Error)
-                    return wsInfo * Program.ProcessProvider.System.PageSize;
+                using (var phandle = new ProcessHandle(_pitem.Pid, 
+                    ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                {
+                    if ((status = NProcessHacker.PhQueryProcessWs(phandle, WsInformationClass, out wsInfo,
+                        4, out retLen)) < NtStatus.Error)
+                        return wsInfo * Program.ProcessProvider.System.PageSize;
+                }
             }
             catch
             { }
@@ -345,9 +344,9 @@ namespace ProcessHacker
             get
             {
                 if (_pitem.CpuUsage == 0)
-                    return string.Empty;
-                
-                return this._pitem.CpuUsage.ToString("F2");
+                    return "";
+                else
+                    return _pitem.CpuUsage.ToString("F2");
             }
         }
 
@@ -361,9 +360,9 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return string.Empty;
-                
-                return this._pitem.SessionId.ToString();
+                    return "";
+                else
+                    return _pitem.SessionId.ToString();
             }
         }
 
@@ -371,16 +370,14 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.ProcessQueryHandle == null)
-                    return string.Empty;
-
                 try
                 {
-                    return PhUtils.FormatPriorityClass(_pitem.ProcessQueryHandle.PriorityClass);
+                    using (var phandle = new ProcessHandle(Pid, Program.MinProcessQueryRights))
+                        return PhUtils.FormatPriorityClass(phandle.GetPriorityClass());
                 }
                 catch
                 {
-                    return string.Empty;
+                    return "";
                 }
             }
         }
@@ -390,9 +387,9 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return string.Empty;
-                
-                return this._pitem.Process.BasePriority.ToString();
+                    return "";
+                else
+                    return _pitem.Process.BasePriority.ToString();
             }
         }
 
@@ -400,22 +397,16 @@ namespace ProcessHacker
         {
             get
             {
-                switch (this.Pid)
-                {
-                    case 0:
-                        return "System Idle Process";
-                    case -2:
-                        return "Deferred Procedure Calls";
-                    case -3:
-                        return "Interrupts";
-                    default:
-                        {
-                            if (this._pitem.VersionInfo != null && !string.IsNullOrEmpty(this._pitem.VersionInfo.FileDescription))
-                                return this._pitem.VersionInfo.FileDescription;
-
-                            return string.Empty;
-                        }
-                }
+                if (Pid == 0)
+                    return "System Idle Process";
+                else if (Pid == -2)
+                    return "Deferred Procedure Calls";
+                else if (Pid == -3)
+                    return "Interrupts";
+                else if (_pitem.VersionInfo != null && _pitem.VersionInfo.FileDescription != null)
+                    return _pitem.VersionInfo.FileDescription;
+                else
+                    return "";
             }
         }
 
@@ -423,10 +414,10 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.VersionInfo != null && !string.IsNullOrEmpty(_pitem.VersionInfo.CompanyName))
+                if (_pitem.VersionInfo != null && _pitem.VersionInfo.CompanyName != null)
                     return _pitem.VersionInfo.CompanyName;
-                
-                return string.Empty;
+                else
+                    return "";
             }
         }
 
@@ -434,10 +425,10 @@ namespace ProcessHacker
         {
             get
             {
-                if (string.IsNullOrEmpty(_pitem.FileName))
-                    return string.Empty;
-                
-                return this._pitem.FileName;
+                if (_pitem.FileName == null)
+                    return "";
+                else
+                    return _pitem.FileName;
             }
         }
 
@@ -445,10 +436,10 @@ namespace ProcessHacker
         {
             get
             {
-                if (string.IsNullOrEmpty(_pitem.CmdLine))
-                    return string.Empty;
-                
-                return this._pitem.CmdLine;//.Replace("\0", string.Empty);
+                if (_pitem.CmdLine == null)
+                    return "";
+                else
+                    return _pitem.CmdLine.Replace("\0", "");
             }
         }
 
@@ -457,9 +448,9 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return string.Empty;
-                
-                return this._pitem.Process.NumberOfThreads.ToString();
+                    return "";
+                else
+                    return _pitem.Process.NumberOfThreads.ToString();
             }
         }
 
@@ -468,9 +459,9 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return string.Empty;
-               
-                return this._pitem.Process.HandleCount.ToString();
+                    return "";
+                else
+                    return _pitem.Process.HandleCount.ToString();
             }
         }
 
@@ -478,12 +469,10 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.ProcessQueryHandle == null)
-                    return 0;
-
                 try
                 {
-                    return _pitem.ProcessQueryHandle.GetGuiResources(false);
+                    using (var phandle = new ProcessHandle(Pid, ProcessAccess.QueryInformation))
+                        return phandle.GetGuiResources(false);
                 }
                 catch
                 {
@@ -497,14 +486,16 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return string.Empty;
-                
-                int number = this.GdiHandlesNumber;
+                    return "";
+                else
+                {
+                    int number = this.GdiHandlesNumber;
 
-                if (number == 0)
-                    return string.Empty;
-                    
-                return number.ToString();
+                    if (number == 0)
+                        return "";
+                    else
+                        return number.ToString();
+                }
             }
         }
 
@@ -512,12 +503,10 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.ProcessQueryHandle == null)
-                    return 0;
-
                 try
                 {
-                    return _pitem.ProcessQueryHandle.GetGuiResources(true);
+                    using (var phandle = new ProcessHandle(Pid, ProcessAccess.QueryInformation))
+                        return phandle.GetGuiResources(true);
                 }
                 catch
                 {
@@ -531,20 +520,26 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return string.Empty;
-                
-                int number = this.UserHandlesNumber;
+                    return "";
+                else
+                {
+                    int number = this.UserHandlesNumber;
 
-                if (number == 0)
-                    return string.Empty;
-                    
-                return number.ToString();
+                    if (number == 0)
+                        return "";
+                    else
+                        return number.ToString();
+                }
             }
         }
 
         public long IoTotalNumber
         {
-            get { return (_pitem.IoReadDelta.Delta + _pitem.IoWriteDelta.Delta + _pitem.IoOtherDelta.Delta) * 1000 / Settings.Instance.RefreshInterval; }
+            get
+            {
+                return (_pitem.IoReadDelta.Delta + _pitem.IoWriteDelta.Delta +
+                    _pitem.IoOtherDelta.Delta) * 1000 / Settings.Instance.RefreshInterval;
+            }
         }
 
         public string IoTotal
@@ -552,9 +547,9 @@ namespace ProcessHacker
             get
             {
                 if (this.IoTotalNumber == 0)
-                    return string.Empty;
-                
-                return Utils.FormatSize(this.IoTotalNumber) + "/s";
+                    return "";
+                else
+                    return Utils.FormatSize(this.IoTotalNumber) + "/s";
             }
         }
 
@@ -562,7 +557,8 @@ namespace ProcessHacker
         {
             get
             {
-                return (_pitem.IoReadDelta.Delta + _pitem.IoOtherDelta.Delta) * 1000 / Settings.Instance.RefreshInterval;
+                return (_pitem.IoReadDelta.Delta + _pitem.IoOtherDelta.Delta) * 1000 /
+                    Settings.Instance.RefreshInterval;
             }
         }
 
@@ -571,15 +567,19 @@ namespace ProcessHacker
             get
             {
                 if (this.IoReadOtherNumber == 0)
-                    return string.Empty;
-                
-                return Utils.FormatSize(this.IoReadOtherNumber) + "/s";
+                    return "";
+                else
+                    return Utils.FormatSize(this.IoReadOtherNumber) + "/s";
             }
         }
 
         public long IoWriteNumber
         {
-            get { return _pitem.IoWriteDelta.Delta * 1000 / Settings.Instance.RefreshInterval; }
+            get
+            {
+                return _pitem.IoWriteDelta.Delta * 1000 /
+                    Settings.Instance.RefreshInterval;
+            }
         }
 
         public string IoWrite
@@ -587,9 +587,9 @@ namespace ProcessHacker
             get
             {
                 if (this.IoWriteNumber == 0)
-                    return string.Empty;
-                
-                return Utils.FormatSize(this.IoWriteNumber) + "/s";
+                    return "";
+                else
+                    return Utils.FormatSize(this.IoWriteNumber) + "/s";
             }
         }
 
@@ -607,12 +607,9 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.ProcessQueryHandle == null)
-                    return 0;
-
                 try
                 {
-                    return _pitem.ProcessQueryHandle.IoPriority;
+                    return _pitem.ProcessQueryHandle.GetIoPriority();
                 }
                 catch
                 {
@@ -625,12 +622,9 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.ProcessQueryHandle == null)
-                    return 0;
-
                 try
                 {
-                    return _pitem.ProcessQueryHandle.PagePriority;
+                    return _pitem.ProcessQueryHandle.GetPagePriority();
                 }
                 catch
                 {
@@ -649,9 +643,9 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4 || _pitem.CreateTime.Year == 1)
-                    return string.Empty;
-                
-                return this._pitem.CreateTime.ToString();
+                    return "";
+                else
+                    return _pitem.CreateTime.ToString();
             }
         }
 
@@ -660,9 +654,9 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4 || _pitem.CreateTime.Year == 1)
-                    return string.Empty;
-                
-                return Utils.FormatRelativeDateTime(this._pitem.CreateTime);
+                    return "";
+                else
+                    return Utils.FormatRelativeDateTime(_pitem.CreateTime);
             }
         }
 
@@ -683,12 +677,12 @@ namespace ProcessHacker
 
         public string VerificationStatus
         {
-            get { return _pitem.VerifyResult == VerifyResult.Trusted ? "Verified" : string.Empty; }
+            get { return _pitem.VerifyResult == VerifyResult.Trusted ? "Verified" : ""; }
         }
 
         public string VerifiedSigner
         {
-            get { return _pitem.VerifyResult == VerifyResult.Trusted ? _pitem.VerifySignerName : string.Empty; }
+            get { return _pitem.VerifyResult == VerifyResult.Trusted ? _pitem.VerifySignerName : ""; }
         }
     }
 }

@@ -88,7 +88,7 @@ namespace ProcessHacker
                     progressWindow.ProgressBarStyle = ProgressBarStyle.Marquee;
                     progressWindow.ProgressText = "Creating the dump file...";
 
-                    dumpTask.Completed += result =>
+                    dumpTask.Completed += (result) =>
                     {
                         progressWindow.SetCompleted();
 
@@ -216,8 +216,8 @@ namespace ProcessHacker
                         // Fill in the cell.
                         str[i + 1][columnIndex] = 
                             // If this is the first column in the row, add some indentation.
-                            (columnIndex == 0 ? (new string(' ', (node.Level - 1) * 2)) : string.Empty) +
-                            (text != null ? text : string.Empty);
+                            (columnIndex == 0 ? (new string(' ', (node.Level - 1) * 2)) : "") + 
+                            (text != null ? text : "");
                     }
 
                     i++;
@@ -286,9 +286,9 @@ namespace ProcessHacker
 
             try
             {
-                using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                 {
-                    var fileName = phandle.ImageFileName;
+                    var fileName = phandle.GetImageFileName();
 
                     sb.AppendLine("Native file name: " + fileName);
                     fileName = FileUtils.GetFileName(fileName);
@@ -307,9 +307,9 @@ namespace ProcessHacker
                         sb.AppendLine("Version info section failed! " + ex2.Message);
                     }
 
-                    sb.AppendLine("Started: " + phandle.CreateTime);
+                    sb.AppendLine("Started: " + phandle.GetCreateTime().ToString());
 
-                    var memoryInfo = phandle.MemoryStatistics;
+                    var memoryInfo = phandle.GetMemoryStatistics();
 
                     sb.AppendLine("WS: " + Utils.FormatSize(memoryInfo.WorkingSetSize));
                     sb.AppendLine("Pagefile usage: " + Utils.FormatSize(memoryInfo.PagefileUsage));
@@ -324,7 +324,7 @@ namespace ProcessHacker
             {
                 using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                 {
-                    var commandLine = phandle.CommandLine;
+                    var commandLine = phandle.GetCommandLine();
                     var currentDirectory = phandle.GetPebString(PebOffset.CurrentDirectoryPath);
 
                     sb.AppendLine("Command line: " + commandLine);
@@ -381,16 +381,16 @@ namespace ProcessHacker
                 using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                 using (var thandle = phandle.GetToken(TokenAccess.Query))
                 {
-                    sb.AppendLine("User: " + thandle.User.GetFullName(true));
-                    sb.AppendLine("Owner: " + thandle.Owner.GetFullName(true));
-                    sb.AppendLine("Primary group: " + thandle.PrimaryGroup.GetFullName(true));
+                    sb.AppendLine("User: " + thandle.GetUser().GetFullName(true));
+                    sb.AppendLine("Owner: " + thandle.GetOwner().GetFullName(true));
+                    sb.AppendLine("Primary group: " + thandle.GetPrimaryGroup().GetFullName(true));
 
-                    foreach (var group in thandle.Groups)
+                    foreach (var group in thandle.GetGroups())
                     {
                         sb.AppendLine("Group " + group.GetFullName(true));
                     }
 
-                    foreach (var privilege in thandle.Privileges)
+                    foreach (var privilege in thandle.GetPrivileges())
                     {
                         sb.AppendLine("Privilege " + privilege.Name + ": " + privilege.Attributes.ToString());
                     }

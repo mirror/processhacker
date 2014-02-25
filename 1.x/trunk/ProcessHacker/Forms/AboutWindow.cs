@@ -31,16 +31,17 @@ namespace ProcessHacker
         public AboutWindow()
         {
             InitializeComponent();
-
+            this.AddEscapeToClose();
             this.SetTopMost();
 
-            this.labelVersion.Text = Application.ProductVersion;
-            this.buttonChangelog.Visible = System.IO.File.Exists(Application.StartupPath + "\\CHANGELOG.txt");
+            labelVersion.Text = Application.ProductVersion;
+
+            buttonChangelog.Visible = System.IO.File.Exists(Application.StartupPath + "\\CHANGELOG.txt");
         }
 
         private void flowCredits_MouseEnter(object sender, EventArgs e)
         {
-            this.flowCredits.Select();
+            flowCredits.Select();
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
@@ -52,12 +53,11 @@ namespace ProcessHacker
         {
             try
             {
-                using (InformationBox box = new InformationBox(System.IO.File.ReadAllText(Application.StartupPath + "\\CHANGELOG.txt")))
-                {
-                    box.ShowSaveButton = false;
-                    box.Title = "Process Hacker Changelog";
-                    box.ShowDialog();
-                }
+                InformationBox box = new InformationBox(System.IO.File.ReadAllText(Application.StartupPath + "\\CHANGELOG.txt"));
+
+                box.ShowSaveButton = false;
+                box.Title = "Process Hacker Changelog";
+                box.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -67,11 +67,9 @@ namespace ProcessHacker
 
         private void buttonDiagnostics_Click(object sender, EventArgs e)
         {
-            using (InformationBox box = new InformationBox(Program.GetDiagnosticInformation()))
-            {
-                box.DefaultFileName = "Process Hacker Diagnostics Info";
-                box.ShowDialog();
-            }
+            InformationBox box = new InformationBox(Program.GetDiagnosticInformation());
+            box.DefaultFileName = "Process Hacker Diagnostics Info";    
+            box.ShowDialog();
         }
 
         private void linkHexBox_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

@@ -27,8 +27,20 @@ namespace ProcessHacker.Common.Objects
 {
     public class HandleTableEntry
     {
-        public int Handle { get; internal set; }
-        public IRefCounted Object { get; internal set; }
+        private int _handle;
+        private IRefCounted _object;
+
+        public int Handle
+        {
+            get { return _handle; }
+            internal set { _handle = value; }
+        }
+
+        public IRefCounted Object
+        {
+            get { return _object; }
+            internal set { _object = value; }
+        }
     }
 
     /// <summary>
@@ -52,9 +64,9 @@ namespace ProcessHacker.Common.Objects
         /// <returns>Return true to stop enumerating; otherwise return false.</returns>
         public delegate bool EnumerateHandleTableDelegate(int handle, TEntry entry);
 
-        private readonly IdGenerator _handleGenerator = new IdGenerator(4, 4);
-        private readonly FastResourceLock _lock = new FastResourceLock();
-        private readonly Dictionary<int, TEntry> _handles = new Dictionary<int, TEntry>();
+        private IdGenerator _handleGenerator = new IdGenerator(4, 4);
+        private FastResourceLock _lock = new FastResourceLock();
+        private Dictionary<int, TEntry> _handles = new Dictionary<int, TEntry>();
 
         protected override void DisposeObject(bool disposing)
         {
@@ -306,7 +318,8 @@ namespace ProcessHacker.Common.Objects
         /// An object. This object has been referenced and must be 
         /// dereferenced once it is no longer needed.
         /// </returns>
-        public T ReferenceByHandle<T>(int handle, out TEntry entry) where T : class, IRefCounted
+        public T ReferenceByHandle<T>(int handle, out TEntry entry)
+            where T : class, IRefCounted
         {
             IRefCounted obj = this.ReferenceByHandle(handle, out entry);
 
@@ -318,10 +331,12 @@ namespace ProcessHacker.Common.Objects
             {
                 return (T)obj;
             }
-            
-            // Wrong type. Dereference and return.
-            obj.Dereference();
-            return null;
+            else
+            {
+                // Wrong type. Dereference and return.
+                obj.Dereference();
+                return null;
+            }
         }
     }
 }

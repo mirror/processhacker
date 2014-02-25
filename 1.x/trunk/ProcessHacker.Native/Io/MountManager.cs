@@ -21,7 +21,10 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -44,12 +47,7 @@ namespace ProcessHacker.Native.Io
         [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrMountPoint
         {
-            public static readonly int SizeOf;
-            
-            static MountMgrMountPoint()
-            {
-                SizeOf = Marshal.SizeOf(typeof(MountMgrMountPoint));
-            }
+            public static readonly int Size = Marshal.SizeOf(typeof(MountMgrMountPoint));
 
             public int SymbolicLinkNameOffset;
             public ushort SymbolicLinkNameLength;
@@ -96,17 +94,12 @@ namespace ProcessHacker.Native.Io
         [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrVolumeMountPoint
         {
-            public static readonly int SizeOf;
+            public static readonly int Size = Marshal.SizeOf(typeof(MountMgrVolumeMountPoint));
 
             public ushort SourceVolumeNameOffset;
             public ushort SourceVolumeNameLength;
             public ushort TargetVolumeNameOffset;
             public ushort TargetVolumeNameLength;
-
-            static MountMgrVolumeMountPoint()
-            {
-                SizeOf = Marshal.SizeOf(typeof(MountMgrVolumeMountPoint));
-            }
         }
 
         // Input, output for IoCtlChangeNotify
@@ -172,16 +165,14 @@ namespace ProcessHacker.Native.Io
 
         private static void DeleteSymbolicLink(string path)
         {
-            using (MemoryAlloc data = new MemoryAlloc(MountMgrMountPoint.SizeOf + path.Length * 2))
-            using (MemoryAlloc outData = new MemoryAlloc(1600))
+            using (var data = new MemoryAlloc(MountMgrMountPoint.Size + path.Length * 2))
+            using (var outData = new MemoryAlloc(1600))
             {
-                MountMgrMountPoint mountPoint = new MountMgrMountPoint
-                {
-                    SymbolicLinkNameLength = (ushort)(path.Length*2), 
-                    SymbolicLinkNameOffset = MountMgrMountPoint.SizeOf
-                };
+                MountMgrMountPoint mountPoint = new MountMgrMountPoint();
 
-                data.WriteStruct(mountPoint);
+                mountPoint.SymbolicLinkNameLength = (ushort)(path.Length * 2);
+                mountPoint.SymbolicLinkNameOffset = MountMgrMountPoint.Size;
+                data.WriteStruct<MountMgrMountPoint>(mountPoint);
                 data.WriteUnicodeString(mountPoint.SymbolicLinkNameOffset, path);
 
                 using (var fhandle = OpenMountManager(FileAccess.GenericRead | FileAccess.GenericWrite))
@@ -201,7 +192,7 @@ namespace ProcessHacker.Native.Io
         /// <returns>The device name associated with the DOS drive.</returns>
         public static string GetDeviceName(string fileName)
         {
-            using (FileHandle fhandle = new FileHandle(
+            using (var fhandle = new FileHandle(
                 fileName,
                 FileShareMode.ReadWrite,
                 FileCreateOptions.SynchronousIoNonAlert,
@@ -212,7 +203,7 @@ namespace ProcessHacker.Native.Io
 
         public static string GetDeviceName(FileHandle fhandle)
         {
-            using (MemoryAlloc data = new MemoryAlloc(600))
+            using (var data = new MemoryAlloc(600))
             {
                 fhandle.IoControl(IoCtlQueryDeviceName, IntPtr.Zero, 0, data, data.Size);
 
@@ -224,7 +215,7 @@ namespace ProcessHacker.Native.Io
 
         private static string GetReparsePointTarget(FileHandle fhandle)
         {
-            using (MemoryAlloc data = new MemoryAlloc(FileSystem.MaximumReparseDataBufferSize))
+            using (var data = new MemoryAlloc(FileSystem.MaximumReparseDataBufferSize))
             {
                 fhandle.IoControl(FileSystem.FsCtlGetReparsePoint, IntPtr.Zero, 0, data, data.Size);
 
@@ -299,15 +290,13 @@ namespace ProcessHacker.Native.Io
 
         public static string GetVolumeName(string deviceName)
         {
-            using (MemoryAlloc data = new MemoryAlloc(MountMgrMountPoint.SizeOf + deviceName.Length * 2))
+            using (var data = new MemoryAlloc(MountMgrMountPoint.Size + deviceName.Length * 2))
             {
-                MountMgrMountPoint mountPoint = new MountMgrMountPoint
-                {
-                    DeviceNameLength = (ushort)(deviceName.Length*2), 
-                    DeviceNameOffset = MountMgrMountPoint.SizeOf
-                };
+                MountMgrMountPoint mountPoint = new MountMgrMountPoint();
 
-                data.WriteStruct(mountPoint);
+                mountPoint.DeviceNameLength = (ushort)(deviceName.Length * 2);
+                mountPoint.DeviceNameOffset = MountMgrMountPoint.Size;
+                data.WriteStruct<MountMgrMountPoint>(mountPoint);
                 data.WriteUnicodeString(mountPoint.DeviceNameOffset, deviceName);
 
                 using (var fhandle = OpenMountManager((FileAccess)StandardRights.Synchronize))
@@ -315,7 +304,7 @@ namespace ProcessHacker.Native.Io
                     NtStatus status;
                     int retLength;
 
-                    using (MemoryAlloc outData = new MemoryAlloc(0x100))
+                    using (var outData = new MemoryAlloc(0x100))
                     {
                         while (true)
                         {
@@ -339,7 +328,8 @@ namespace ProcessHacker.Native.Io
                             }
                         }
 
-                        status.ThrowIf();
+                        if (status >= NtStatus.Error)
+                            Win32.Throw(status);
 
                         MountMgrMountPoints mountPoints = outData.ReadStruct<MountMgrMountPoints>();
 
@@ -349,11 +339,11 @@ namespace ProcessHacker.Native.Io
                         {
                             MountMgrMountPoint mp = outData.ReadStruct<MountMgrMountPoint>(
                                 MountMgrMountPoints.MountPointsOffset,
-                                MountMgrMountPoint.SizeOf,
                                 i
                                 );
+                            string symLinkName;
 
-                            string symLinkName = Marshal.PtrToStringUni(
+                            symLinkName = Marshal.PtrToStringUni(
                                 outData.Memory.Increment(mp.SymbolicLinkNameOffset),
                                 mp.SymbolicLinkNameLength / 2
                                 );
@@ -372,20 +362,20 @@ namespace ProcessHacker.Native.Io
         {
             if (
                 path.Length == 14 &&
-                path.StartsWith(@"\DosDevices\", StringComparison.OrdinalIgnoreCase) &&
+                path.StartsWith(@"\DosDevices\") &&
                 path[12] >= 'A' && path[12] <= 'Z' &&
                 path[13] == ':'
                 )
                 return true;
-
-            return false;
+            else
+                return false;
         }
 
         public static bool IsVolumePath(string path)
         {
             if (
                 (path.Length == 48 || (path.Length == 49 && path[48] == '\\')) &&
-                (path.StartsWith(@"\??\Volume", StringComparison.OrdinalIgnoreCase) || path.StartsWith(@"\\?\Volume", StringComparison.OrdinalIgnoreCase)) &&
+                (path.StartsWith(@"\??\Volume") || path.StartsWith(@"\\?\Volume")) &&
                 path[10] == '{' &&
                 path[19] == '-' &&
                 path[24] == '-' &&
@@ -394,32 +384,31 @@ namespace ProcessHacker.Native.Io
                 path[47] == '}'
                 )
                 return true;
-            
-            return false;
+            else
+                return false;
         }
 
         private static void Notify(bool created, string sourceVolumeName, string targetVolumeName)
         {
-            using (MemoryAlloc data = new MemoryAlloc(
-                MountMgrVolumeMountPoint.SizeOf +
+            using (var data = new MemoryAlloc(
+                MountMgrVolumeMountPoint.Size +
                 sourceVolumeName.Length * 2 +
                 targetVolumeName.Length * 2
                 ))
             {
-                MountMgrVolumeMountPoint mountPoint = new MountMgrVolumeMountPoint
-                {
-                    SourceVolumeNameLength = (ushort)(sourceVolumeName.Length * 2), 
-                    SourceVolumeNameOffset = (ushort)MountMgrVolumeMountPoint.SizeOf, 
-                    TargetVolumeNameLength = (ushort)(targetVolumeName.Length * 2)
-                };
+                MountMgrVolumeMountPoint mountPoint = new MountMgrVolumeMountPoint();
 
-                mountPoint.TargetVolumeNameOffset = (ushort)(mountPoint.SourceVolumeNameOffset + mountPoint.SourceVolumeNameLength);
+                mountPoint.SourceVolumeNameLength = (ushort)(sourceVolumeName.Length * 2);
+                mountPoint.SourceVolumeNameOffset = (ushort)MountMgrVolumeMountPoint.Size;
+                mountPoint.TargetVolumeNameLength = (ushort)(targetVolumeName.Length * 2);
+                mountPoint.TargetVolumeNameOffset = 
+                    (ushort)(mountPoint.SourceVolumeNameOffset + mountPoint.SourceVolumeNameLength);
 
-                data.WriteStruct(mountPoint);
+                data.WriteStruct<MountMgrVolumeMountPoint>(mountPoint);
                 data.WriteUnicodeString(mountPoint.SourceVolumeNameOffset, sourceVolumeName);
                 data.WriteUnicodeString(mountPoint.TargetVolumeNameOffset, targetVolumeName);
 
-                using (FileHandle fhandle = OpenMountManager(FileAccess.GenericRead | FileAccess.GenericWrite))
+                using (var fhandle = OpenMountManager(FileAccess.GenericRead | FileAccess.GenericWrite))
                 {
                     fhandle.IoControl(
                         created ? IoCtlVolumeMountPointCreated : IoCtlVolumeMountPointDeleted,

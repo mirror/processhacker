@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Objects;
 
@@ -46,8 +47,7 @@ namespace ProcessHacker
         /// <summary>
         /// Represents a handler called when a dictionary item is modified.
         /// </summary>
-        /// <param name="oldItem">The old item.</param>
-        /// <param name="newItem">The new item.</param>
+        /// <param name="item">The modified item.</param>
         public delegate void ProviderDictionaryModified(TValue oldItem, TValue newItem);
 
         /// <summary>
@@ -94,19 +94,19 @@ namespace ProcessHacker
         private string _name = string.Empty;
         private IDictionary<TKey, TValue> _dictionary;
 
-        private bool _disposing;
-        private bool _boosting;
-        private bool _busy;
-        private bool _enabled;
-        private readonly LinkedListEntry<IProvider> _listEntry;
+        private bool _disposing = false;
+        private bool _boosting = false;
+        private bool _busy = false;
+        private bool _enabled = false;
+        private LinkedListEntry<IProvider> _listEntry;
         private ProviderThread _owner;
-        private int _runCount;
-        private bool _unregistering;
+        private int _runCount = 0;
+        private bool _unregistering = false;
 
         /// <summary>
         /// Creates a new instance of the Provider class.
         /// </summary>
-        protected Provider()
+        public Provider()
             : this(new Dictionary<TKey, TValue>())
         { }
 
@@ -114,7 +114,7 @@ namespace ProcessHacker
         /// Creates a new instance of the Provider class, specifying a 
         /// custom equality comparer.
         /// </summary>
-        protected Provider(IEqualityComparer<TKey> comparer)
+        public Provider(IEqualityComparer<TKey> comparer)
             : this(new Dictionary<TKey, TValue>(comparer))
         { }
 
@@ -122,20 +122,20 @@ namespace ProcessHacker
         /// Creates a new instance of the Provider class, specifying a
         /// custom <seealso cref="System.Collections.Generic.IDictionary&lt;TKey, TValue&gt;"/> instance.
         /// </summary>
-        protected Provider(IDictionary<TKey, TValue> dictionary)
+        public Provider(IDictionary<TKey, TValue> dictionary)
         {
             if (dictionary == null)
                 throw new ArgumentNullException("dictionary");
 
             _dictionary = dictionary;
-            _listEntry = new LinkedListEntry<IProvider>
-            {
-                Value = this
-            };
+            _listEntry = new LinkedListEntry<IProvider>();
+            _listEntry.Value = this;
         }
 
         protected override void DisposeObject(bool disposing)
         {   
+            Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): disposing (" + disposing.ToString() + ")");
+
             _disposing = true;
 
             if (this.Disposed != null)
@@ -149,6 +149,8 @@ namespace ProcessHacker
                     Logging.Log(ex);
                 }
             }
+
+            Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): finished disposing (" + disposing.ToString() + ")");
         }
 
         public string Name
@@ -292,22 +294,34 @@ namespace ProcessHacker
             _busy = false;
         }
 
+        private void CallEvent(Delegate e, params object[] args)
+        {
+            if (e != null)
+            {
+                try
+                {
+                    e.DynamicInvoke(args);
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
+            }
+        }
+
         protected void OnDictionaryAdded(TValue item)
         {
-            if (this.DictionaryAdded != null)
-                this.DictionaryAdded(item);
+            this.CallEvent(this.DictionaryAdded, item);
         }
 
         protected void OnDictionaryModified(TValue oldItem, TValue newItem)
         {
-            if (this.DictionaryModified != null)
-                this.DictionaryModified(oldItem, newItem);
+            this.CallEvent(this.DictionaryModified, oldItem, newItem);
         }
 
         protected void OnDictionaryRemoved(TValue item)
         {
-            if (this.DictionaryRemoved != null)
-                this.DictionaryRemoved(item);
+            this.CallEvent(this.DictionaryRemoved, item);
         }
 
         protected virtual void Update()

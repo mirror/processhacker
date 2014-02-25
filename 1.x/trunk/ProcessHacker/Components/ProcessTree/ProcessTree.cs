@@ -35,51 +35,47 @@ namespace ProcessHacker
     {
         private ProcessSystemProvider _provider;
         private ProcessTreeModel _treeModel;
-        private readonly ProcessToolTipProvider _tooltipProvider;
-        private int _runCount;
+        private ProcessToolTipProvider _tooltipProvider;
+        private int _runCount = 0;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
         public new event EventHandler DoubleClick;
         public event EventHandler SelectionChanged;
         public event EventHandler<TreeNodeAdvMouseEventArgs> NodeMouseDoubleClick;
-        private readonly object _listLock = new object();
+        private object _listLock = new object();
         private bool _draw = true;
-        private bool _dumpMode;
+        private bool _dumpMode = false;
 
         public ProcessTree()
         {
             InitializeComponent();
 
-            TreeColumn column = new TreeColumn("CPU History", 60)
-            {
-                IsVisible = false, 
-                MinColumnWidth = 10
-            };
+            var column = new TreeColumn("CPU History", 60);
 
+            column.IsVisible = false;
+            column.MinColumnWidth = 10;
             treeProcesses.Columns.Add(column);
-            treeProcesses.NodeControls.Add(new Components.NodePlotter
+            treeProcesses.NodeControls.Add(new ProcessHacker.Components.NodePlotter()
             {
                 DataPropertyName = "CpuHistory",
                 ParentColumn = column
             });
 
-            column = new TreeColumn("I/O History", 60)
-            {
-                IsVisible = false, 
-                MinColumnWidth = 10
-            };
+            column = new TreeColumn("I/O History", 60);
+            column.IsVisible = false;
+            column.MinColumnWidth = 10;
             treeProcesses.Columns.Add(column);
-            treeProcesses.NodeControls.Add(new Components.NodePlotter
+            treeProcesses.NodeControls.Add(new ProcessHacker.Components.NodePlotter()
             {
                 DataPropertyName = "IoHistory",
                 ParentColumn = column
             });
 
-            treeProcesses.KeyDown += this.ProcessTree_KeyDown;
-            treeProcesses.MouseDown += this.treeProcesses_MouseDown;
-            treeProcesses.MouseUp += this.treeProcesses_MouseUp;
-            treeProcesses.DoubleClick += this.treeProcesses_DoubleClick;
+            treeProcesses.KeyDown += new KeyEventHandler(ProcessTree_KeyDown);
+            treeProcesses.MouseDown += new MouseEventHandler(treeProcesses_MouseDown);
+            treeProcesses.MouseUp += new MouseEventHandler(treeProcesses_MouseUp);
+            treeProcesses.DoubleClick += new EventHandler(treeProcesses_DoubleClick);
 
             nodeName.ToolTipProvider = _tooltipProvider = new ProcessToolTipProvider(this);
 
@@ -264,15 +260,15 @@ namespace ProcessHacker
         {
             if (_draw)
             {
-                this.BeginInvoke(new MethodInvoker(() =>
+                this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    if (this._treeModel.GetSortColumn() != string.Empty)
+                    if (_treeModel.GetSortColumn() != "")
                     {
-                        this._treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
+                        _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
                     }
 
                     //treeProcesses.InvalidateNodeControlCache();
-                    this.treeProcesses.Invalidate();
+                    treeProcesses.Invalidate();
                 }));
             }
 
@@ -283,12 +279,12 @@ namespace ProcessHacker
         {
             Timer t = new Timer();
 
-            t.Tick += (sender, args) =>
+            t.Tick += new EventHandler(delegate(object o, EventArgs args)
             {
                 t.Enabled = false;
                 action();
                 t.Dispose();
-            };
+            });
 
             t.Interval = delay;
             t.Enabled = true;
@@ -298,66 +294,50 @@ namespace ProcessHacker
         {
             if (Settings.Instance.UseColorDebuggedProcesses && p.IsBeingDebugged)
                 return Settings.Instance.ColorDebuggedProcesses;
-
-            if (Settings.Instance.UseColorElevatedProcesses && p.ElevationType == TokenElevationType.Full)
+            else if (Settings.Instance.UseColorElevatedProcesses &&
+                p.ElevationType == TokenElevationType.Full)
                 return Settings.Instance.ColorElevatedProcesses;
-
-            if (Settings.Instance.UseColorPosixProcesses && p.IsPosix)
+            else if (Settings.Instance.UseColorPosixProcesses &&
+                p.IsPosix)
                 return Settings.Instance.ColorPosixProcesses;
-
-            if (Settings.Instance.UseColorWow64Processes && p.IsWow64)
+            else if (Settings.Instance.UseColorWow64Processes &&
+                p.IsWow64)
                 return Settings.Instance.ColorWow64Processes;
-
-            if (Settings.Instance.UseColorJobProcesses && p.IsInSignificantJob)
+            else if (Settings.Instance.UseColorJobProcesses && p.IsInSignificantJob)
                 return Settings.Instance.ColorJobProcesses;
-
-            if (
-                Settings.Instance.UseColorPackedProcesses && 
-                Settings.Instance.VerifySignatures && 
-                !string.IsNullOrEmpty(p.Name) && 
+            else if (Settings.Instance.UseColorPackedProcesses &&
+                Settings.Instance.VerifySignatures &&
+                p.Name != null &&
                 Program.ImposterNames.Contains(p.Name.ToLowerInvariant()) &&
-                p.VerifyResult != VerifyResult.Trusted && 
-                p.VerifyResult != VerifyResult.Unknown && 
-                !string.IsNullOrEmpty(p.FileName)
-                )
+                p.VerifyResult != VerifyResult.Trusted &&
+                p.VerifyResult != VerifyResult.Unknown &&
+                p.FileName != null)
                 return Settings.Instance.ColorPackedProcesses;
-
-            if (Settings.Instance.UseColorPackedProcesses &&
+            else if (Settings.Instance.UseColorPackedProcesses &&
                 Settings.Instance.VerifySignatures &&
                 p.VerifyResult != VerifyResult.Trusted &&
                 p.VerifyResult != VerifyResult.NoSignature &&
                 p.VerifyResult != VerifyResult.Unknown)
                 return Settings.Instance.ColorPackedProcesses;
-
-            if (Settings.Instance.UseColorDotNetProcesses && p.IsDotNet)
+            else if (Settings.Instance.UseColorDotNetProcesses && p.IsDotNet)
                 return Settings.Instance.ColorDotNetProcesses;
-
-            if (Settings.Instance.UseColorPackedProcesses && p.IsPacked)
+            else if (Settings.Instance.UseColorPackedProcesses && p.IsPacked)
                 return Settings.Instance.ColorPackedProcesses;
-
-            if (this._dumpMode && Settings.Instance.UseColorServiceProcesses &&
-                this.DumpProcessServices.ContainsKey(p.Pid) && this.DumpProcessServices[p.Pid].Count > 0)
+            else if (_dumpMode && Settings.Instance.UseColorServiceProcesses &&
+                DumpProcessServices.ContainsKey(p.Pid) && DumpProcessServices[p.Pid].Count > 0)
                 return Settings.Instance.ColorServiceProcesses;
-
-            if (!this._dumpMode && Settings.Instance.UseColorServiceProcesses &&
+            else if (!_dumpMode && Settings.Instance.UseColorServiceProcesses &&
                 Program.HackerWindow.ProcessServices.ContainsKey(p.Pid) &&
                 Program.HackerWindow.ProcessServices[p.Pid].Count > 0)
                 return Settings.Instance.ColorServiceProcesses;
-
-            if (Settings.Instance.UseColorSystemProcesses && string.Equals(p.Username, "NT AUTHORITY\\SYSTEM", StringComparison.OrdinalIgnoreCase))
+            else if (Settings.Instance.UseColorSystemProcesses && p.Username == "NT AUTHORITY\\SYSTEM")
                 return Settings.Instance.ColorSystemProcesses;
-
-            if (this._dumpMode && 
-                Settings.Instance.UseColorOwnProcesses && 
-                string.Equals(p.Username, this.DumpUserName, StringComparison.OrdinalIgnoreCase))
+            else if (_dumpMode && Settings.Instance.UseColorOwnProcesses && p.Username == DumpUserName)
                 return Settings.Instance.ColorOwnProcesses;
-
-            if (!this._dumpMode && 
-                Settings.Instance.UseColorOwnProcesses && 
-                string.Equals(p.Username, Program.CurrentUsername, StringComparison.OrdinalIgnoreCase))
+            else if (!_dumpMode && Settings.Instance.UseColorOwnProcesses && p.Username == Program.CurrentUsername)
                 return Settings.Instance.ColorOwnProcesses;
-
-            return SystemColors.Window;
+            else
+                return SystemColors.Window;
         }
 
         public void AddItem(ProcessItem item)
@@ -372,25 +352,25 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(ProcessItem item)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            this.BeginInvoke(new MethodInvoker(delegate
             {
-                lock (this._listLock)
+                lock (_listLock)
                 {
-                    this._treeModel.Add(item);
+                    _treeModel.Add(item);
 
                     TreeNodeAdv node = this.FindTreeNode(item.Pid);
 
                     if (node != null)
                     {
-                        if (item.RunId > 0 && this._runCount > 0)
+                        if (item.RunId > 0 && _runCount > 0)
                         {
                             node.State = TreeNodeAdv.NodeState.New;
-                            
-                            this.PerformDelayed(Settings.Instance.HighlightingDuration, () =>
+                            this.PerformDelayed(Settings.Instance.HighlightingDuration,
+                                new MethodInvoker(delegate
                             {
                                 node.State = TreeNodeAdv.NodeState.Normal;
-                                this.treeProcesses.Invalidate();
-                            });
+                                treeProcesses.Invalidate();
+                            }));
                         }
 
                         node.BackColor = this.GetProcessColor(item);
@@ -402,9 +382,9 @@ namespace ProcessHacker
 
         private void provider_DictionaryModified(ProcessItem oldItem, ProcessItem newItem)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            this.BeginInvoke(new MethodInvoker(delegate
             {
-                lock (this._listLock)
+                lock (_listLock)
                 {
                     TreeNodeAdv node = this.FindTreeNode(newItem.Pid);
 
@@ -413,16 +393,16 @@ namespace ProcessHacker
                         node.BackColor = this.GetProcessColor(newItem);
                     }
 
-                    this._treeModel.Nodes[newItem.Pid].ProcessItem = newItem;
+                    _treeModel.Nodes[newItem.Pid].ProcessItem = newItem;
                 }
             }));
         }
 
         private void provider_DictionaryRemoved(ProcessItem item)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            this.BeginInvoke(new MethodInvoker(delegate
             {
-                lock (this._listLock)
+                lock (_listLock)
                 {
                     TreeNodeAdv node = this.FindTreeNode(item.Pid);
 
@@ -430,27 +410,27 @@ namespace ProcessHacker
                     {
                         //if (this.StateHighlighting)
                         //{
-                        node.State = TreeNodeAdv.NodeState.Removed;
-                        
-                        this.PerformDelayed(Settings.Instance.HighlightingDuration, () =>
-                        {
-                            try
+                            node.State = TreeNodeAdv.NodeState.Removed;
+                            this.PerformDelayed(Settings.Instance.HighlightingDuration,
+                                new MethodInvoker(delegate
                             {
-                                this._treeModel.Remove(item);
-                                this.RefreshItems();
-                            }
-                            catch (Exception ex)
-                            {
-                                Logging.Log(ex);
-                            }
-                        });
+                                try
+                                {
+                                    _treeModel.Remove(item);
+                                    this.RefreshItems();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logging.Log(ex);
+                                }
+                            }));
                         //}
                         //else
                         //{
                         //    _treeModel.Remove(item);
                         //}
 
-                        this.treeProcesses.Invalidate();
+                        treeProcesses.Invalidate();
                     }
                 }
             }));
@@ -498,8 +478,8 @@ namespace ProcessHacker
         {
             if (_treeModel.Nodes.ContainsKey(pid))
                 return treeProcesses.FindNode(_treeModel.GetPath(_treeModel.Nodes[pid]));
-
-            return null;
+            else
+                return null;
         }
 
         public TreeNodeAdv FindTreeNode(ProcessNode node)

@@ -47,7 +47,7 @@ namespace ProcessHacker.Native.Symbols
 
                 foreach (var module in modules)
                 {
-                    if (module.FileName.EndsWith("dbghelp.dll", StringComparison.OrdinalIgnoreCase))
+                    if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
                     {
                         if (!File.Exists(Path.GetDirectoryName(module.FileName) + "\\symsrv.dll"))
                         {
@@ -56,7 +56,7 @@ namespace ProcessHacker.Native.Symbols
 
                             TaskDialog td = new TaskDialog();
                             bool verificationChecked;
-                            td.PositionRelativeToWindow = true;
+
                             td.CommonButtons = TaskDialogCommonButtons.Ok;
                             td.WindowTitle = "Process Hacker";
                             td.MainIcon = TaskDialogIcon.Warning;

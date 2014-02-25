@@ -28,18 +28,11 @@ using ProcessHacker.Native.Threading;
 
 namespace ProcessHacker.Native.Ipc
 {
-    public unsafe class IpcCircularBuffer : IDisposable
+    public unsafe class IpcCircularBuffer
     {
         [StructLayout(LayoutKind.Sequential)]
-        public struct BufferHeader
+        private struct BufferHeader
         {
-            public static readonly int SizeOf;
-
-            static BufferHeader()
-            {
-                SizeOf = Marshal.SizeOf(typeof(BufferHeader));
-            }
-
             public int BlockSize;
             public int NumberOfBlocks;
 
@@ -57,21 +50,22 @@ namespace ProcessHacker.Native.Ipc
             Random r = new Random();
             long readSemaphoreId = ((long)r.Next() << 32) + r.Next();
             long writeSemaphoreId = ((long)r.Next() << 32) + r.Next();
+            Section section;
 
-            Section section = new Section(name, blockSize * numberOfBlocks, MemoryProtection.ReadWrite);
+            section = new Section(name, blockSize * numberOfBlocks, MemoryProtection.ReadWrite);
 
-            using (SectionView view = section.MapView(BufferHeader.SizeOf))
+            using (var view = section.MapView(Marshal.SizeOf(typeof(BufferHeader))))
             {
-                BufferHeader header = new BufferHeader
-                {
-                    BlockSize = blockSize, 
-                    NumberOfBlocks = numberOfBlocks, 
-                    ReadSemaphoreId = readSemaphoreId, 
-                    WriteSemaphoreId = writeSemaphoreId, 
-                    ReadPosition = 0, WritePosition = 0
-                };
+                BufferHeader header = new BufferHeader();
 
-                view.WriteStruct(header);
+                header.BlockSize = blockSize;
+                header.NumberOfBlocks = numberOfBlocks;
+                header.ReadSemaphoreId = readSemaphoreId;
+                header.WriteSemaphoreId = writeSemaphoreId;
+                header.ReadPosition = 0;
+                header.WritePosition = 0;
+
+                view.WriteStruct<BufferHeader>(header);
             }
 
             return new IpcCircularBuffer(
@@ -87,13 +81,13 @@ namespace ProcessHacker.Native.Ipc
             return new IpcCircularBuffer(new Section(name, SectionAccess.All), name, null, null);
         }
 
-        private readonly Section _section;
-        private readonly SectionView _sectionView;
-        private readonly Semaphore _readSemaphore;
-        private readonly Semaphore _writeSemaphore;
+        private Section _section;
+        private SectionView _sectionView;
+        private Semaphore _readSemaphore;
+        private Semaphore _writeSemaphore;
 
-        private readonly BufferHeader* _header;
-        private readonly void* _data;
+        private BufferHeader* _header;
+        private void* _data;
 
         private IpcCircularBuffer(Section section, string sectionName, Semaphore readSemaphore, Semaphore writeSemaphore)
         {
@@ -101,7 +95,7 @@ namespace ProcessHacker.Native.Ipc
 
             _section = section;
 
-            _sectionView = section.MapView(BufferHeader.SizeOf);
+            _sectionView = section.MapView(Marshal.SizeOf(typeof(BufferHeader)));
             header = _sectionView.ReadStruct<BufferHeader>();
             _sectionView.Dispose();
 
@@ -121,17 +115,16 @@ namespace ProcessHacker.Native.Ipc
             _data = &_header->Data;
         }
 
-        public T Read<T>() where T : struct
+        public T Read<T>()
+            where T : struct
         {
-            using (MemoryAlloc data = this.Read())
-            {
+            using (var data = this.Read())
                 return data.ReadStruct<T>();
-            }
         }
 
         public MemoryAlloc Read()
         {
-            MemoryAlloc data = new MemoryAlloc(_header->BlockSize);
+            var data = new MemoryAlloc(_header->BlockSize);
 
             this.Read(data);
 
@@ -175,12 +168,13 @@ namespace ProcessHacker.Native.Ipc
             _writeSemaphore.Release();
         }
 
-        public void Write<T>(int size, T s) where T : struct
+        public void Write<T>(T s)
+            where T : struct
         {
-            using (MemoryAlloc data = new MemoryAlloc(size))
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
             {
-                data.WriteStruct(s);
-                this.Write(data);
+                data.WriteStruct<T>(s);
+                this.Write((MemoryRegion)data);
             }
         }
 
@@ -224,15 +218,6 @@ namespace ProcessHacker.Native.Ipc
 
             // Release the read semaphore to allow a reader to read one more block.
             _readSemaphore.Release();
-        }
-
-        public void Dispose()
-        {
-            if (_readSemaphore != null)
-                _readSemaphore.Dispose();
-
-            if (_writeSemaphore != null)
-                _writeSemaphore.Dispose();
         }
     }
 }

@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -33,18 +34,21 @@ namespace ProcessHacker.Native.Objects
     {
         public static LsaSecretHandle Create(LsaSecretAccess access, LsaPolicyHandle policyHandle, string name)
         {
+            NtStatus status;
+            UnicodeString nameStr;
             IntPtr handle;
 
-            UnicodeString nameStr = new UnicodeString(name);
+            nameStr = new UnicodeString(name);
 
             try
             {
-                Win32.LsaCreateSecret(
+                if ((status = Win32.LsaCreateSecret(
                     policyHandle,
                     ref nameStr,
                     access,
                     out handle
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -60,18 +64,21 @@ namespace ProcessHacker.Native.Objects
 
         public LsaSecretHandle(LsaPolicyHandle policyHandle, string name, LsaSecretAccess access)
         {
+            NtStatus status;
+            UnicodeString nameStr;
             IntPtr handle;
 
-            UnicodeString nameStr = new UnicodeString(name);
+            nameStr = new UnicodeString(name);
 
             try
             {
-                Win32.LsaOpenSecret(
+                if ((status = Win32.LsaOpenSecret(
                     policyHandle,
                     ref nameStr,
                     access,
                     out handle
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -106,25 +113,27 @@ namespace ProcessHacker.Native.Objects
             out DateTime oldValueSetTime
             )
         {
+            NtStatus status;
             IntPtr currentValueStr;
             long currentValueSetTimeLong;
             IntPtr oldValueStr;
             long oldValueSetTimeLong;
 
-            Win32.LsaQuerySecret(
+            if ((status = Win32.LsaQuerySecret(
                 this,
                 out currentValueStr,
                 out currentValueSetTimeLong,
                 out oldValueStr,
                 out oldValueSetTimeLong
-                ).ThrowIf();
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
-            using (LsaMemoryAlloc currentValueStrAlloc = new LsaMemoryAlloc(currentValueStr))
-            using (LsaMemoryAlloc oldValueStrAlloc = new LsaMemoryAlloc(oldValueStr))
+            using (var currentValueStrAlloc = new LsaMemoryAlloc(currentValueStr))
+            using (var oldValueStrAlloc = new LsaMemoryAlloc(oldValueStr))
             {
-                currentValue = currentValueStrAlloc.ReadStruct<UnicodeString>().Text;
+                currentValue = currentValueStrAlloc.ReadStruct<UnicodeString>().Read();
                 currentValueSetTime = DateTime.FromFileTime(currentValueSetTimeLong);
-                oldValue = oldValueStrAlloc.ReadStruct<UnicodeString>().Text;
+                oldValue = oldValueStrAlloc.ReadStruct<UnicodeString>().Read();
                 oldValueSetTime = DateTime.FromFileTime(oldValueSetTimeLong);
             }
         }
@@ -136,16 +145,21 @@ namespace ProcessHacker.Native.Objects
 
         public void Set(string currentValue, string oldValue)
         {
-            UnicodeString currentValueStr = new UnicodeString(currentValue);
-            UnicodeString oldValueStr = new UnicodeString(oldValue);
+            NtStatus status;
+            UnicodeString currentValueStr;
+            UnicodeString oldValueStr;
+
+            currentValueStr = new UnicodeString(currentValue);
+            oldValueStr = new UnicodeString(oldValue);
 
             try
             {
-                Win32.LsaSetSecret(
+                if ((status = Win32.LsaSetSecret(
                     this,
                     ref currentValueStr,
                     ref oldValueStr
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {

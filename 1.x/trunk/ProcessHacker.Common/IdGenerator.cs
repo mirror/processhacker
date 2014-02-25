@@ -30,9 +30,9 @@ namespace ProcessHacker.Common
     /// </summary>
     public class IdGenerator
     {
-        private readonly int _step = 1;
-        private bool _sort;
-        private readonly List<int> _ids = new List<int>();
+        private int _step = 1;
+        private bool _sort = false;
+        private List<int> _ids = new List<int>();
         private int _id;
 
         /// <summary>
@@ -88,9 +88,11 @@ namespace ProcessHacker.Common
 
                     return id;
                 }
-                
-                id = this._id;
-                this._id += this._step;
+                else
+                {
+                    id = _id;
+                    _id += _step;
+                }
             }
 
             return id;

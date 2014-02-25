@@ -29,9 +29,9 @@ namespace ProcessHacker
 {
     public partial class StructWindow : Form
     {
-        private readonly int _pid;
-        private readonly IntPtr _address;
-        private readonly StructDef _struct;
+        private int _pid;
+        private IntPtr _address;
+        private StructDef _struct;
 
         public StructWindow(int pid, IntPtr address, StructDef struc)
         {

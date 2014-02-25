@@ -39,11 +39,11 @@ namespace ProcessHacker
             get { return _value; }
         }
 
-        public PromptBox() : this(string.Empty, false) { }
+        public PromptBox() : this("", false) { }
 
         public PromptBox(string value) : this(value, false) { }
 
-        public PromptBox(bool multiline) : this(string.Empty, multiline) { }
+        public PromptBox(bool multiline) : this("", multiline) { }
 
         public PromptBox(string value, bool multiline)
         {
@@ -51,7 +51,7 @@ namespace ProcessHacker
             this.AddEscapeToClose();
             this.SetTopMost();
 
-            if (value == string.Empty)
+            if (value == "")
             {
                 textValue.Text = LastValue;
             }

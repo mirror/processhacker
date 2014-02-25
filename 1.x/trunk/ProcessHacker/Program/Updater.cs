@@ -187,16 +187,15 @@ namespace ProcessHacker
             {
                 if (OSVersion.HasTaskDialogs)
                 {
-                    TaskDialog td = new TaskDialog
-                    {
-                        PositionRelativeToWindow = true, 
-                        Content = "Your Version: " + currentVersion.Version + "\nServer Version: " + bestUpdate.Version, 
-                        MainInstruction = "Process Hacker is up-to-date", 
-                        WindowTitle = "No updates available", 
-                        MainIcon = TaskDialogIcon.SecuritySuccess,
-                        CommonButtons = TaskDialogCommonButtons.Ok
-                    };
-
+                    TaskDialog td = new TaskDialog();
+                    td.PositionRelativeToWindow = true;
+                    td.Content =
+                        "Your Version: " + currentVersion.Version.ToString() +
+                        "\nServer Version: " + bestUpdate.Version.ToString();
+                    td.MainInstruction = "Process Hacker is up-to-date";
+                    td.WindowTitle = "No updates available";
+                    td.MainIcon = TaskDialogIcon.SecuritySuccess;
+                    td.CommonButtons = TaskDialogCommonButtons.Ok;
                     td.Show(form);
                 }
                 else
