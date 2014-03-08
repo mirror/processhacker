@@ -4,7 +4,6 @@
 body {
     color: black;
     font: normal 14px 'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif;
-    margin: 0;
 }
 
 a:link,
@@ -16,10 +15,6 @@ a:visited {
 a:link:hover,
 a:visited:hover {
     text-decoration: underline;
-}
-
-strong {
-    font-weight: bold;
 }
 
 code {
@@ -80,10 +75,6 @@ h3 {
 h3,
 .side h2 {
     font-size: 16px;
-}
-
-img {
-    border: 0;
 }
 
 li {
@@ -355,13 +346,13 @@ ul {
     -webkit-box-shadow: inset 0 1px 0 0 #BBDAF7;
        -moz-box-shadow: inset 0 1px 0 0 #BBDAF7;
             box-shadow: inset 0 1px 0 0 #BBDAF7;
+    background-color: #1C8D2E;
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1C8D2E), color-stop(1, #629D4F)); /* Chrome, Safari4+ */
     background-image: -webkit-linear-gradient(center top, #1C8D2E 5%, #629D4F 100%); /* Chrome10+, Safari5.1+ */
     background-image:    -moz-linear-gradient(center top, #1C8D2E 5%, #629D4F 100%); /* FF3.6+ */
     background-image:     -ms-linear-gradient(center top, #1C8D2E 5%, #629D4F 100%); /* IE10+ */
     background-image:      -o-linear-gradient(center top, #1C8D2E 5%, #629D4F 100%); /* Opera 11.10+ */
     background-image:         linear-gradient(to bottom,  #1C8D2E 5%, #629D4F 100%); /* W3C */
-    background-color: #1C8D2E;
     border: 1px solid #1C8D2E;
     -webkit-box-sizing: content-box;
        -moz-box-sizing: content-box;
@@ -377,13 +368,13 @@ ul {
 }
 
 .downloads li > a:hover {
+    background-color: #629D4F;
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #629D4F), color-stop(1, #1C8D2E)); /* Chrome, Safari4+ */
     background-image: -webkit-linear-gradient(center top, #629D4F 5%, #1C8D2E 100%); /* Chrome10+, Safari5.1+ */
     background-image:    -moz-linear-gradient(center top, #629D4F 5%, #1C8D2E 100%); /* FF3.6+ */
     background-image:     -ms-linear-gradient(center top, #629D4F 5%, #1C8D2E 100%); /* IE10+ */
     background-image:      -o-linear-gradient(center top, #629D4F 5%, #1C8D2E 100%); /* Opera 11.10+ */
     background-image:         linear-gradient(to bottom,  #629D4F 5%, #1C8D2E 100%); /* W3C */
-    background-color: #629D4F;
     text-decoration: none;
 }
 
