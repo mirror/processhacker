@@ -6,7 +6,7 @@ rem npm install -g uglify-js
 pushd %~dp0
 
 echo minifying and combining css files...
-type css\normalize.css css\stylesheet.css | cleancss --s0 --selectors-merge-mode ie8 --debug -o css\pack.css
+type css\normalize.css css\stylesheet.css | cleancss --s0 --compatibility ie8 --debug -o css\pack.css
 cmd /c uglifyjs js\moment.js js\feed.js --compress --mangle -o js\pack.js
 
 popd
