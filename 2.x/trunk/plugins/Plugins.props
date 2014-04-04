@@ -2,7 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup>
+    <IncludePath>$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>../../sdk/include;include;resources;$(SolutionDir)..\ProcessHacker\sdk;$(SolutionDir)..\ProcessHacker\include;$(SolutionDir)..\phlib\include;$(SolutionDir)..\ProcessHacker\mxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

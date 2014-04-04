@@ -34,6 +34,7 @@
 #include <phplug.h>
 #include <phappresource.h>
 #include <windowsx.h>
+#include <d2d1.h>
 #include <Wincodec.h>
 
 #include "resource.h"
