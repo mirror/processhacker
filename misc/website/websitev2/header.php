@@ -217,7 +217,7 @@ function get_time_ago_string($time_stamp, $divisor, $time_unit)
     <link rel="alternate" type="application/atom+xml" href="http://processhacker.sourceforge.net/forums/feed.php?f=1" title="Process Hacker - News"/>
     <link rel="alternate" type="application/atom+xml" href="http://sourceforge.net/p/processhacker/code/feed" title="Process Hacker - SVN"/>
     <!--[if lt IE 9]>
-    <script src="js/html5shiv.js"></script>
+    <script src="js/html5shiv.min.js"></script>
     <![endif]-->
 </head>
 <body>
