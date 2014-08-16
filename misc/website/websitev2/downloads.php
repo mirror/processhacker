@@ -68,6 +68,11 @@
                 <p>If you like this software, please
                 <a href="http://sourceforge.net/project/project_donations.php?group_id=242527"><strong>Donate</strong></a>
                 to show your support!</p>
+
+                <!-- Ad Unit 6 - DO NOT CHANGE THIS CODE -->
+                <div style="clear: both; margin-left: auto; margin-right: auto; margin-top: 20px; width: 336px; height: 280px;">
+                    <?php ad_unit_6(); ?>
+                </div>
             </div>
         </div>
     </div>
