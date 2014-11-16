@@ -204,12 +204,12 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                                         u.user_colour
                                     FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
                                     WHERE t.topic_id = p.topic_id AND
-                                        t.topic_approved = 1 AND
+                                        t.topic_visibility = 1 AND
                                         f.forum_id = t.forum_id AND
                                         t.forum_id != 1 AND
                                         t.forum_id != 7 AND
                                         t.topic_status <> 2 AND
-                                        p.post_approved = 1 AND
+                                        p.post_visibility = 1 AND
                                         p.post_id = t.topic_last_post_id AND
                                         p.poster_id = u.user_id
                                     ORDER BY p.post_id DESC LIMIT $topicnumber";
