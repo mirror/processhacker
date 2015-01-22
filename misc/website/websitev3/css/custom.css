@@ -1,11 +1,17 @@
-html {
+﻿html {
     overflow-y: scroll; 
 }
 
+.jumbotron {
+    padding: 30px 15px;
+}
+
 body {
-    /*color: #FFFFFF;
-    background-color: #222222;*/
-	padding-top:65px;
+    padding-top: 50px;
+    padding-bottom: 20px;
+    /*color: #FFFFFF; background-color: #222222; 
+	padding: 65px;
+	font-family: "Segoe UI", sans-serif, Verdana, Helvetica, Arial;*/
 }
 
 p {
@@ -14,7 +20,7 @@ p {
 
 #forumitem {
     font-size: 12px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: ;
 }
 
 #forumitem img {
@@ -38,48 +44,38 @@ p {
     padding: 9px 0;
 }
 
-.container hr {
+/*.container hr {
     margin: 20px 0 5px 0;
 }
 
 .page-header {
     margin: 0 0 20px;
     padding-bottom: 2px;
-}
+}*/
 
 .nav-header {
     color: #999;
 }
 
-.splash-cover {
-    background: #363b48;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    position: absolute;
-    z-index: 2;
-    opacity: 0.85;
-    filter: alpha(opacity=85);
+@media (min-width: 768px) {
+.box
+{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    border-top: 0px solid #eee;
+}
 }
 
-.splash-block {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 100;
+@media (max-width: 768px) {
+.box
+{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    border-top: 1px solid #eee;
 }
-
-.splash-block:before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-    margin-right: -0.25em;
-    /* Adjusts for spacing */
 }
-
 .centered {
     display: inline-block;
     vertical-align: middle;
@@ -87,17 +83,10 @@ p {
     padding: 100px 0;
 }
 
-.changelog {
-    border: 2px solid #000;
-    -webkit-box-sizing: content-box;
-    -moz-box-sizing: content-box;
-    box-sizing: content-box;
-    overflow: scroll;
-    width: 100%;
-    height: 600px;
-}
-
-.navbar-collapse {
-    padding-right: 0px;
-    padding-left: 0px;
+.info dt {
+float: left;
+font-weight: bold;
+padding: 3px 6px;
+clear: both;
+width: 30%;
 }
