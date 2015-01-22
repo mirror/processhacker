@@ -1,23 +1,22 @@
 <?php
-$LATEST_PH_VERSION = "2.32";
-$LATEST_PH_BUILD = "5521";
-$LATEST_PH_RELEASE_DATE = "31st of October 2013";
+$LATEST_PH_VERSION = "2.33";
+$LATEST_PH_BUILD = "5590";
+$LATEST_PH_RELEASE_DATE = "27th of December 2013";
 
 $LATEST_PH_BIN_SIZE = "2.7 MB";
-$LATEST_PH_BIN_SHA1 = "22543a04c2c68a9e9c1396184da33c2ae0c890d4";
+$LATEST_PH_BIN_SHA1 = "2738c909fa6b37a22a4aa256e5d7e733449b905e";
 
 $LATEST_PH_SDK_SIZE = "2.7 MB";
-$LATEST_PH_SDK_SHA1 = "f6deb41d216eb5e61b13a77e7155d2e9e0211359";
+$LATEST_PH_SDK_SHA1 = "5b17c8c555298cc10ea297f1ce7977ea50f09d9d";
 
 $LATEST_PH_SETUP_SIZE = "1.9 MB";
-$LATEST_PH_SETUP_SHA1 = "aad89a04af0e0cbbe8d9cef2e218b8eeb03f30b0";
+$LATEST_PH_SETUP_SHA1 = "f328286bdf529e3905e8098b8d7558f974d9293c";
 
 $LATEST_PH_SOURCE_SIZE = "2.6 MB";
-$LATEST_PH_SOURCE_SHA1 = "7d6368e068975a9aa3426dc2b75920e8970ae2c6";
+$LATEST_PH_SOURCE_SHA1 = "9f8d97d5409e5f4e49cbd7dd8e12df29d17658ff";
 
-$LATEST_PH_RELEASE_NEWS = "http://processhacker.sourceforge.net/forums/viewtopic.php?f=1&t=1229";
-
-
+$LATEST_PH_RELEASE_NEWS = "http://processhacker.sourceforge.net/forums/viewtopic.php?f=1&t=1294";
+$LATEST_PH_RELEASE_URL = "http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-".$LATEST_PH_VERSION."-setup.exe/download?use_mirror=autoselect";
 
 // =================================================
 // Setup database details
@@ -104,5 +103,15 @@ function get_time_ago_string($time_stamp, $divisor, $time_unit)
         // TODO: This pluralizes the time unit, which is done by adding "s" at the end; this will not work for i18n!
         return $time_units . ' ' . $time_unit . 's ago';
     }
+}
+
+// This function summarizes posts to max. 1200 characters
+function summary($str, $limit = 1200, $strip = false) {
+    $str = ($strip == true) ? strip_tags($str) : $str;
+    if (strlen ($str) > $limit) {
+        $str = substr ($str, 0, $limit - 3);
+        return trim(substr ($str, 0, strrpos ($str, ' ')).'...');
+    }
+    return trim($str);
 }
 ?>
