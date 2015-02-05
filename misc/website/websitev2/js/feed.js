@@ -1,32 +1,32 @@
-var feedcontainer = document.getElementById("feeddiv");
-feedcontainer.innerHTML = "<div>Loading commit history...</div>";
+var feedContainer = document.getElementById("feeddiv");
+feedContainer.innerHTML = "<div>Loading commit history...</div>";
 
-function rssfeedsetup() {
-    var feedpointer = new google.feeds.Feed("http://sourceforge.net/p/processhacker/code/feed");
-    feedpointer.setNumEntries(5);
-    feedpointer.load(displayfeed);
-}
-
-function displayfeed(result) {
+function displayFeed(result) {
     if (!result.error) {
-        var rssoutput = "";
-        var thefeeds = result.feed.entries;
-        for (var i = 0; i < thefeeds.length; i++) {
-            rssoutput += "<div>";
-            rssoutput += "<a href=\" " + thefeeds[i].link + " \">" +
-                            thefeeds[i].title.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/") +
+        var rssOutput = "";
+        var theFeeds = result.feed.entries;
+        for (var i = 0; i < theFeeds.length; i++) {
+            rssOutput += "<div>";
+            rssOutput += "<a href=\" " + theFeeds[i].link + " \">" +
+                            theFeeds[i].title.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/") +
                          "</a>";
-            rssoutput += "<span class=\"forumdate\"> by <span class=\"author\">" + thefeeds[i].author + "</span></span>";
-            rssoutput += "<div class=\"forumdate\">" + moment(thefeeds[i].publishedDate).fromNow() + " - " + new Date(thefeeds[i].publishedDate).toLocaleString() + "</div>";
-            rssoutput += "</div>";
+            rssOutput += "<span class=\"forumdate\"> by <span class=\"author\">" + theFeeds[i].author + "</span></span>";
+            rssOutput += "<div class=\"forumdate\">" + moment(theFeeds[i].publishedDate).fromNow() + " - " + new Date(theFeeds[i].publishedDate).toLocaleString() + "</div>";
+            rssOutput += "</div>";
         }
 
-        feedcontainer.innerHTML = rssoutput;
+        feedContainer.innerHTML = rssOutput;
     } else {
-        feedcontainer.innerHTML = "Error fetching feeds!";
+        feedContainer.innerHTML = "Error fetching feeds!";
     }
 }
 
-window.onload = function() {
-    rssfeedsetup();
+function rssFeedSetup() {
+    var feedPointer = new google.feeds.Feed("http://sourceforge.net/p/processhacker/code/feed");
+    feedPointer.setNumEntries(5);
+    feedPointer.load(displayFeed);
+}
+
+window.onload = function () {
+    rssFeedSetup();
 };
