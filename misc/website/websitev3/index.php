@@ -115,11 +115,6 @@
         <div class="col-sm-8">
             <h2>And much more...</h2>
             <p>Capabilities, Claims, Permissions, Integrity Control, Symbols, Statistics, Peformance, Threads, Tokens, Modules, Memory, Environement Variables, Handles, Services, GPU, Disk, Network, Terminator, DLL Injector, VirusTotal Uploader, Jotti Uploader, Comodo Uploader, Priority, Protection, Ping, Tracert, Whois... And much more!</p>
-            <a href="downloads.php" class="btn btn-primary btn-lg">Download Process Hacker &raquo;</a>
-            <br>
-            <a href="http://processhacker.sourceforge.net/forums/posting.php?mode=post&f=5" class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-comment" style="font-size: smaller"></i> Ask a question</a>
-            <br>
-            <a href="http://processhacker.sourceforge.net/forums/posting.php?mode=post&f=24" class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-fire" style="font-size: smaller"></i> Report a bug</a>
         </div>     
         <div class="col-sm-4">          
             <a class="thumbnail" href="http://processhacker.sourceforge.net/img/screenshots/menu.png" data-lightbox="image-screenshot" data-title="Process Menu">
