@@ -53,6 +53,11 @@ p {
     padding-bottom: 2px;
 }*/
 
+#page-padding
+{
+    margin: 20px 0 0 0;
+}
+
 .nav-header {
     color: #999;
 }

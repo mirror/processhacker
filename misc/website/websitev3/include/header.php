@@ -1,4 +1,4 @@
-﻿<?php include "config.php"; ?>
+<?php include "config.php";?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -10,7 +10,7 @@
 
         <link rel="shortcut icon" href="favicon.ico"/>
 
-        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3.3.1/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3.3.2/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="//processhacker.sourceforge.net/v3/css/lightbox.css"/>
         <link rel="stylesheet" type="text/css" href="//processhacker.sourceforge.net/v3/css/custom.css"/>
 
