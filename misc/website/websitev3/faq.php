@@ -1,4 +1,4 @@
-﻿<?php $pagetitle = "FAQ"; include "include/header.php"; ?>
+<?php $pagetitle = "FAQ"; include "include/header.php"; ?>
 
 <div class="container">
     <div class="row row-offcanvas row-offcanvas-right">

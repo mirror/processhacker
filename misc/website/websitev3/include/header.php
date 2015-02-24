@@ -1,4 +1,4 @@
-<?php include "config.php";?>
+<?php include "config.php"; ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -49,7 +49,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-				<li <?php if ($pagetitle == 'Overview') echo "class=\"active\"" ?>><a href="index.php">Overview</a></li>
+                <li <?php if ($pagetitle == 'Overview') echo "class=\"active\"" ?>><a href="index.php">Overview</a></li>
                 <li <?php if ($pagetitle == 'Downloads') echo "class=\"active\"" ?>><a href="downloads.php">Downloads</a></li>
                 <li <?php if ($pagetitle == 'FAQ') echo "class=\"active\"" ?>><a href="faq.php">FAQ</a></li>
                 <li <?php if ($pagetitle == 'About') echo "class=\"active\"" ?>><a href="about.php">About</a></li>

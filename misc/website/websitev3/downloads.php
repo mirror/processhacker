@@ -1,4 +1,4 @@
-﻿<?php $pagetitle = "Downloads"; include "include/header.php"; ?>
+<?php $pagetitle = "Downloads"; include "include/header.php"; ?>
 
 <div class="jumbotron">
     <div class="container">
