@@ -380,7 +380,7 @@ AddDefaultCharset utf-8
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Option 1: rewrite www.example.com → example.com
+# Option 1: rewrite www.example.com ? example.com
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
@@ -391,7 +391,7 @@ AddDefaultCharset utf-8
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Option 2: rewrite example.com → www.example.com
+# Option 2: rewrite example.com ? www.example.com
 #
 # Be aware that the following might not be a good idea if you use "real"
 # subdomains for certain parts of your website.
@@ -426,7 +426,7 @@ AddDefaultCharset utf-8
 # https://tools.ietf.org/html/rfc7034#section-2.1.
 #
 # Keep in mind that while you could send the `X-Frame-Options` header
-# for all of your website’s pages, this has the potential downside that
+# for all of your website?s pages, this has the potential downside that
 # it forbids even non-malicious framing of your content (e.g.: when
 # users visit your website using a Google Image Search results page).
 #
@@ -548,7 +548,7 @@ AddDefaultCharset utf-8
         Satisfy All
     </IfModule>
 
-    # Apache ≥ 2.3
+    # Apache ? 2.3
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
