@@ -24,7 +24,7 @@
 #include <phgui.h>
 #include <graph.h>
 
-#define COLORREF_TO_BITS(Color) (_byteswap_ulong(Color) >> 8)
+#define COLORREF_TO_BITS(Color) (_byteswap_ulong(Color) >> 8 | 0xff000000)
 
 typedef struct _PHP_GRAPH_CONTEXT
 {
