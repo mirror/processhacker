@@ -8,6 +8,7 @@
         <li><a href="privacy.php">Privacy Policy</a></li>
         <li>Copyright &copy; 2008-2015 Wen Jia Liu (wj32)</li>
     </ul>
+</footer>
 
 <?php
 if ($pagetitle == "Overview") {
@@ -28,6 +29,6 @@ if ($pagetitle == "Overview") {
   ga('send', 'pageview');
 </script>
 <!-- End Google Analytics -->
-</footer>
+
 </body>
 </html>
