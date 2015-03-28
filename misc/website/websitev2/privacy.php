@@ -27,7 +27,7 @@
                 outlines the types of personal information is received and collected
                 by processhacker.sourceforge.net and how it is used.
             </p>
-            <p><h2>Log Files</h2></p>
+            <h2>Log Files</h2>
             <p>
                 Like many other Web sites, processhacker.sourceforge.net makes
                 use of log files. The information inside the log files includes
@@ -38,7 +38,7 @@
                 IP addresses, and other such information are not linked to any
                 information that is personally identifiable.
             </p>
-            <p><h2>Cookies and Web Beacons</h2></p>
+            <h2>Cookies and Web Beacons</h2>
             <p>
                 processhacker.sourceforge.net does use cookies to store information
                 about visitors preferences, record user-specific information on which
@@ -46,7 +46,7 @@
                 visitors browser type or other information that the visitor sends
                 via their browser.
             </p>
-            <p><h2>DoubleClick DART Cookie</h2></p>
+            <h2>DoubleClick DART Cookie</h2>
             <ul>
                 <li>
                     Google, as a third party vendor, may use cookies to serve
