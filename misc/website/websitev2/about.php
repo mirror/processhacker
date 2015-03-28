@@ -38,7 +38,7 @@
 
                     <div class="yui-g">
                         <div class="portlet">
-                            <script src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
+                            <script src="http://www.openhub.net/p/329666/widgets/project_basic_stats.js"></script>
                         </div>
                     </div>
                     <div class="yui-u">
@@ -58,9 +58,9 @@
                         <li>Status: Active</li>
                         <!-- <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&amp;u=2">Send Message</a></li> -->
                     </ul>
-                    <img class="ohloh-kudos" src="http://www.ohloh.net/accounts/47453/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24">
-                    <a href="http://www.ohloh.net/p/processhacker/contributors/1415904688650589" target="_blank">
-                        <img class="ohloh-commits" src="http://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png" alt="wj32 commit history" width="182" height="32">
+                    <img class="openhub-kudos" src="http://www.openhub.net/accounts/47453/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24">
+                    <a href="http://www.openhub.net/p/processhacker/contributors/1415904688650589" target="_blank">
+                        <img class="ohloh-commits" src="http://www.openhub.net/p/processhacker/contributors/144925/commits_spark.png" alt="wj32 commit history" width="182" height="32">
                     </a>
                 </div>
 
@@ -76,10 +76,10 @@
                         <!-- <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&amp;u=54">Send Message</a></li> -->
                     </ul>
 
-                    <img class="ohloh-kudos" src="http://www.ohloh.net/accounts/56334/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24">
+                    <img class="openhub-kudos" src="http://www.openhub.net/accounts/56334/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24">
 
-                    <a href="http://www.ohloh.net/p/processhacker/contributors/1415904688659470" target="_blank">
-                        <img class="ohloh-commits" src="http://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" alt="dmex commit history" width="182" height="32">
+                    <a href="http://www.openhub.net/p/processhacker/contributors/1415904688659470" target="_blank">
+                        <img class="ohloh-commits" src="http://www.openhub.net/p/processhacker/contributors/368201/commits_spark.png" alt="dmex commit history" width="182" height="32">
                     </a>
                 </div>
 
@@ -94,10 +94,10 @@
                         <li>Status: Active</li>
                     </ul>
 
-                    <img class="ohloh-kudos" src="http://www.ohloh.net/accounts/60504/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24">
+                    <img class="openhub-kudos" src="http://www.openhub.net/accounts/60504/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24">
 
-                    <a href="http://www.ohloh.net/p/processhacker/contributors/1415904688663640" target="_blank">
-                        <img class="ohloh-commits" src="http://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" alt="XhmikosR commit history" width="182" height="32">
+                    <a href="http://www.openhub.net/p/processhacker/contributors/1415904688663640" target="_blank">
+                        <img class="ohloh-commits" src="http://www.openhub.net/p/processhacker/contributors/145086/commits_spark.png" alt="XhmikosR commit history" width="182" height="32">
                     </a>
                 </div>
             </div>
