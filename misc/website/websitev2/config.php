@@ -1,21 +1,21 @@
 <?php
-$LATEST_PH_VERSION = "2.33";
-$LATEST_PH_BUILD = "5590";
-$LATEST_PH_RELEASE_DATE = "27th of December 2013";
+$LATEST_PH_VERSION = "2.34";
+$LATEST_PH_BUILD = "5828";
+$LATEST_PH_RELEASE_DATE = "24th of April 2015";
 
-$LATEST_PH_BIN_SIZE = "2.7 MB";
-$LATEST_PH_BIN_SHA1 = "2738c909fa6b37a22a4aa256e5d7e733449b905e";
+$LATEST_PH_BIN_SIZE = "2.8 MB";
+$LATEST_PH_BIN_SHA1 = "536530e98c5865266091012b05a027b1376d3493";
 
-$LATEST_PH_SDK_SIZE = "2.7 MB";
-$LATEST_PH_SDK_SHA1 = "5b17c8c555298cc10ea297f1ce7977ea50f09d9d";
+$LATEST_PH_SDK_SIZE = "3.0 MB";
+$LATEST_PH_SDK_SHA1 = "7eb4738e51e9accdfe26296b840e14e0cab2c276";
 
-$LATEST_PH_SETUP_SIZE = "1.9 MB";
-$LATEST_PH_SETUP_SHA1 = "f328286bdf529e3905e8098b8d7558f974d9293c";
+$LATEST_PH_SETUP_SIZE = "2.0 MB";
+$LATEST_PH_SETUP_SHA1 = "eb4b28338fd337e6940d99caa3a11b691901141f";
 
-$LATEST_PH_SOURCE_SIZE = "2.6 MB";
-$LATEST_PH_SOURCE_SHA1 = "9f8d97d5409e5f4e49cbd7dd8e12df29d17658ff";
+$LATEST_PH_SOURCE_SIZE = "2.8 MB";
+$LATEST_PH_SOURCE_SHA1 = "f90e15bf29a77e1994fca390a75b4a7a9cc7d4c6";
 
-$LATEST_PH_RELEASE_NEWS = "http://processhacker.sourceforge.net/forums/viewtopic.php?f=1&t=1294";
+$LATEST_PH_RELEASE_NEWS = "http://processhacker.sourceforge.net/forums/viewtopic.php?f=1&t=1824";
 
 $LATEST_PH_RELEASE_URL = "http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-".$LATEST_PH_VERSION."-setup.exe/download?use_mirror=autoselect";
 //$LATEST_PH_RELEASE_URL = "http://processhacker.googlecode.com/files/processhacker-".$LATEST_PH_VERSION."-setup.exe";
