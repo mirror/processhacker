@@ -49,9 +49,9 @@
                         <h2 class="center">Download</h2>
                         <div class="downloads">
                             <ul>
-                                <li><a href="http://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe" title="Installer (recommended)">Installer</a></li>
-                                <li><a href="http://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip">Binaries (portable)</a></li>
-                                <li><a href="http://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip">Source code</a></li>
+                                <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download?use_mirror=autoselect" title="Installer (recommended)">Installer</a></li>
+                                <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download?use_mirror=autoselect">Binaries (portable)</a></li>
+                                <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download?use_mirror=autoselect">Source code</a></li>
                             </ul>
                         </div>
                         <div class="all-downloads">
