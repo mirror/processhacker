@@ -55,7 +55,7 @@
                             </ul>
                         </div>
                         <div class="all-downloads">
-                            <a href="http://wj32.org/files/processhacker-rel/">Mirror</a>
+                            <a href="http://wj32.org/files/processhacker-rel/">Mirror</a><br>
                             <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/">See all downloads</a>
                         </div>
                     </div>
