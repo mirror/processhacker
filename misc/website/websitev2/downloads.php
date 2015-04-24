@@ -1,4 +1,34 @@
-<?php $pagetitle = "Downloads"; include "header.php"; ?>
+<?php
+$pagetitle = "Downloads";
+include "header.php";
+
+function sf_link($type)
+{
+    global $LATEST_PH_VERSION;
+    return "http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-$LATEST_PH_VERSION-$type/download?use_mirror=autoselect";
+}
+
+function wj32_link($type)
+{
+    global $LATEST_PH_VERSION;
+    return "http://wj32.org/files/processhacker-rel/processhacker-$LATEST_PH_VERSION-$type";
+}
+
+$load_number = 5;
+$which_server = rand(1, $load_number);
+$show_mirror = true;
+
+if ($which_server == 1) {
+    $show_mirror = false;
+    $link_setup = wj32_link("setup.exe");
+    $link_bin = wj32_link("bin.zip");
+    $link_src = wj32_link("src.zip");
+} else {
+    $link_setup = sf_link("setup.exe");
+    $link_bin = sf_link("bin.zip");
+    $link_src = sf_link("src.zip");
+}
+?>
 
 <div class="page">
     <div class="yui-d0">
@@ -49,13 +79,13 @@
                         <h2 class="center">Download</h2>
                         <div class="downloads">
                             <ul>
-                                <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download?use_mirror=autoselect" title="Installer (recommended)">Installer</a></li>
-                                <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download?use_mirror=autoselect">Binaries (portable)</a></li>
-                                <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download?use_mirror=autoselect">Source code</a></li>
+                                <li><a href="<?php echo $link_setup ?>" title="Installer (recommended)">Installer</a></li>
+                                <li><a href="<?php echo $link_bin ?>">Binaries (portable)</a></li>
+                                <li><a href="<?php echo $link_src ?>">Source code</a></li>
                             </ul>
                         </div>
                         <div class="all-downloads">
-                            <a href="http://wj32.org/files/processhacker-rel/">Mirror</a><br>
+                            <?php if($show_mirror) : ?><a href="http://wj32.org/files/processhacker-rel/">Mirror</a><br><?php endif; ?>
                             <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/">See all downloads</a>
                         </div>
                     </div>
