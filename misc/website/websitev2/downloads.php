@@ -11,7 +11,7 @@ function sf_link($type)
 function wj32_link($type)
 {
     global $LATEST_PH_VERSION;
-    return "http://wj32.org/files/processhacker-rel/processhacker-$LATEST_PH_VERSION-$type";
+    return "http://wj32.org/processhacker/rel/processhacker-$LATEST_PH_VERSION-$type";
 }
 
 $load_number = 5;
