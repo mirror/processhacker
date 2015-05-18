@@ -12,4 +12,9 @@ echo "<size>".$LATEST_PH_SETUP_SIZE."</size>".PHP_EOL;
 echo "<relnotes>".htmlspecialchars($LATEST_PH_RELEASE_NEWS)."</relnotes>".PHP_EOL;
 echo "<setupurl>".htmlspecialchars($LATEST_PH_RELEASE_URL)."</setupurl>".PHP_EOL;
 echo "</latest>";
+
+$file = "update-count.txt";
+$contents = file_get_contents($file);
+$contents = intval($contents) + 1;
+file_put_contents($file, $contents);
 ?>
