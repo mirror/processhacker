@@ -85,7 +85,7 @@ if ($which_server == 1) {
                             </ul>
                         </div>
                         <div class="all-downloads">
-                            <?php if($show_mirror) : ?><a href="http://wj32.org/files/processhacker-rel/">Mirror</a><br><?php endif; ?>
+                            <?php if($show_mirror) : ?><a href="http://wj32.org/processhacker/rel/">Mirror</a><br><?php endif; ?>
                             <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/">See all downloads</a>
                         </div>
                     </div>
