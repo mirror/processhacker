@@ -14,7 +14,7 @@ function wj32_link($type)
     return "http://wj32.org/processhacker/rel/processhacker-$LATEST_PH_VERSION-$type";
 }
 
-$load_number = 5;
+$load_number = 1;
 $which_server = rand(1, $load_number);
 $show_mirror = true;
 
