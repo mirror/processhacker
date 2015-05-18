@@ -13,8 +13,5 @@ echo "<relnotes>".htmlspecialchars($LATEST_PH_RELEASE_NEWS)."</relnotes>".PHP_EO
 echo "<setupurl>".htmlspecialchars($LATEST_PH_RELEASE_URL)."</setupurl>".PHP_EOL;
 echo "</latest>";
 
-$file = "update-count.txt";
-$contents = file_get_contents($file);
-$contents = intval($contents) + 1;
-file_put_contents($file, $contents);
+file_put_contents("update-count.txt", "1", FILE_APPEND);
 ?>
