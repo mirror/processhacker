@@ -1,10 +1,4 @@
-<?php
-$pagetitle = "Overview";
-include "header.php";
-
-// Connect to DB
-$conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
-?>
+<?php $pagetitle = "Overview"; include "header.php"; ?>
 
 <div class="page">
     <div class="yui-d0">
@@ -135,11 +129,4 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
     <!-- AddThis Button END -->
 </div>
 
-<?php
-if ($conn)
-{
-    mysqli_close($conn);
-}
-
-include "footer.php";
-?>
+<?php include "footer.php"; ?>

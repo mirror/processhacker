@@ -93,17 +93,7 @@ END;
 }
 
 // END AD CODE
-
 // =================================================
-// Setup database details
-@include('./forums/config.php');
-
-$topicnumber = 5;
-$table_topics = @$table_prefix. "topics";
-$table_forums = @$table_prefix. "forums";
-$table_posts = @$table_prefix. "posts";
-$table_users = @$table_prefix. "users";
-$table_sessions = @$table_prefix. "sessions";
 
 // function for converting time into time elapsed
 function get_time_ago($time_stamp)
