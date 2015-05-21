@@ -110,10 +110,31 @@
             </div>
             <br/> <!-- this br div is a placeholder -->
 
-            <div class="yui-u">
-                <div class="portlet">
-                    <p><strong>SVN Activity</strong></p>
-                    <div id="feeddiv"></div>
+           <div class="yui-g">
+                <div class="yui-u first">
+                    <div class="portlet">
+                        <p><strong>Latest News</strong></p>
+                        <div id="news_feed_div"></div>
+                    </div>
+                </div>
+
+                <div class="yui-g">
+                    <div class="portlet">
+                        <p><strong>Forum Activity</strong></p>
+                        <div id="forum_feed_div"></div>
+                    </div>
+                </div>
+                <div class="yui-u">
+                    <div id="structural-subscription-content-box"></div>
+                </div>
+            </div>
+
+            <div class="yui-g">
+                <div class="yui-u">
+                    <div class="portlet">
+                        <p><strong>SVN Activity</strong></p>
+                        <div id="source_feed_div"></div>
+                    </div>
                 </div>
             </div>
         </div>

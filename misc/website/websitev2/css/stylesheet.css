@@ -159,6 +159,10 @@ ul {
     color: #A00;
 }
 
+.forumdate > .user {
+    color: #000;
+}
+
 .about-li {
     list-style-type: none;
     margin-left: 0;
