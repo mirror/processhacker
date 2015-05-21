@@ -337,7 +337,7 @@ AddDefaultCharset utf-8
     # Options +SymLinksIfOwnerMatch
 
     # (4)
-    # RewriteBase /
+    RewriteBase /
 
     # (5)
     # RewriteOptions <options>
@@ -347,6 +347,8 @@ AddDefaultCharset utf-8
     RewriteRule ^ - [env=proto:https]
     RewriteCond %{HTTPS} !=on
     RewriteRule ^ - [env=proto:http]
+
+    RewriteRule ^forums/(.*) http://wj32.org/processhacker/forums/$1 [R=301]
 
 </IfModule>
 
@@ -1000,5 +1002,3 @@ Deny from All
 <Files "error.php">
 allow from all
 </Files>
-
-php_value memory_limit 32M
