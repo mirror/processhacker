@@ -108,16 +108,16 @@
 
                 <p class="headline bottom-download"><strong><a href="downloads.php?bottom=1">Download &gt;</a></strong></p>
             </div>
+
             <br/> <!-- this br div is a placeholder -->
 
-           <div class="yui-g">
+            <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet">
                         <p><strong>Latest News</strong></p>
                         <div id="news_feed_div"></div>
                     </div>
                 </div>
-
                 <div class="yui-g">
                     <div class="portlet">
                         <p><strong>Forum Activity</strong></p>
@@ -128,7 +128,6 @@
                     <div id="structural-subscription-content-box"></div>
                 </div>
             </div>
-
             <div class="yui-g">
                 <div class="yui-u">
                     <div class="portlet">
@@ -139,15 +138,6 @@
             </div>
         </div>
     </div>
-
-    <!-- AddThis Button BEGIN -->
-    <div class="addthis_toolbox addthis_default_style" style="position:absolute; top:10px; right:0" addthis:url="http://processhacker.sourceforge.net">
-        <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
-        <a class="addthis_button_tweet"></a>
-        <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
-        <a class="addthis_counter addthis_pill_style"></a>
-    </div>
-    <!-- AddThis Button END -->
 </div>
 
 <?php include "footer.php"; ?>
