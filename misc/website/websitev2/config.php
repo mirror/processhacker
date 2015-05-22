@@ -18,5 +18,4 @@ $LATEST_PH_SOURCE_SHA1 = "fe254b842dd98cfb4a39f0c8315257407b945c6d";
 $LATEST_PH_RELEASE_NEWS = "http://processhacker.sourceforge.net/forums/viewtopic.php?f=1&t=1877";
 
 $LATEST_PH_RELEASE_URL = "http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-".$LATEST_PH_VERSION."-setup.exe/download?use_mirror=autoselect";
-//$LATEST_PH_RELEASE_URL = "http://processhacker.googlecode.com/files/processhacker-".$LATEST_PH_VERSION."-setup.exe";
 ?>

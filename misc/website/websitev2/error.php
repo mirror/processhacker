@@ -30,7 +30,7 @@ function curPageURL()
     <meta name="description" content="A free and open source process viewer with powerful process termination and memory searching/editing capabilities.">
     <link rel="icon" type="image/ico" href="/favicon.ico">
     <link rel="stylesheet" href="/css/pack.css">
-    <link rel="alternate" type="application/atom+xml" href="http://processhacker.sourceforge.net/forums/feed.php?f=1" title="Process Hacker - News">
+    <link rel="alternate" type="application/atom+xml" href="http://wj32.org/processhacker/forums/feed.php?f=1" title="Process Hacker - News">
     <link rel="alternate" type="application/atom+xml" href="http://sourceforge.net/p/processhacker/code/feed" title="Process Hacker - SVN">
     <!--[if lt IE 9]>
     <script src="js/html5shiv.min.js"></script>
@@ -52,7 +52,7 @@ function curPageURL()
                         <li><a href="/downloads.php">Downloads</a></li>
                         <li><a href="/faq.php">FAQ</a></li>
                         <li><a href="/about.php">About</a></li>
-                        <li><a href="/forums/">Forum</a></li>
+                        <li><a href="http://wj32.org/processhacker/forums/">Forum</a></li>
                     </ul>
                 </div>
             </nav>
@@ -71,21 +71,17 @@ function curPageURL()
     <br>
     <a href="privacy.php">Privacy Policy</a>
     <br>
-    Copyright &copy; 2008-2012 wj32
+    Copyright &copy; 2008-2015 wj32
 
-<!-- Google Analytics (Async)-->
+<!-- Google Analytics -->
 <script>
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-22023876-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script');
-        ga.type = 'text/javascript';
-        ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(ga, s);
-    })();
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-22023876-1', 'auto');
+  ga('send', 'pageview');
 </script>
 <!-- End Google Analytics -->
 </footer>

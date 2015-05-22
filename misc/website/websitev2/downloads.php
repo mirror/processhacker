@@ -45,7 +45,7 @@ if ($which_server == 1) {
                         <li class="active"><a href="downloads.php">Downloads</a></li>
                         <li><a href="faq.php">FAQ</a></li>
                         <li><a href="about.php">About</a></li>
-                        <li><a href="forums/">Forum</a></li>
+                        <li><a href="http://wj32.org/processhacker/forums/">Forum</a></li>
                     </ul>
                 </div>
             </nav>
