@@ -166,7 +166,7 @@ function get_time_ago_string($time_stamp, $divisor, $time_unit)
     <title><?php echo $pagetitle ?> - Process Hacker</title>
     <meta name="description" content="A free and open source process viewer with powerful process termination and memory searching/editing capabilities.">
     <link rel="shortcut icon" href="favicon.ico">
-    <link rel="stylesheet" href="css/stylesheet.css">
+    <link rel="stylesheet" href="css/pack.css">
     <link rel="alternate" type="application/atom+xml" href="http://wj32.org/processhacker/forums/feed.php?f=1" title="Process Hacker - News">
     <link rel="alternate" type="application/atom+xml" href="http://sourceforge.net/p/processhacker/code/feed" title="Process Hacker - SVN">
     <!--[if lt IE 9]>

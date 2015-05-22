@@ -13,8 +13,7 @@
 <?php
 if ($pagetitle == "Overview") {
     echo "<script src=\"http://www.google.com/jsapi\"></script><script>google.load(\"feeds\", \"1\")</script>
-          <script src=\"js/feed.js\"></script>
-          <script src=\"js/moment.js\"></script>";
+          <script src=\"js/pack.js\"></script>";
 }
 ?>
 
