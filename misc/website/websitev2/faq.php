@@ -29,8 +29,8 @@
                         <h2 class="center">Quick Links</h2>
                         <ul class="involvement">
                             <li><a href="http://sourceforge.net/projects/processhacker/">SourceForge project page</a></li>
-                            <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
-                            <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
+                            <li><a href="http://wj32.org/processhacker/forums/viewforum.php?f=5">Ask a question</a></li>
+                            <li><a href="http://wj32.org/processhacker/forums/viewforum.php?f=24">Report a bug</a></li>
                             <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
                             <li><a href="doc/">Source code documentation</a></li>
                         </ul>
@@ -41,7 +41,7 @@
             <div class="summary">
                 <dl>
                     <dt>Why is there annoying bug X in Process Hacker? Why is Process Hacker missing feature Y?</dt>
-                    <dd>Please report any bugs or feature requests in the <a href="forums">forums</a>.</dd>
+                    <dd>Please report any bugs or feature requests in the <a href="http://wj32.org/processhacker/forums/">forums</a>.</dd>
 
                     <dt>Is Process Hacker a portable application?</dt>
                     <dd>
