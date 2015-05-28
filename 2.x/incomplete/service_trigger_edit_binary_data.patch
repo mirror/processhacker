@@ -1,0 +1,476 @@
+Index: ExtendedServices.rc
+===================================================================
+--- ExtendedServices.rc	(revision 5975)
++++ ExtendedServices.rc	(working copy)
+@@ -201,15 +201,16 @@
+     LTEXT           "Action:",IDC_STATIC,7,59,24,8
+     COMBOBOX        IDC_ACTION,52,58,72,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+     LTEXT           "Data items:",IDC_STATIC,7,76,38,8
+-    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,52,79,217,90
+-    PUSHBUTTON      "New...",IDC_NEW,273,79,50,14
+-    PUSHBUTTON      "Edit...",IDC_EDIT,273,96,50,14
+-    PUSHBUTTON      "Delete",IDC_DELETE,273,113,50,14
++    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,52,79,209,90
++    PUSHBUTTON      "New String...",IDC_NEWSTRING,264,78,59,14
++    PUSHBUTTON      "Edit...",IDC_EDIT,264,112,59,14
++    PUSHBUTTON      "Delete",IDC_DELETE,264,129,59,14
+     DEFPUSHBUTTON   "OK",IDOK,219,175,50,14
+     PUSHBUTTON      "Cancel",IDCANCEL,273,175,50,14
++    PUSHBUTTON      "New Binary...",IDC_NEWBINARY,264,95,59,14
+ END
+ 
+-IDD_VALUE DIALOGEX 0, 0, 267, 167
++IDD_VALUESTRING DIALOGEX 0, 0, 267, 167
+ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+ CAPTION "Edit Data"
+ FONT 8, "MS Shell Dlg", 400, 0, 0x1
+@@ -231,7 +232,18 @@
+     PUSHBUTTON      "Delete",IDC_DELETE,225,197,50,14
+ END
+ 
++IDD_VALUEBINARY DIALOGEX 0, 0, 345, 176
++STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
++CAPTION "Edit Data"
++FONT 8, "MS Shell Dlg", 400, 0, 0x1
++BEGIN
++    DEFPUSHBUTTON   "OK",IDOK,234,155,50,14
++    PUSHBUTTON      "Cancel",IDCANCEL,288,155,50,14
++    LTEXT           "Binary data:",IDC_STATIC,7,7,40,8
++    CONTROL         "",IDC_DATA,"PhHexEdit",WS_CLIPSIBLINGS | WS_VSCROLL | WS_TABSTOP,7,18,331,133
++END
+ 
++
+ /////////////////////////////////////////////////////////////////////////////
+ //
+ // DESIGNINFO
+@@ -304,7 +316,7 @@
+         BOTTOMMARGIN, 189
+     END
+ 
+-    IDD_VALUE, DIALOG
++    IDD_VALUESTRING, DIALOG
+     BEGIN
+         LEFTMARGIN, 7
+         RIGHTMARGIN, 260
+@@ -319,6 +331,14 @@
+         TOPMARGIN, 7
+         BOTTOMMARGIN, 211
+     END
++
++    IDD_VALUEBINARY, DIALOG
++    BEGIN
++        LEFTMARGIN, 7
++        RIGHTMARGIN, 338
++        TOPMARGIN, 7
++        BOTTOMMARGIN, 169
++    END
+ END
+ #endif    // APSTUDIO_INVOKED
+ 
+Index: resource.h
+===================================================================
+--- resource.h	(revision 5975)
++++ resource.h	(working copy)
+@@ -18,7 +18,9 @@
+ #define IDD_OPTIONS                     107
+ #define IDD_SRVTRIGGER                  108
+ #define IDD_VALUE                       109
++#define IDD_VALUESTRING                 109
+ #define IDD_SRVTRIGGERS                 110
++#define IDD_VALUEBINARY                 111
+ #define IDC_SERVICES_LAYOUT             1001
+ #define IDC_MESSAGE                     1002
+ #define IDC_FIRSTFAILURE                1003
+@@ -58,16 +60,18 @@
+ #define IDC_ADD                         1043
+ #define IDC_SERVICESID                  1044
+ #define IDC_SIDTYPE                     1045
+-#define IDC_COMBO2                      1046
+ #define IDC_PROTECTION                  1046
++#define IDC_DATA                        1047
++#define IDC_NEWSTRING                   1049
++#define IDC_NEWBINARY                   1050
+ 
+ // Next default values for new objects
+ // 
+ #ifdef APSTUDIO_INVOKED
+ #ifndef APSTUDIO_READONLY_SYMBOLS
+-#define _APS_NEXT_RESOURCE_VALUE        111
++#define _APS_NEXT_RESOURCE_VALUE        112
+ #define _APS_NEXT_COMMAND_VALUE         40001
+-#define _APS_NEXT_CONTROL_VALUE         1047
++#define _APS_NEXT_CONTROL_VALUE         1051
+ #define _APS_NEXT_SYMED_VALUE           107
+ #endif
+ #endif
+Index: trigger.c
+===================================================================
+--- trigger.c	(revision 5975)
++++ trigger.c	(working copy)
+@@ -22,6 +22,7 @@
+ 
+ #include <phdk.h>
+ #include <windowsx.h>
++#include <hexedit.h>
+ #include "extsrv.h"
+ #include "resource.h"
+ 
+@@ -31,11 +32,7 @@
+     union
+     {
+         PPH_STRING String;
+-        struct
+-        {
+-            PVOID Binary;
+-            ULONG BinaryLength;
+-        };
++        PPH_BYTES Binary;
+         UCHAR Byte;
+         ULONG64 UInt64;
+     };
+@@ -65,7 +62,11 @@
+     PPH_STRING LastCustomSubType;
+ 
+     // Value dialog box
+-    PPH_STRING EditingValue;
++    union
++    {
++        PPH_STRING EditingString;
++        PPH_BYTES EditingBinary;
++    };
+ } ES_TRIGGER_CONTEXT, *PES_TRIGGER_CONTEXT;
+ 
+ typedef struct _TYPE_ENTRY
+@@ -94,7 +95,7 @@
+     _In_ LPARAM lParam
+     );
+ 
+-INT_PTR CALLBACK ValueDlgProc(
++INT_PTR CALLBACK ValueStringDlgProc(
+     _In_ HWND hwndDlg,
+     _In_ UINT uMsg,
+     _In_ WPARAM wParam,
+@@ -101,6 +102,13 @@
+     _In_ LPARAM lParam
+     );
+ 
++INT_PTR CALLBACK ValueBinaryDlgProc(
++    _In_ HWND hwndDlg,
++    _In_ UINT uMsg,
++    _In_ WPARAM wParam,
++    _In_ LPARAM lParam
++    );
++
+ static GUID NetworkManagerFirstIpAddressArrivalGuid = { 0x4f27f2de, 0x14e2, 0x430b, { 0xa5, 0x49, 0x7c, 0xd4, 0x8c, 0xbc, 0x82, 0x45 } };
+ static GUID NetworkManagerLastIpAddressRemovalGuid = { 0xcc4ba62a, 0x162e, 0x4648, { 0x84, 0x7a, 0xb6, 0xbd, 0xf9, 0x93, 0xe3, 0x35 } };
+ static GUID DomainJoinGuid = { 0x1ce20aba, 0x9851, 0x4421, { 0x94, 0x30, 0x1d, 0xde, 0xb7, 0x66, 0xe8, 0x09 } };
+@@ -173,8 +181,7 @@
+         }
+         else if (data->Type == SERVICE_TRIGGER_DATA_TYPE_BINARY)
+         {
+-            data->BinaryLength = DataItem->cbData;
+-            data->Binary = PhAllocateCopy(DataItem->pData, DataItem->cbData);
++            data->Binary = PhCreateBytesEx(DataItem->pData, DataItem->cbData);
+         }
+         else if (data->Type == SERVICE_TRIGGER_DATA_TYPE_LEVEL)
+         {
+@@ -207,7 +214,7 @@
+     else if (newData->Type == SERVICE_TRIGGER_DATA_TYPE_BINARY)
+     {
+         if (newData->Binary)
+-            newData->Binary = PhAllocateCopy(newData->Binary, newData->BinaryLength);
++            newData->Binary = PhCreateBytesEx(newData->Binary->Buffer, newData->Binary->Length);
+     }
+ 
+     return newData;
+@@ -225,7 +232,7 @@
+     else if (Data->Type == SERVICE_TRIGGER_DATA_TYPE_BINARY)
+     {
+         if (Data->Binary)
+-            PhFree(Data->Binary);
++            PhDereferenceObject(Data->Binary);
+     }
+ 
+     PhFree(Data);
+@@ -798,8 +805,8 @@
+                     }
+                     else if (data->Type == SERVICE_TRIGGER_DATA_TYPE_BINARY)
+                     {
+-                        dataItem->cbData = data->BinaryLength;
+-                        dataItem->pData = data->Binary;
++                        dataItem->cbData = (ULONG)data->Binary->Length;
++                        dataItem->pData = data->Binary->Buffer;
+                     }
+                     else if (data->Type == SERVICE_TRIGGER_DATA_TYPE_LEVEL)
+                     {
+@@ -1212,7 +1219,7 @@
+     }
+     else if (Data->Type == SERVICE_TRIGGER_DATA_TYPE_BINARY)
+     {
+-        *Text = PhCreateString(L"(binary data)");
++        *Text = PhFormatString(L"(binary data: %Iu bytes)", Data->Binary->Length);
+     }
+     else if (Data->Type == SERVICE_TRIGGER_DATA_TYPE_LEVEL)
+     {
+@@ -1370,18 +1377,18 @@
+                     EspFixServiceTriggerControls(hwndDlg, context);
+                 }
+                 break;
+-            case IDC_NEW:
++            case IDC_NEWSTRING:
+                 {
+                     HWND lvHandle;
+ 
+                     lvHandle = GetDlgItem(hwndDlg, IDC_LIST);
+-                    context->EditingValue = PhReferenceEmptyString();
++                    context->EditingString = PhReferenceEmptyString();
+ 
+                     if (DialogBoxParam(
+                         PluginInstance->DllBase,
+-                        MAKEINTRESOURCE(IDD_VALUE),
++                        MAKEINTRESOURCE(IDD_VALUESTRING),
+                         hwndDlg,
+-                        ValueDlgProc,
++                        ValueStringDlgProc,
+                         (LPARAM)context
+                         ) == IDOK)
+                     {
+@@ -1391,7 +1398,7 @@
+ 
+                         data = EspCreateTriggerData(NULL);
+                         data->Type = SERVICE_TRIGGER_DATA_TYPE_STRING;
+-                        data->String = EspConvertNewLinesToNulls(context->EditingValue);
++                        data->String = EspConvertNewLinesToNulls(context->EditingString);
+ 
+                         if (!context->EditingInfo->DataList)
+                             context->EditingInfo->DataList = PhCreateList(4);
+@@ -1403,9 +1410,46 @@
+                         PhDereferenceObject(text);
+                     }
+ 
+-                    PhSwapReference(&context->EditingValue, NULL);
++                    PhSwapReference(&context->EditingString, NULL);
+                 }
+                 break;
++            case IDC_NEWBINARY:
++                {
++                    HWND lvHandle;
++
++                    lvHandle = GetDlgItem(hwndDlg, IDC_LIST);
++                    context->EditingBinary = PhCreateBytesEx("\0", 1);
++
++                    if (DialogBoxParam(
++                        PluginInstance->DllBase,
++                        MAKEINTRESOURCE(IDD_VALUEBINARY),
++                        hwndDlg,
++                        ValueBinaryDlgProc,
++                        (LPARAM)context
++                        ) == IDOK)
++                    {
++                        PES_TRIGGER_DATA data;
++                        PPH_STRING text;
++                        INT lvItemIndex;
++
++                        data = EspCreateTriggerData(NULL);
++                        data->Type = SERVICE_TRIGGER_DATA_TYPE_BINARY;
++                        PhReferenceObject(context->EditingBinary);
++                        data->Binary = context->EditingBinary;
++
++                        if (!context->EditingInfo->DataList)
++                            context->EditingInfo->DataList = PhCreateList(4);
++
++                        PhAddItemList(context->EditingInfo->DataList, data);
++
++                        EspFormatTriggerData(data, &text);
++                        lvItemIndex = PhAddListViewItem(lvHandle, MAXINT, text->Buffer, data);
++                        PhDereferenceObject(text);
++                    }
++
++                    PhSwapReference(&context->EditingBinary, NULL);
++                }
++                break;
+             case IDC_EDIT:
+                 {
+                     HWND lvHandle;
+@@ -1416,35 +1460,58 @@
+                     lvHandle = GetDlgItem(hwndDlg, IDC_LIST);
+                     lvItemIndex = ListView_GetNextItem(lvHandle, -1, LVNI_SELECTED);
+ 
+-                    if (
+-                        lvItemIndex != -1 && PhGetListViewItemParam(lvHandle, lvItemIndex, (PPVOID)&data) &&
+-                        data->Type == SERVICE_TRIGGER_DATA_TYPE_STRING // editing binary values is not supported
+-                        )
++                    if (lvItemIndex != -1 && PhGetListViewItemParam(lvHandle, lvItemIndex, (PPVOID)&data))
+                     {
+                         index = PhFindItemList(context->EditingInfo->DataList, data);
+ 
+                         if (index != -1)
+                         {
+-                            context->EditingValue = EspConvertNullsToNewLines(data->String);
++                            if (data->Type == SERVICE_TRIGGER_DATA_TYPE_STRING)
++                            {
++                                context->EditingString = EspConvertNullsToNewLines(data->String);
+ 
+-                            if (DialogBoxParam(
+-                                PluginInstance->DllBase,
+-                                MAKEINTRESOURCE(IDD_VALUE),
+-                                hwndDlg,
+-                                ValueDlgProc,
+-                                (LPARAM)context
+-                                ) == IDOK)
++                                if (DialogBoxParam(
++                                    PluginInstance->DllBase,
++                                    MAKEINTRESOURCE(IDD_VALUESTRING),
++                                    hwndDlg,
++                                    ValueStringDlgProc,
++                                    (LPARAM)context
++                                    ) == IDOK)
++                                {
++                                    PPH_STRING text;
++
++                                    PhSwapReference2(&data->String, EspConvertNewLinesToNulls(context->EditingString));
++
++                                    EspFormatTriggerData(data, &text);
++                                    PhSetListViewSubItem(lvHandle, lvItemIndex, 0, text->Buffer);
++                                    PhDereferenceObject(text);
++                                }
++
++                                PhSwapReference(&context->EditingString, NULL);
++                            }
++                            else if (data->Type == SERVICE_TRIGGER_DATA_TYPE_BINARY)
+                             {
+-                                PPH_STRING text;
++                                PhSwapReference(&context->EditingBinary, data->Binary);
+ 
+-                                PhSwapReference2(&data->String, EspConvertNewLinesToNulls(context->EditingValue));
++                                if (DialogBoxParam(
++                                    PluginInstance->DllBase,
++                                    MAKEINTRESOURCE(IDD_VALUEBINARY),
++                                    hwndDlg,
++                                    ValueBinaryDlgProc,
++                                    (LPARAM)context
++                                    ) == IDOK)
++                                {
++                                    PPH_STRING text;
+ 
+-                                EspFormatTriggerData(data, &text);
+-                                PhSetListViewSubItem(lvHandle, lvItemIndex, 0, text->Buffer);
+-                                PhDereferenceObject(text);
++                                    PhSwapReference(&data->Binary, context->EditingBinary);
++
++                                    EspFormatTriggerData(data, &text);
++                                    PhSetListViewSubItem(lvHandle, lvItemIndex, 0, text->Buffer);
++                                    PhDereferenceObject(text);
++                                }
++
++                                PhSwapReference(&context->EditingBinary, NULL);
+                             }
+-
+-                            PhSwapReference(&context->EditingValue, NULL);
+                         }
+                     }
+                 }
+@@ -1618,8 +1685,8 @@
+                         {
+                             PES_TRIGGER_DATA data = PhGetSelectedListViewItemParam(GetDlgItem(hwndDlg, IDC_LIST));
+ 
+-                            // Editing binary data is not supported.
+-                            EnableWindow(GetDlgItem(hwndDlg, IDC_EDIT), data && data->Type == SERVICE_TRIGGER_DATA_TYPE_STRING);
++                            EnableWindow(GetDlgItem(hwndDlg, IDC_EDIT), data &&
++                                (data->Type == SERVICE_TRIGGER_DATA_TYPE_STRING || data->Type == SERVICE_TRIGGER_DATA_TYPE_BINARY));
+                             EnableWindow(GetDlgItem(hwndDlg, IDC_DELETE), TRUE);
+                         }
+                         else
+@@ -1646,7 +1713,7 @@
+     return FALSE;
+ }
+ 
+-static INT_PTR CALLBACK ValueDlgProc(
++static INT_PTR CALLBACK ValueStringDlgProc(
+     _In_ HWND hwndDlg,
+     _In_ UINT uMsg,
+     _In_ WPARAM wParam,
+@@ -1675,7 +1742,7 @@
+     {
+     case WM_INITDIALOG:
+         {
+-            SetDlgItemText(hwndDlg, IDC_VALUES, context->EditingValue->Buffer);
++            SetDlgItemText(hwndDlg, IDC_VALUES, context->EditingString->Buffer);
+             SetFocus(GetDlgItem(hwndDlg, IDC_VALUES));
+             Edit_SetSel(GetDlgItem(hwndDlg, IDC_VALUES), 0, -1);
+         }
+@@ -1688,7 +1755,7 @@
+                 EndDialog(hwndDlg, IDCANCEL);
+                 break;
+             case IDOK:
+-                PhSwapReference2(&context->EditingValue, PhGetWindowText(GetDlgItem(hwndDlg, IDC_VALUES)));
++                PhSwapReference2(&context->EditingString, PhGetWindowText(GetDlgItem(hwndDlg, IDC_VALUES)));
+                 EndDialog(hwndDlg, IDOK);
+                 break;
+             }
+@@ -1698,3 +1765,65 @@
+ 
+     return FALSE;
+ }
++
++INT_PTR CALLBACK ValueBinaryDlgProc(
++    _In_ HWND hwndDlg,
++    _In_ UINT uMsg,
++    _In_ WPARAM wParam,
++    _In_ LPARAM lParam
++    )
++{
++    PES_TRIGGER_CONTEXT context;
++
++    if (uMsg == WM_INITDIALOG)
++    {
++        context = (PES_TRIGGER_CONTEXT)lParam;
++        SetProp(hwndDlg, L"Context", (HANDLE)context);
++    }
++    else
++    {
++        context = (PES_TRIGGER_CONTEXT)GetProp(hwndDlg, L"Context");
++
++        if (uMsg == WM_DESTROY)
++            RemoveProp(hwndDlg, L"Context");
++    }
++
++    if (!context)
++        return FALSE;
++
++    switch (uMsg)
++    {
++    case WM_INITDIALOG:
++        {
++            HexEdit_SetData(GetDlgItem(hwndDlg, IDC_DATA), context->EditingBinary->Buffer, context->EditingBinary->Length);
++            SetFocus(GetDlgItem(hwndDlg, IDC_DATA));
++            HexEdit_SetSel(GetDlgItem(hwndDlg, IDC_DATA), 0, -1);
++        }
++        break;
++    case WM_COMMAND:
++        {
++            switch (LOWORD(wParam))
++            {
++            case IDCANCEL:
++                EndDialog(hwndDlg, IDCANCEL);
++                break;
++            case IDOK:
++                {
++                    PVOID data;
++                    ULONG length;
++
++                    data = HexEdit_GetBuffer(GetDlgItem(hwndDlg, IDC_DATA), &length);
++
++                    if (data)
++                        PhSwapReference2(&context->EditingBinary, PhCreateBytesEx(data, length));
++
++                    EndDialog(hwndDlg, IDOK);
++                }
++                break;
++            }
++        }
++        break;
++    }
++
++    return FALSE;
++}
