@@ -348,8 +348,8 @@ AddDefaultCharset utf-8
     RewriteCond %{HTTPS} !=on
     RewriteRule ^ - [env=proto:http]
 
-    RewriteRule ^forums/(.*) http://wj32.org/processhacker/forums/$1 [R=301]
-
+    RewriteRule ^forums/(.*) http://wj32.org/processhacker/forums/$1 [R=301,NC]
+    RewriteRule ^forums(.*) http://wj32.org/processhacker/forums/$1 [R=301,NC]
 </IfModule>
 
 # ----------------------------------------------------------------------
