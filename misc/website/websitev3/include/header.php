@@ -1,4 +1,4 @@
-<?php include "config.php"; ?>
+<?php include "config.php"; include "helpers.php"; /*ob_start('removeWhitespace');*/ ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -10,7 +10,7 @@
 
         <link rel="shortcut icon" href="favicon.ico"/>
 
-        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3.3.2/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3.3.4/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="//processhacker.sourceforge.net/v3/css/lightbox.css"/>
         <link rel="stylesheet" type="text/css" href="//processhacker.sourceforge.net/v3/css/custom.css"/>
 
@@ -23,12 +23,12 @@
             <script src="//cdn.jsdelivr.net/html5shiv/3.7.2/html5shiv.min.js"></script>
             <script src="//cdn.jsdelivr.net/respond/1.4.2/respond.min.js"></script> 
         <![endif]-->
-
+        
         <?php if ($pagetitle == 'Overview') {
                 echo "<script type=\"text/javascript\" src=\"http://www.google.com/jsapi\"></script>
         <script type=\"text/javascript\">google.load(\"feeds\", \"1\");</script>
-        <script src=\"js/feed.js\"></script>
-        <script src=\"http://cdn.jsdelivr.net/momentjs/2.9.0/moment.min.js\"></script>";
+        <script type=\"text/javascript\" src=\"js/feed.js\"></script>
+        <script type=\"text/javascript\" src=\"http://cdn.jsdelivr.net/momentjs/2.10.3/moment.min.js\"></script>";
         } ?>
     </head>
 <body>

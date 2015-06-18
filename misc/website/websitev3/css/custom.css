@@ -2,65 +2,70 @@ html {
     overflow-y: scroll; 
 }
 
-.jumbotron {
-    padding: 30px 15px;
-}
-
 body {
     padding-top: 50px;
     padding-bottom: 20px;
     /*color: #FFFFFF; background-color: #222222; 
-	padding: 65px;
 	font-family: "Segoe UI", sans-serif, Verdana, Helvetica, Arial;*/
 }
 
 p {
-    margin: 0 0 5px;
+margin: 0 0 5px;
+}
+
+.jumbotron {
+padding: 30px 15px;
 }
 
 #forumitem {
-    font-size: 12px;
-    font-family: ;
+font-size: 12px;
+font-family: ;
 }
 
 #forumitem img {
-    width: 16px;
-    height: 16px;
+width: 16px;
+height: 16px;
 }
 
 .footer {
-    color: silver;
+color: silver;
 }
 
 #author { 
-    color:#A00
+color:#A00
 }
 
 .panel-index {
-    padding: 0;
+padding: 0;
 }
 
 .well-sm {
-    padding: 9px 0;
+padding: 9px 0;
 }
 
-/*.container hr {
-    margin: 20px 0 5px 0;
-}
-
-.page-header {
-    margin: 0 0 20px;
-    padding-bottom: 2px;
-}*/
-
-#page-padding
-{
-    margin: 20px 0 0 0;
+#page-padding {
+margin: 20px 0 0 0;
 }
 
 .nav-header {
-    color: #999;
+color: #999;
 }
+
+#content a.button { 
+    border: 1px solid #FFFFFF;
+    display: inline-block; 
+    font-family: Segoe UI;
+    font-size: 24px;
+    line-height: 46px;
+    padding: 0 15px 3px;
+}
+
+#content a.button img { 
+    float: right; 
+    padding: 10px 0 0 15px; 
+}
+
+
 
 @media (min-width: 768px) {
 .box
@@ -89,9 +94,9 @@ p {
 }
 
 .info dt {
-float: left;
-font-weight: bold;
-padding: 3px 6px;
-clear: both;
-width: 30%;
+    float: left;
+    font-weight: bold;
+    padding: 3px 6px;
+    clear: both;
+    width: 30%;
 }

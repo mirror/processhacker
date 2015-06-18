@@ -67,21 +67,33 @@
                 </div>
             </div>
          
-            <div class="row">
+            <div class="container">
                 <h1 class="page-header"><small>Ohloh Stats</small></h1>
                 <div class="pull-left">
                     <script src="http://www.ohloh.net/p/processhacker/widgets/project_basic_stats.js"></script>
                 </div>
             </div>
+            
+            <div class="container">
+                <a href="https://scan.coverity.com/projects/684">
+                  <img alt="Coverity Scan Build Status"
+                       src="https://scan.coverity.com/projects/684/badge.svg"/>
+                </a>
+            </div>
         </div>
     
-        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="page-padding" role="navigation">
-            <div class="list-group">
-                <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Ask a question</a>
-                <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-fire"></i> Report a bug</a>
-                <a href="http://sourceforge.net/projects/processhacker/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-globe"></i> SourceForge project page</a>
-                <a href="http://sourceforge.net/p/processhacker/code/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-check"></i> Browse source code</a>
-                <a href="http://processhacker.sourceforge.net/doc/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-edit"></i> Source code documentation</a>
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="page-padding">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Quick Links</h3>
+                </div>
+                <div class="list-group">
+                    <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Ask a question</a>
+                    <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-fire"></i> Report a bug</a>
+                    <a href="http://sourceforge.net/projects/processhacker/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-globe"></i> SourceForge project page</a>
+                    <a href="http://sourceforge.net/p/processhacker/code/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-check"></i> Browse source code</a>
+                    <a href="http://processhacker.sourceforge.net/doc/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-edit"></i> Source code documentation</a>
+                </div>
             </div>
         </div>
     </div>

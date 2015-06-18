@@ -85,4 +85,15 @@ function get_time_ago_string($time_stamp, $divisor, $time_unit)
         return $time_units . ' ' . $time_unit . 's ago';
     }
 }
+
+/** 
+ * Remove multiple spaces from the buffer.
+ * 
+ * @var string $buffer
+ * @return string
+ */
+function removeWhitespace($buffer)
+{
+    return preg_replace('/\s+/', ' ', $buffer);
+}
 ?>

@@ -1,12 +1,24 @@
-<?php $pagetitle = "Overview"; include "include/header.php"; include "include/helpers.php"; ?>
+<?php $pagetitle = "Overview"; include "include/header.php"; ?>
 
 <div class="jumbotron">
     <div class="container">
-      	<h1>Process Hacker</h1>
-        <p class="headline main-headline">
-            A <strong>free</strong>, powerful, multi-purpose tool that helps you <strong>monitor system resources</strong>, <strong>debug software</strong> and <strong>detect malware</strong>.
-        </p>
-        <p><a href="downloads.php" class="btn btn-primary btn-lg">Download Process Hacker &raquo;</a></p>
+        <div class="row">
+            <div class="col-md-8">
+                <h1>Process Hacker</h1>
+                <p class="headline main-headline">
+                    A <strong>free</strong>, powerful, multi-purpose tool that helps you <strong>monitor system resources</strong>, <strong>debug software</strong> and <strong>detect malware</strong>.
+                </p>
+                <p><a href="downloads.php" class="btn btn-primary btn-lg">Download Process Hacker <i class="glyphicon glyphicon-download-alt"></i></a></p>
+            </div>
+
+            <div class="col-md-4">
+                <div class="sidebar-nav-fixed pull-right">
+                    <div class="alert alert-danger">
+                        <h4 style="width: 328px; height: 200px">advertisement</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -128,143 +140,15 @@
     <div class="row">
         <div class="col-md-4">
             <h2>Latest News</h2>
-                <?php
-                        // Connect to DB
-                        $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
-                        if (mysqli_connect_errno())
-                        {
-                            echo "<p>Failed to connect to MySQL: " . mysqli_connect_error()."</p>";
-                        }
-                        else
-                        {
-                            $sql = "SELECT 
-                                        t.topic_id,
-                                        t.topic_title,
-                                        t.topic_views,
-                                        t.topic_last_post_id,
-                                        t.forum_id,
-                                        p.post_id,
-                                        p.poster_id,
-                                        p.post_time,
-                                        u.user_id,
-                                        u.username,
-                                        u.user_colour
-                                    FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
-                                    WHERE t.topic_id = p.topic_id AND
-                                        f.forum_id = t.forum_id AND
-                                        t.forum_id = 1 AND
-                                        t.topic_status <> 2 AND
-                                        p.post_id = t.topic_last_post_id AND
-                                        p.poster_id = u.user_id
-                                    ORDER BY p.post_id DESC LIMIT $topicnumber";
-                            
-                            if ($result = mysqli_query($conn, $sql))
-                            {
-                                while ($row = mysqli_fetch_array($result))
-                                {
-                                    // Query fields
-                                    $topic_title = $row["topic_title"];
-                                    $topic_views = $row["topic_views"];
-                                    $author_name = $row["username"];
-                                    $author_colour = $row["user_colour"];
-                                    $post_time = $row["post_time"];
-                                    $post_id = $row["post_id"];
-                                    $author_link = $row["user_id"];
-                                    
-                                    // Convert values
-                                    $post_local_time = date("F jS, Y", $post_time);
-                                    $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
-                                    $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
-                                    
-                                    echo
-                                        "<a href=\"".htmlspecialchars($post_link)."\" target=\"_blank\" class=\"list-group-item\"><span class=\"badge\">{$topic_views}</span>
-                                            <h4 class=\"list-group-item-heading\">".$topic_title."</h4>
-                                            <p class=\"list-group-item-text\">
-                                                <span class=\"text-muted\">".$post_local_time." by <span style=\"color:#".$author_colour."\">".$author_name."</span></span>
-                                            </p>
-                                        </a>";
-                                }
-                                
-                                mysqli_free_result($result);
-                            }
-                            mysqli_close($conn);
-                        }
-                s?>
+            <div id="news_feed_div"></div>
         </div>
         <div class="col-md-4">
             <h2>Latest Posts</h2>
-            <?php
-                // Connect to DB
-                $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
-                
-                        if (mysqli_connect_errno())
-                        {
-                            echo "<p>Failed to connect to MySQL: ".mysqli_connect_error()."</p>";
-                        }
-                        else
-                        {
-                            $sql = "SELECT 
-                                        t.topic_id,
-                                        t.topic_title,
-                                        t.topic_views,
-                                        t.topic_last_post_id,
-                                        t.forum_id,
-                                        p.post_id,
-                                        p.poster_id,
-                                        p.post_time,
-                                        u.user_id,
-                                        u.username,
-                                        u.user_colour
-                                    FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
-                                    WHERE t.topic_id = p.topic_id AND
-                                        t.topic_visibility = 1 AND
-                                        f.forum_id = t.forum_id AND
-                                        t.forum_id != 1 AND
-                                        t.forum_id != 7 AND
-                                        t.topic_status <> 2 AND
-                                        p.post_visibility = 1 AND
-                                        p.post_id = t.topic_last_post_id AND
-                                        p.poster_id = u.user_id
-                                    ORDER BY p.post_id DESC LIMIT $topicnumber";
-                            
-                            if ($result = mysqli_query($conn, $sql))
-                            {
-                                while ($row = mysqli_fetch_array($result))
-                                {
-                                    // Query fields
-                                    $topic_title = $row["topic_title"];
-                                    $topic_views = $row["topic_views"];
-                                    $author_name = $row["username"];
-                                    $author_colour = $row["user_colour"];
-                                    $post_time = $row["post_time"];
-                                    $post_id = $row["post_id"];
-                                    $author_link = $row["user_id"];
-                                       
-                                    // Convert values
-                                    $post_local_time = date("F jS, Y, g:i a", $post_time);
-                                    $post_date = get_time_ago($post_time);
-                                    $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
-                                    $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
-                                    $topic_title = summary($topic_title, 35, true);
-                                    
-                                    echo
-                                        "<a href=\"".htmlspecialchars($post_link)."\" target=\"_blank\" class=\"list-group-item\"><span class=\"badge\">{$topic_views}</span>
-                                            <h4 class=\"list-group-item-heading\">{$topic_title}</h4>
-                                            <p class=\"list-group-item-text\">
-                                                <span class=\"text-muted\">".$post_date." by <span style=\"color:#".$author_colour."\">".$author_name."</span></span>
-                                            </p>
-                                        </a>";
-                                }
-                                
-                                mysqli_free_result($result);
-                            }
-                            mysqli_close($conn);
-                        }
-                        ?>
+            <div id="forum_feed_div"></div>
        </div>
         <div class="col-md-4">
             <h2>Latest Source</h2>
-            <div id="feeddiv"></div>
+            <div id="source_feed_div"></div>
         </div>
     </div>
 </div>

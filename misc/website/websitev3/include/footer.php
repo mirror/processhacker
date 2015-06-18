@@ -16,7 +16,7 @@
 </div>
 
 <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
-<script src="//cdn.jsdelivr.net/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="//cdn.jsdelivr.net/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script src="//getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
 <script src="//processhacker.sourceforge.net/v3/js/lightbox.min.js"></script>
 
