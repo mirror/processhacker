@@ -2,11 +2,11 @@
     <hr>
     <div class="pull-right">
         <a class="thumbnail" href="http://sourceforge.net/projects/processhacker/">
-            <img src="/img/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30">
+            <img src="img/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30">
         </a>
     </div>
     <div class="pull-left">
-        <p><small>Copyright &copy; 2008-2015 - Wen Jia Liu (wj32)</small></p>
+        <p><small>Copyright &copy; 2008-2016 - Wen Jia Liu (wj32)</small></p>
         <a href="index.php">Overview</a> | 
         <a href="downloads.php">Downloads</a> |
         <a href="faq.php">FAQ</a> | 
