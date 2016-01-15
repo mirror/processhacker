@@ -71,7 +71,7 @@ function curPageURL()
     <br>
     <a href="privacy.php">Privacy Policy</a>
     <br>
-    Copyright &copy; 2008-2015 wj32
+    Copyright &copy; 2008-2016 wj32
 
 <!-- Google Analytics -->
 <script>
