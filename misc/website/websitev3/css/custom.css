@@ -9,22 +9,39 @@ body {
 	font-family: "Segoe UI", sans-serif, Verdana, Helvetica, Arial;*/
 }
 
+a {
+    outline: 0 !important;
+}
+
+.nav a:visited {
+color:#fff;
+}
+.nav a:hover {
+color:#000;
+}
+.nav a:active {
+color:#000;
+}
+.nav a:focus {
+color:#000;
+}
+
 p {
-margin: 0 0 5px;
+    margin: 0 0 5px;
 }
 
 .jumbotron {
-padding: 30px 15px;
+    padding: 30px 15px;
 }
 
 #forumitem {
-font-size: 12px;
-font-family: ;
+    font-size: 12px;
+    font-family: ;
 }
 
 #forumitem img {
-width: 16px;
-height: 16px;
+    width: 16px;
+    height: 16px;
 }
 
 .footer {

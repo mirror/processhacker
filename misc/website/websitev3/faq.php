@@ -34,16 +34,19 @@
                 <h3>Symbols don't work properly!</h3>
       			Firstly, you need the latest <code>dbghelp.dll</code> version:<br>
                 <br>
-                1) Install the latest Windows SDK.<br>
+                1) Install the latest Windows SDK (e.g. Windows 10 SDK).<br>
                 2) Open Process Hacker options via the main menu: Hacker &gt; Options<br>
                 3) Click Symbols, and locate <code>dbghelp.dll</code><br><br>
                 <dl>
                     <dd>
                         Windows XP, Vista and Windows 7 SDK:<br>
                         <code>\Program Files\Debugging Tools for Windows (x86)\</code><br><br>
-                        Windows 8 or above SDK:<br>
+                        Windows 8 or 8.1 SDK:<br>
                         32bit Windows: <code>\Program Files (x86)\Windows Kits\8.x\Debuggers\x86\</code><br>
-                        64bit Windows: <code>\Program Files (x86)\Windows Kits\8.x\Debuggers\x64\</code><br>
+                        64bit Windows: <code>\Program Files (x86)\Windows Kits\8.x\Debuggers\x64\</code><br><br>
+                        Windows 10 SDK:<br>
+                        32bit Windows: <code>\Program Files (x86)\Windows Kits\10\Debuggers\x86\</code><br>
+                        64bit Windows: <code>\Program Files (x86)\Windows Kits\10\Debuggers\x64\</code><br>
                     </dd>
                 </dl>
                 Secondly, you need to configure the search path. If you don't know what to do, enter:<br>
@@ -70,8 +73,8 @@
                     <h3 class="panel-title">Quick Links</h3>
                 </div>
                 <div class="list-group">
-                    <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Ask a question</a>
-                    <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-fire"></i> Report a bug</a>
+                    <a href="forums/viewforum.php?f=5" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Ask a question</a>
+                    <a href="forums/viewforum.php?f=24" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-fire"></i> Report a bug</a>
                     <a href="http://sourceforge.net/projects/processhacker/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-globe"></i> SourceForge project page</a>
                     <a href="http://sourceforge.net/p/processhacker/code/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-check"></i> Browse source code</a>
                     <a href="http://processhacker.sourceforge.net/doc/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-edit"></i> Source code documentation</a>

@@ -88,8 +88,8 @@
                     <h3 class="panel-title">Quick Links</h3>
                 </div>
                 <div class="list-group">
-                    <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Ask a question</a>
-                    <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-fire"></i> Report a bug</a>
+                    <a href="forums/viewforum.php?f=5" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Ask a question</a>
+                    <a href="forums/viewforum.php?f=24" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-fire"></i> Report a bug</a>
                     <a href="http://sourceforge.net/projects/processhacker/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-globe"></i> SourceForge project page</a>
                     <a href="http://sourceforge.net/p/processhacker/code/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-check"></i> Browse source code</a>
                     <a href="http://processhacker.sourceforge.net/doc/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-edit"></i> Source code documentation</a>

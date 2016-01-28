@@ -7,13 +7,13 @@
     </div>
 </div>
 
-<div class="container">
+<!-- <div class="container">
     <div class="col-sm-12">
         <div class="alert alert-danger">
-            <h4>advertisement</h4>
+            <h4></h4>
         </div>
     </div>
-</div>
+</div> -->
 
 <div class="container">
 
@@ -36,7 +36,7 @@
             <h3 class="media-heading">Installer (recommended)</h3>
             <p>Prebuilt installer for easy and simple software deployment.</p>
             <p>
-                <a href="https://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe" class="btn btn-primary" role="button" onclick="ga('send', 'event', 'DownloadPage', 'click', 'Download_EXE');">
+                <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download?use_mirror=autoselect" class="btn btn-primary" role="button" onclick="ga('send', 'event', 'DownloadPage', 'click', 'Download_EXE');">
                     <i class="glyphicon glyphicon-download-alt"></i> processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe
                 </a>
             </p>
@@ -48,7 +48,7 @@
             <h3 class="media-heading">Binaries (portable)</h3>
             <p>Compiled and zipped executable (includes plugins) without installer for advanced portable software deployment.</p>
             <p>
-                <a href="https://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip" class="btn btn-primary" role="button" onclick="ga('send', 'event', 'DownloadPage', 'click', 'Download_BIN');">
+                <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download?use_mirror=autoselect" class="btn btn-primary" role="button" onclick="ga('send', 'event', 'DownloadPage', 'click', 'Download_BIN');">
                     <i class="glyphicon glyphicon-download-alt"></i> processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip
                 </a>
             </p>
@@ -60,7 +60,7 @@
             <h3 class="media-heading">Source code</h3>
             <p>Raw source code; Requires a compiler such as Visual Studio and some configuration.</p>
             <p>
-                <a href="https://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip" class="btn btn-primary" role="button" onclick="ga('send', 'event', 'DownloadPage', 'click', 'Download_SRC');">
+                <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download?use_mirror=autoselect" class="btn btn-primary" role="button" onclick="ga('send', 'event', 'DownloadPage', 'click', 'Download_SRC');">
                     <i class="glyphicon glyphicon-download-alt"></i> processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip
                 </a>
             </p>
@@ -77,10 +77,10 @@
                 </div>
                 <div class="list-group">
                     <a href="<?php echo $LATEST_PH_RELEASE_NEWS; ?>" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Release Notes</a>
-                    <a href="http://svn.code.sf.net/p/processhacker/code/2.x/trunk/LICENSE.txt" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> End User License Agreement</a>
-                    <a href="" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Checksums</a>
-                    <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Ask a question</a>
-                    <a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-fire"></i> Report a bug</a>
+                    <!--<a href="http://svn.code.sf.net/p/processhacker/code/2.x/trunk/LICENSE.txt" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> End User License Agreement</a>
+                    <a href="" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Checksums</a>-->
+                    <a href="forums/viewforum.php?f=5" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-comment"></i> Ask a question</a>
+                    <a href="forums/viewforum.php?f=24" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-fire"></i> Report a bug</a>
                     <a href="http://sourceforge.net/projects/processhacker/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-globe"></i> SourceForge project page</a>
                     <a href="http://sourceforge.net/p/processhacker/code/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-check"></i> Browse source code</a>
                     <a href="http://processhacker.sourceforge.net/doc/" target="_blank" class="list-group-item"><i class="glyphicon glyphicon-edit"></i> Source code documentation</a>

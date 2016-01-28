@@ -1,10 +1,10 @@
 <div class="container footer">
     <hr>
-    <div class="pull-right">
-        <a class="thumbnail" href="http://sourceforge.net/projects/processhacker/">
-            <img src="img/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30">
+    <!--<div class="pull-right">
+        <a class="thumbnail" href="https://wj32.org/processhacker/">
+            <img src="img/logo_64x64.png" alt="Process Hacker logo" title="Process Hacker" width="32" height="32">
         </a>
-    </div>
+    </div>-->
     <div class="pull-left">
         <p><small>Copyright &copy; 2008-2016 - Wen Jia Liu (wj32)</small></p>
         <a href="index.php">Overview</a> | 
@@ -18,7 +18,7 @@
 <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script src="//getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
-<script src="//processhacker.sourceforge.net/v3/js/lightbox.min.js"></script>
+<script src="js/lightbox.min.js"></script>
 
 <!-- Google Analytics -->
 <script>

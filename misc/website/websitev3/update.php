@@ -1,5 +1,8 @@
 <?php include "include/config.php";
 
+if (!ob_start("ob_gzhandler"))
+    ob_start();
+
 header('Content-Type: application/xml; charset=UTF-8');
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>".PHP_EOL;
